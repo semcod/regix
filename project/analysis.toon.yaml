@@ -1,0 +1,19 @@
+# code2llm | 1f 25L | shell:1 | 2026-03-31
+# CC̄=0.0 | critical:0/0 | dups:0 | cycles:0
+
+HEALTH[0]: ok
+
+REFACTOR[0]: none needed
+
+PIPELINES[0]: none detected
+
+LAYERS:
+  ./                              CC̄=0.0    ←in:0  →out:0
+  │ project.sh                  25L  0C    0m  CC=0.0    ←0
+  │
+
+COUPLING: no cross-package imports detected
+
+EXTERNAL:
+  validation: run `vallm batch .` → validation.toon
+  duplication: run `redup scan .` → duplication.toon

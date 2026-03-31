@@ -1,13 +1,13 @@
 [build-system]
 requires = ["setuptools>=68", "wheel"]
-build-backend = "setuptools.backends.legacy:build"
+build-backend = "setuptools.build_meta"
 
 [project]
 name = "regix"
-version = "0.1.0"
+version = "0.1.1"
 description = "Regression Index — detect and measure code quality regressions between git versions"
 readme = "README.md"
-license = "MIT"
+license = "Apache-2.0"
 authors = [{ name = "Tom Sapletta", email = "tom@sapletta.com" }]
 keywords = ["regression", "refactoring", "code-quality", "git", "cyclomatic-complexity", "CI"]
 classifiers = [
@@ -24,7 +24,6 @@ classifiers = [
     "Topic :: Software Development :: Version Control :: Git",
 ]
 requires-python = ">=3.9"
-
 dependencies = [
     "pyyaml>=6.0",
     "typer>=0.12",
@@ -36,7 +35,7 @@ lizard = ["lizard>=1.17"]
 radon = ["radon>=6.0"]
 coverage = ["coverage[toml]>=7.0"]
 vallm = ["vallm>=0.1"]
-docstring = []                    # built-in (ast), no extra deps
+docstring = []
 full = [
     "lizard>=1.17",
     "radon>=6.0",
@@ -49,7 +48,10 @@ dev = [
     "pytest-cov>=5.0",
     "lizard>=1.17",
     "radon>=6.0",
-    "coverage[toml,"goal>=2.1.0", "costs>=0.1.20", "pfix>=0.1.60"]>=7.0",
+    "coverage[toml]>=7.0",
+    "goal>=2.1.0",
+    "costs>=0.1.20",
+    "pfix>=0.1.60",
 ]
 
 [project.scripts]
@@ -60,8 +62,6 @@ Homepage = "https://github.com/semcod/regix"
 Documentation = "https://github.com/semcod/regix/tree/main/docs"
 Repository = "https://github.com/semcod/regix"
 Issues = "https://github.com/semcod/regix/issues"
-
-# ── Tool configuration ────────────────────────────────────────────────────────
 
 [tool.regix]
 workdir = "."
@@ -86,7 +86,7 @@ show_improvements = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-addopts = "--cov=regix --cov-report=json:.regix/coverage.json --cov-report=term-missing"
+addopts = "--cov=regix --cov-report=term-missing"
 
 [tool.setuptools.packages.find]
 where = ["."]

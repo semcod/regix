@@ -1,0 +1,36 @@
+regix:
+  workdir: .
+
+  metrics:
+    cc_max: 15
+    mi_min: 20
+    coverage_min: 80
+    length_max: 100
+    docstring_min: 60
+
+  thresholds:
+    delta_warn: 2
+    delta_error: 5
+
+  backends:
+    cc: lizard
+    mi: radon
+    coverage: pytest-cov
+    quality: none
+    docstring: builtin
+
+  exclude:
+    - "tests/**"
+    - "docs/**"
+    - "examples/**"
+    - ".venv/**"
+    - "venv/**"
+
+  output:
+    format: rich
+    dir: .regix/
+    show_improvements: true
+
+  gates:
+    on_regression: warn
+    fail_exit_code: 1

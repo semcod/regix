@@ -1,0 +1,17 @@
+# vallm batch | 19f | 2✓ 0⚠ 2✗ | 2026-03-31
+
+SUMMARY:
+  scanned: 19  passed: 2 (10.5%)  warnings: 0  errors: 2  unsupported: 15
+
+ERRORS[2]{path,score}:
+  pyproject.toml,0.00
+    issues[1]{rule,severity,message,line}:
+      syntax.tree_sitter,error,tree-sitter found 6 parse error(s) in toml,
+  tests/test_regix.py,0.57
+    issues[1]{rule,severity,message,line}:
+      python.import.resolvable,error,Module 'regix' not found,11
+
+UNSUPPORTED[3]{bucket,count}:
+  *.md,7
+  *.txt,1
+  other,7

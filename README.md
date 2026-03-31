@@ -3,17 +3,15 @@
 
 ## AI Cost Tracking
 
-![PyPI](https://img.shields.io/badge/pypi-costs-blue) ![Version](https://img.shields.io/badge/version-0.1.31-blue) ![Python](https://img.shields.io/badge/python-3.9+-blue) ![License](https://img.shields.io/badge/license-Apache--2.0-green)
-![AI Cost](https://img.shields.io/badge/AI%20Cost-$0.15-orange) ![Human Time](https://img.shields.io/badge/Human%20Time-1.0h-blue) ![Model](https://img.shields.io/badge/Model-openrouter%2Fqwen%2Fqwen3--coder--next-lightgrey)
+![PyPI](https://img.shields.io/badge/pypi-costs-blue) ![Version](https://img.shields.io/badge/version-0.1.1-blue) ![Python](https://img.shields.io/badge/python-3.9+-blue) ![License](https://img.shields.io/badge/license-Apache--2.0-green)
+![AI Cost](https://img.shields.io/badge/AI%20Cost-$0.15-orange) ![Human Time](https://img.shields.io/badge/Human%20Time-2.0h-blue) ![Model](https://img.shields.io/badge/Model-openrouter%2Fqwen%2Fqwen3--coder--next-lightgrey)
 
 - 🤖 **LLM usage:** $0.1500 (1 commits)
-- 👤 **Human dev:** ~$100 (1.0h @ $100/h, 30min dedup)
+- 👤 **Human dev:** ~$200 (2.0h @ $100/h, 30min dedup)
 
 Generated on 2026-03-31 using [openrouter/qwen/qwen3-coder-next](https://openrouter.ai/qwen/qwen3-coder-next)
 
 ---
-
-
 
 **Regix** is a Python library for detecting, measuring, and reporting code quality regressions between versions of a codebase. It compares static analysis metrics across git commits, branches, or local snapshots and pinpoints exactly which functions, classes, or lines have regressed — and by how much.
 
@@ -26,7 +24,7 @@ Generated on 2026-03-31 using [openrouter/qwen/qwen3-coder-next](https://openrou
 When refactoring code over multiple iterations:
 
 - A function's cyclomatic complexity improves in one commit, then regresses two commits later.
-- Test coverage drops by 3 % after a merge — but no single file is obviously responsible.
+- Test coverage drops by 3% after a merge — but no single file is obviously responsible.
 - Maintainability index worsens across three files simultaneously; the cause is spread over dozens of small changes.
 - A CI pipeline fails a quality gate without explaining *what changed* since the last passing run.
 
@@ -83,13 +81,12 @@ Regressions are reported at **three granularity levels**:
 pip install regix
 ```
 
-With optional analysis backends:
+With optional backends:
 
 ```bash
 pip install "regix[full]"      # lizard + radon + vallm + pytest-cov
 pip install "regix[lizard]"    # CC + length analysis only
 pip install "regix[coverage]"  # pytest-cov integration only
-pip install "regix[vallm]"     # LLM-based quality scoring
 ```
 
 Python requirement: **>= 3.9**
@@ -110,14 +107,9 @@ Regression Report: HEAD~1 → HEAD
   pyqual/cli.py
     ▲ bulk_run_cmd        CC  14 → 19  (+5)   ⚠ WARNING
     ▲ _build_run_summary  CC  12 → 18  (+6)   ✗ ERROR
-    ▼ run                 MI  45 → 38  (-7)   ⚠ WARNING
 
-  pyqual/validation.py
-    ▲ validate_config     CC  18 → 26  (+8)   ✗ ERROR
-    ▲ validate_config     len 92 → 110 (+18)  ⚠ WARNING
-
-Summary: 2 errors, 3 warnings, 0 improvements across 2 files
-Gates: ✗ FAIL  (cc_max=15 violated in 4 symbols)
+Summary: 1 error(s), 1 warning(s), 0 improvement(s)
+Gates: ✗ FAIL
 ```
 
 ### Compare two branches
@@ -126,20 +118,16 @@ Gates: ✗ FAIL  (cc_max=15 violated in 4 symbols)
 regix compare main feature/refactor --format json > regression.json
 ```
 
-### Track regression over last 10 commits
+### Check before committing
+
+```bash
+regix compare HEAD --local
+```
+
+### Track regressions over last 10 commits
 
 ```bash
 regix history --depth 10 --metric cc --metric coverage
-```
-
-```
-Commit    cc_avg  cc_max  coverage  mi_avg
-────────  ──────  ──────  ────────  ──────
-abc1234   6.2     19      59.9 %    38.4     ← current HEAD
-def5678   6.0     18      61.2 %    39.1
-ghi9012   5.8     16      63.0 %    41.2     ← coverage regression starts here
-jkl3456   5.7     15      65.1 %    42.0
-...
 ```
 
 ### Use from Python
@@ -147,12 +135,7 @@ jkl3456   5.7     15      65.1 %    42.0
 ```python
 from regix import Regix, RegressionConfig
 
-cfg = RegressionConfig(
-    cc_max=15,
-    mi_min=20,
-    coverage_min=80,
-)
-
+cfg = RegressionConfig(cc_max=15, delta_error=5)
 rx = Regix(config=cfg, workdir=".")
 report = rx.compare("HEAD~1", "HEAD")
 
@@ -213,119 +196,47 @@ A `RegressionReport` aggregates all `Regression` and `Improvement` objects from 
 ## CLI reference
 
 ```
-regix [OPTIONS] COMMAND [ARGS]
-
-Commands:
-  compare   Compare metrics between two git refs or local state.
-  history   Show metric timeline across N historical commits.
-  snapshot  Capture and store a snapshot without comparing.
-  diff      Show symbol-level metric diff (like git diff but for metrics).
-  gates     Check current state against configured quality gates.
-  report    Re-render a stored comparison as a different format.
-```
-
-### `regix compare`
-
-```
-regix compare [REF_A] [REF_B] [OPTIONS]
-
-  REF_A    Base ref (default: HEAD~1)
-  REF_B    Target ref (default: HEAD or local if --local)
-
-Options:
-  --local              Compare REF_A against the current working tree
-  --config FILE        Path to regix.yaml (default: regix.yaml or .regix/config.yaml)
-  --format             Output format: rich | json | yaml | toon  [default: rich]
-  --output FILE        Write report to file instead of stdout
-  --metric TEXT        Only report on specific metric(s), repeatable
-  --file TEXT          Only report on specific file(s), repeatable
-  --symbol TEXT        Only report on specific function/class, repeatable
-  --errors-only        Suppress warnings, show errors only
-  --fail-on warning    Exit code 1 on warnings too (default: errors only)
-  --no-improvements    Suppress improvement entries from output
-  --depth INTEGER      For history mode: number of commits to scan
-```
-
-### `regix history`
-
-```
-regix history [OPTIONS]
-
-Options:
-  --depth INTEGER      Number of commits to include  [default: 20]
-  --ref TEXT           Starting ref  [default: HEAD]
-  --metric TEXT        Metrics to include, repeatable
-  --file TEXT          Filter to specific file(s)
-  --symbol TEXT        Filter to specific symbol
-  --format             rich | json | yaml | csv  [default: rich]
-  --output FILE
-```
-
-### `regix diff`
-
-```
-regix diff [REF_A] [REF_B] [OPTIONS]
-
-  Shows a symbol-by-symbol metric diff, similar to `git diff` but for
-  static analysis data instead of source lines.
-
-Options:
-  --threshold FLOAT    Only show symbols with delta >= threshold
-  --metric TEXT        Filter to specific metric(s)
+regix compare [REF_A] [REF_B]    Compare metrics between two git refs
+regix history [--depth N]         Show metric timeline across commits
+regix snapshot [REF]              Capture and store a snapshot
+regix diff [REF_A] [REF_B]       Symbol-level metric diff
+regix gates                       Check against absolute quality gates
+regix status                      Show config and backend availability
+regix init                        Create a default regix.yaml
 ```
 
 ---
 
 ## Configuration
 
-Create a `regix.yaml` at the project root:
+Create `regix.yaml` at the project root, or add `[tool.regix]` to `pyproject.toml`:
 
 ```yaml
 regix:
-  workdir: .
-
   metrics:
-    cc_max: 15              # cyclomatic complexity per function
-    mi_min: 20              # maintainability index (radon)
-    coverage_min: 80        # test coverage (%)
-    length_max: 100         # function length in lines
-    docstring_min: 60       # docstring coverage (%)
-
+    cc_max: 15
+    mi_min: 20
+    coverage_min: 80
   thresholds:
-    delta_warn: 2           # minimum delta to emit a warning
-    delta_error: 5          # minimum delta to emit an error
-
+    delta_warn: 2
+    delta_error: 5
   backends:
-    cc: lizard              # lizard | radon | both
+    cc: lizard
     mi: radon
     coverage: pytest-cov
-    quality: vallm          # optional LLM-based score
-
   exclude:
     - "tests/**"
     - "examples/**"
-    - "docs/**"
-    - "**/migrations/**"
-
-  include:
-    - "src/**"
-    - "mypackage/**"
-
   output:
-    format: rich            # rich | json | yaml | toon
-    show_improvements: true
-    max_symbols: 50         # truncate long reports
-
+    format: rich
+    dir: .regix/
   gates:
-    on_regression: warn     # warn | error | block
-    fail_exit_code: 1
+    on_regression: warn
 ```
-
-See [configuration.md](configuration.md) for the full reference.
 
 ---
 
-## Integration with CI
+## CI Integration
 
 ### GitHub Actions
 
@@ -341,7 +252,6 @@ See [configuration.md](configuration.md) for the full reference.
 ### Pre-commit hook
 
 ```yaml
-# .pre-commit-config.yaml
 repos:
   - repo: local
     hooks:
@@ -352,43 +262,17 @@ repos:
         pass_filenames: false
 ```
 
-### pyqual integration
-
-Regix ships a pyqual-compatible stage preset and gate collector:
-
-```yaml
-# pyqual.yaml
-stages:
-  - name: regression-check
-    tool: regix
-    when: metrics_fail
-
-metrics:
-  regression_errors_max: 0
-  regression_warnings_max: 5
-```
-
-The `regix` preset runs `regix compare HEAD~1 HEAD --format toon --output .regix/` and the gate collector reads `.regix/report.toon.yaml` for `regression_errors` and `regression_warnings` metrics.
-
 ---
 
-## Design principles (lessons from pyqual)
+## Design principles
 
-These principles were derived from running iterative quality pipelines and observing failure modes:
-
-1. **Fix the measurement before fixing the code.** If the tool counts unsupported files in the pass-rate denominator, the metric is misleading. Regix measures only what it can actually analyse.
-
-2. **Report at symbol granularity, not file granularity.** A file-level CC average of 6.4 masks individual functions with CC 19+. Regix always links a regression to the smallest attributable unit.
-
-3. **Distinguish regression from absolute violation.** A function with CC=18 that was CC=18 last week is not a *new* regression — it is an existing issue. A function that went CC=10 → CC=18 in this PR *is* a regression. Both should be reportable, but separately.
-
-4. **Stagnation is a signal.** If a fix pass runs twice and produces identical metric values, continuing to iterate wastes time. Regix exposes `report.stagnated` so callers can exit early.
-
-5. **Make the improvement visible too.** Refactoring that improves CC from 22 → 14 in three functions while worsening one from 12 → 16 still net-positive. Hiding improvements creates a discouraging feedback loop.
-
-6. **Historical depth is essential.** A single before/after comparison misses the *trend*. The `history` command lets you see that coverage has been falling 1 % per week for six weeks, not just that it is below the gate today.
-
-7. **Output must be machine-readable.** Every report format (JSON, YAML, TOON) is stable and versioned so downstream tools (dashboards, ticket systems, fix agents) can consume regression data programmatically.
+1. **Fix the measurement before fixing the code.** Regix measures only what it can actually analyse.
+2. **Report at symbol granularity.** A file-level average of CC=6.4 masks individual functions with CC=19+.
+3. **Distinguish regression from absolute violation.** CC=18 that was CC=18 last week is an existing issue, not a new regression.
+4. **Stagnation is a signal.** If metrics are identical across iterations, continuing wastes time.
+5. **Make improvements visible too.** Hiding improvements creates a discouraging feedback loop.
+6. **Historical depth is essential.** A single before/after comparison misses the trend.
+7. **Output must be machine-readable.** JSON, YAML, TOON — all stable and versioned.
 
 ---
 
@@ -396,60 +280,48 @@ These principles were derived from running iterative quality pipelines and obser
 
 ```
 regix/
-├── __init__.py          # Public API: Regix, Snapshot, RegressionReport, ...
-├── cli.py               # Typer-based CLI (compare, history, diff, gates, ...)
-├── config.py            # RegressionConfig dataclass + YAML loader
-├── snapshot.py          # Snapshot capture, caching, git checkout logic
-├── compare.py           # Core comparison engine: produces RegressionReport
+├── __init__.py          # Public API: Regix, Snapshot, RegressionReport
+├── cli.py               # Typer CLI (compare, history, diff, gates, ...)
+├── config.py            # RegressionConfig + YAML/TOML loader
+├── models.py            # Snapshot, Regression, Improvement, Report, etc.
+├── snapshot.py          # Snapshot capture, git worktree, file collection
+├── compare.py           # Core comparison engine
 ├── history.py           # Multi-commit timeline builder
-├── report.py            # Rendering: rich tables, JSON/YAML/TOON serialisation
-├── gates.py             # Gate evaluation (pass/fail) from RegressionReport
+├── report.py            # Rendering: rich, JSON, YAML, TOON
+├── gates.py             # Absolute gate evaluation
+├── cache.py             # Content-addressed snapshot cache
+├── git.py               # Git helpers: worktree, ref resolution, diff
+├── exceptions.py        # Typed exceptions
 ├── backends/
-│   ├── __init__.py
-│   ├── lizard.py        # CC + function length via lizard
-│   ├── radon.py         # MI + raw metrics via radon
-│   ├── coverage.py      # Coverage via pytest-cov JSON output
-│   ├── vallm.py         # LLM quality score via vallm batch
-│   └── base.py          # Backend ABC: collect(path) → SymbolMetrics
-├── git.py               # Git helpers: checkout, stash, diff, log
-├── cache.py             # Content-addressed snapshot cache (~/.cache/regix/)
+│   ├── __init__.py      # BackendBase ABC + registry
+│   ├── lizard_backend.py
+│   ├── radon_backend.py
+│   ├── coverage_backend.py
+│   ├── docstring_backend.py
+│   └── vallm_backend.py
 └── integrations/
-    ├── pyqual.py        # pyqual preset + gate collector
-    └── github.py        # GitHub Actions annotations formatter
+    └── __init__.py      # pyqual preset + gate collector
 ```
 
-See [architecture.md](architecture.md) for a detailed description of each module.
-
 ---
 
-## Comparison with related tools
+## Ecosystem
 
-| Tool | What it measures | Regression detection | Git-aware | Symbol-level |
-|------|-----------------|---------------------|-----------|--------------|
-| **Regix** | CC, MI, coverage, length, quality | ✅ first-class | ✅ | ✅ |
-| pylint | Style, errors | ❌ | ❌ | ❌ |
-| radon | CC, MI raw | ❌ | ❌ | ✅ |
-| lizard | CC, length | ❌ | ❌ | ✅ |
-| pytest-cov | Coverage | ❌ | ❌ | ❌ |
-| pyqual | Quality gates (pipeline) | partial (gate-level) | ❌ | ❌ |
-| diff-cover | Coverage diff | partial (line-level) | ✅ | ❌ |
-| xenon | CC thresholds | ❌ | ❌ | ❌ |
+Regix is part of the **semcod/wronai** AI-assisted development toolchain:
 
-Regix is designed to sit **above** analysis tools (lizard, radon, vallm) as the comparison and regression-detection layer, and **alongside** gate tools (pyqual) as a complementary data source.
-
----
-
-## Roadmap
-
-- [ ] `v0.1` — Core compare/history CLI, lizard + radon backends, JSON/rich output
-- [ ] `v0.2` — pytest-cov backend, configuration file, CI presets
-- [ ] `v0.3` — vallm backend, pyqual integration preset
-- [ ] `v0.4` — Symbol-level caching, incremental snapshots for large repos
-- [ ] `v0.5` — Web dashboard (static HTML report), trend charts
-- [ ] `v1.0` — Stable API, full docs, PyPI release
+| Package | Role |
+|---|---|
+| **code2llm** | Static analysis engine |
+| **vallm** | LLM code validator |
+| **regix** | Regression detection layer |
+| **devloop** | Declarative pipeline runner |
+| **planfile** | Universal ticket standard |
+| **llx** | Intelligent LLM router |
+| **proxym** | Dashboard layer |
+| **costs** | AI cost tracker |
 
 ---
 
 ## License
 
-MIT
+Licensed under Apache-2.0.

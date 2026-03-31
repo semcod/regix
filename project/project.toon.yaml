@@ -1,0 +1,11 @@
+# regix | 0 func | 1f | 36L | shell | 2026-03-31
+
+HEALTH:
+  CC̄=0.0  critical=0 (limit:10)  dup=0  cycles=0
+
+MODULES[1] (top by size):
+  M[project.sh] 25L C:0 F:0 CC↑0 D:0 (shell)
+  LANGS: shell:1
+
+EVOLUTION:
+  2026-03-31 CC̄=0.0 crit=0 36L // Automated analysis

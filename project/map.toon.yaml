@@ -1,0 +1,10 @@
+# regix | 1f 25L | shell:1 | 2026-03-31
+# stats: 0 func | 0 cls | 1 mod | CC̄=0.0 | critical:0 | cycles:0
+# alerts[0]: none
+# hotspots[0]: none
+# evolution: baseline
+# Keys: M=modules, D=details, i=imports, e=exports, c=classes, f=functions, m=methods
+M[1]:
+  project.sh,25
+D:
+  project.sh:
