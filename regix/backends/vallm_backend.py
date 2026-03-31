@@ -13,13 +13,17 @@ from regix.models import SymbolMetrics
 
 
 class VallmBackend(BackendBase):
+    """LLM-based code quality scoring via the ``vallm`` CLI tool."""
+
     name = "vallm"
     required_binary = "vallm"
 
     def is_available(self) -> bool:
+        """True when the ``vallm`` binary is on PATH."""
         return shutil.which("vallm") is not None
 
     def version(self) -> str:
+        """Return installed vallm version."""
         try:
             result = subprocess.run(
                 ["vallm", "--version"],
@@ -36,6 +40,7 @@ class VallmBackend(BackendBase):
         config: RegressionConfig,
         sources: dict[str, str] | None = None,
     ) -> list[SymbolMetrics]:
+        """Run ``vallm batch`` and collect quality scores per file."""
         if not self.is_available():
             return []
 
