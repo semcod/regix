@@ -537,6 +537,27 @@ class BenchmarkReporter:
     def __init__(self, results: List[BenchmarkResult]):
         self.results = results
 
+    @staticmethod
+    def _format_result_details(r: BenchmarkResult) -> str:
+        """Build the details string for a single benchmark result."""
+        if not r.extra and not r.error:
+            return ""
+        if not r.extra:
+            return f"[red]{r.error[:80]}[/red]" if r.error else ""
+        _EXTRA_KEYS = (
+            ("ops_per_sec", "ops/s"),
+            ("files_per_sec", "files/s"),
+            ("symbols_found", "symbols"),
+            ("summary", None),
+        )
+        parts = []
+        for key, suffix in _EXTRA_KEYS:
+            if key in r.extra:
+                parts.append(f"{r.extra[key]} {suffix}" if suffix else r.extra[key])
+        if r.error:
+            parts.append(f"[red]{r.error[:60]}[/red]")
+        return "  ".join(parts)
+
     def print_rich(self) -> None:
         console = Console()
         console.print()
@@ -545,6 +566,11 @@ class BenchmarkReporter:
         suites: Dict[str, List[BenchmarkResult]] = {}
         for r in self.results:
             suites.setdefault(r.suite, []).append(r)
+
+        _STATUS_COLORS = {
+            "OK": "green", "PASS": "green",
+            "FAIL": "red", "ERROR": "bold red",
+        }
 
         for suite_name, suite_results in suites.items():
             table = Table(
@@ -560,34 +586,13 @@ class BenchmarkReporter:
             table.add_column("Details", style="dim")
 
             for r in suite_results:
-                status_color = {
-                    "OK": "green", "PASS": "green",
-                    "FAIL": "red", "ERROR": "bold red",
-                }.get(r.status, "white")
-
-                details = ""
-                if r.extra:
-                    parts = []
-                    if "ops_per_sec" in r.extra:
-                        parts.append(f"{r.extra['ops_per_sec']} ops/s")
-                    if "files_per_sec" in r.extra:
-                        parts.append(f"{r.extra['files_per_sec']} files/s")
-                    if "symbols_found" in r.extra:
-                        parts.append(f"{r.extra['symbols_found']} symbols")
-                    if "summary" in r.extra:
-                        parts.append(r.extra["summary"])
-                    if r.error:
-                        parts.append(f"[red]{r.error[:60]}[/red]")
-                    details = "  ".join(parts)
-                elif r.error:
-                    details = f"[red]{r.error[:80]}[/red]"
-
+                sc = _STATUS_COLORS.get(r.status, "white")
                 table.add_row(
                     r.name,
                     _fmt_time(r.elapsed) if not r.error else "—",
                     _fmt_time(r.threshold) if r.threshold else "—",
-                    f"[{status_color}]{r.status}[/{status_color}]",
-                    details,
+                    f"[{sc}]{r.status}[/{sc}]",
+                    self._format_result_details(r),
                 )
 
             console.print(table)

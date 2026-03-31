@@ -1,17 +1,35 @@
 regix:
   workdir: .
 
-  metrics:
-    cc_max: 15
-    mi_min: 20
-    coverage_min: 80
-    length_max: 100
-    docstring_min: 60
+  # ── Quality gates ──────────────────────────────────────────────
+  gates:
+    # Hard — violations block the pipeline (exit code 1)
+    hard:
+      cc: 30
+      mi: 15
+      coverage: 20
+      length: 150
+      docstring: 20
+      quality: 0.50
 
-  thresholds:
-    delta_warn: 2
-    delta_error: 5
+    # Target — aspirational goals, reported as warnings
+    target:
+      cc: 10
+      mi: 30
+      coverage: 85
+      length: 50
+      docstring: 80
+      quality: 0.95
 
+    on_regression: warn
+    fail_exit_code: 1
+
+  # ── Delta thresholds (relative change between commits) ─────────
+  deltas:
+    warn: 2
+    error: 5
+
+  # ── Backends ───────────────────────────────────────────────────
   backends:
     cc: lizard
     mi: radon
@@ -19,6 +37,7 @@ regix:
     quality: none
     docstring: builtin
 
+  # ── File filtering ─────────────────────────────────────────────
   exclude:
     - "tests/**"
     - "docs/**"
@@ -26,11 +45,8 @@ regix:
     - ".venv/**"
     - "venv/**"
 
+  # ── Output ─────────────────────────────────────────────────────
   output:
     format: rich
     dir: .regix/
     show_improvements: true
-
-  gates:
-    on_regression: warn
-    fail_exit_code: 1

@@ -4,37 +4,42 @@
 
 - **Project**: /home/tom/github/semcod/regix
 - **Primary Language**: python
-- **Languages**: python: 23, shell: 1
+- **Languages**: python: 24, shell: 1
 - **Analysis Mode**: static
-- **Total Functions**: 103
-- **Total Classes**: 31
-- **Modules**: 24
-- **Entry Points**: 73
+- **Total Functions**: 157
+- **Total Classes**: 41
+- **Modules**: 25
+- **Entry Points**: 111
 
 ## Architecture by Module
 
+### regix.benchmark
+- **Functions**: 31
+- **Classes**: 9
+- **File**: `benchmark.py`
+
 ### regix.config
-- **Functions**: 8
-- **Classes**: 1
+- **Functions**: 15
+- **Classes**: 2
 - **File**: `config.py`
 
-### regix.cli
-- **Functions**: 8
-- **File**: `cli.py`
-
 ### regix.smells
-- **Functions**: 8
+- **Functions**: 14
 - **File**: `smells.py`
 
 ### regix.models
-- **Functions**: 8
+- **Functions**: 10
 - **Classes**: 13
 - **File**: `models.py`
 
 ### regix.git
-- **Functions**: 7
+- **Functions**: 9
 - **Classes**: 1
 - **File**: `git.py`
+
+### regix.cli
+- **Functions**: 8
+- **File**: `cli.py`
 
 ### regix.backends.structure_backend
 - **Functions**: 7
@@ -65,13 +70,21 @@
 - **Classes**: 5
 - **File**: `exceptions.py`
 
+### regix.compare
+- **Functions**: 4
+- **File**: `compare.py`
+
+### regix.history
+- **Functions**: 4
+- **File**: `history.py`
+
+### regix.snapshot
+- **Functions**: 4
+- **File**: `snapshot.py`
+
 ### scripts.check_regression
 - **Functions**: 3
 - **File**: `check_regression.py`
-
-### regix.snapshot
-- **Functions**: 3
-- **File**: `snapshot.py`
 
 ### regix.report
 - **Functions**: 3
@@ -92,53 +105,57 @@
 - **Classes**: 1
 - **File**: `radon_backend.py`
 
-### regix.backends.vallm_backend
-- **Functions**: 3
-- **Classes**: 1
-- **File**: `vallm_backend.py`
-
-### regix.backends.lizard_backend
-- **Functions**: 3
-- **Classes**: 1
-- **File**: `lizard_backend.py`
-
-### regix.compare
-- **Functions**: 2
-- **File**: `compare.py`
-
 ## Key Entry Points
 
 Main execution flows into the system:
 
-### regix.models.RegressionReport.to_toon
-> TOON format — machine-readable plain text.
-- **Calls**: None.strftime, lines.append, lines.append, lines.append, lines.append, lines.append, None.join, lines.append
+### regix.config.RegressionConfig.from_dict
+> Build config from a flat or nested dict.
 
-### regix.compare.compare
-> Compare two snapshots and produce a regression report.
-- **Calls**: time.monotonic, sorted, sum, sum, regix.smells.detect_smells, sum, sum, RegressionReport
+Supports two config layouts:
+
+**New (recommended)**::
+
+    gates:
+      hard:  {cc: 30, mi: 15, ...}
+      t
+- **Calls**: data.get, root.get, root.get, root.get, root.get, root.get, root.get, root.get
 
 ### regix.backends.architecture_backend.ArchitectureBackend.collect
-- **Calls**: ast.walk, results.append, full.read_text, ast.parse, sum, len, getattr, max
+- **Calls**: str, ast.walk, results.append, ast.parse, sum, len, getattr, max
+
+### regix.benchmark.BenchmarkReporter.print_rich
+- **Calls**: Console, console.print, console.print, suites.items, len, sum, sum, sum
+
+### regix.models.RegressionReport.to_toon
+> TOON format — machine-readable plain text.
+- **Calls**: None.strftime, lines.append, lines.append, lines.append, lines.append, lines.append, lines.extend, lines.extend
 
 ### regix.cli.compare
 > Compare metrics between two git refs or local state.
 - **Calls**: app.command, typer.Argument, typer.Argument, typer.Option, typer.Option, typer.Option, typer.Option, typer.Option
 
-### regix.cli.diff
-> Show symbol-by-symbol metric diff (like git diff for metrics).
-- **Calls**: app.command, typer.Argument, typer.Argument, typer.Option, typer.Option, typer.Option, typer.Option, regix.cli._load_config
-
-### regix.integrations.RegixCollector._parse
-- **Calls**: path.read_text, text.splitlines, json.loads, line.strip, line.startswith, line.startswith, line.startswith, data.get
-
 ### regix.cli.status
 > Show Regix configuration and available backends.
 - **Calls**: app.command, typer.Option, typer.Option, regix.cli._load_config, typer.echo, typer.echo, typer.echo, typer.echo
 
-### regix.config.RegressionConfig.from_dict
-> Build config from a flat or nested dict.
-- **Calls**: data.get, root.get, root.get, root.get, root.get, root.get, root.get, root.get
+### regix.cli.diff
+> Show symbol-by-symbol metric diff (like git diff for metrics).
+- **Calls**: app.command, typer.Argument, typer.Argument, typer.Option, typer.Option, typer.Option, typer.Option, regix.cli._load_config
+
+### regix.compare.compare
+> Compare two snapshots and produce a regression report.
+- **Calls**: time.monotonic, sorted, sum, sum, regix.smells.detect_smells, sum, sum, RegressionReport
+
+### regix.cli.gates
+> Check current state against configured quality gates (absolute thresholds).
+- **Calls**: app.command, typer.Option, typer.Option, typer.Option, typer.Option, regix.cli._load_config, None.resolve, regix.snapshot.capture
+
+### regix.benchmark.BackendProbe.run
+- **Calls**: regix.backends.get_backend, Path, BenchmarkResult, backend.is_available, BenchmarkResult, tempfile.mkdtemp, self._generate_files, RegressionConfig
+
+### regix.integrations.RegixCollector._parse
+- **Calls**: path.read_text, text.splitlines, json.loads, line.strip, line.startswith, line.startswith, line.startswith, data.get
 
 ### regix.cli.snapshot
 > Capture and store a snapshot without comparing.
@@ -148,104 +165,91 @@ Main execution flows into the system:
 > Show metric timeline across N historical commits.
 - **Calls**: app.command, typer.Option, typer.Option, typer.Option, typer.Option, typer.Option, typer.Option, typer.Option
 
-### regix.cli.gates
-> Check current state against configured quality gates (absolute thresholds).
-- **Calls**: app.command, typer.Option, typer.Option, typer.Option, typer.Option, regix.cli._load_config, None.resolve, regix.snapshot.capture
-
 ### regix.backends.vallm_backend.VallmBackend.collect
 - **Calls**: self.is_available, subprocess.run, json.loads, set, isinstance, data.get, entry.get, entry.get
 
 ### scripts.check_regression.check_regression
-> Main regression check function
-- **Calls**: scripts.check_regression.load_json_file, scripts.check_regression.load_json_file, scripts.check_regression.load_json_file, None.append, open, json.dump, print, sys.exit
+> Main regression check function.
+- **Calls**: scripts.check_regression.load_json_file, scripts.check_regression.load_json_file, scripts.check_regression.load_json_file, None.append, open, json.dump, regix.benchmark.BenchmarkReporter.print, sys.exit
 
 ### regix.backends.structure_backend.StructureBackend.collect
-- **Calls**: self._collect_functions, results.append, full.read_text, ast.parse, SymbolMetrics, regix.backends.structure_backend._analyse_function, results.append, full.exists
+- **Calls**: str, self._collect_functions, results.append, ast.parse, SymbolMetrics, regix.backends.structure_backend._analyse_function, results.append, full.read_text
+
+### regix.benchmark.BenchmarkReporter.print_plain
+- **Calls**: suites.items, None.append, regix.benchmark.BenchmarkReporter.print, regix.benchmark.BenchmarkReporter.print, regix.benchmark.BenchmarkReporter.print, regix.benchmark.BenchmarkReporter.print, regix.benchmark.BenchmarkReporter.print, regix.benchmark.BenchmarkReporter.print
 
 ### regix.backends.docstring_backend.DocstringBackend.collect
-- **Calls**: ast.walk, results.append, full.read_text, ast.parse, isinstance, SymbolMetrics, full.exists, ast.get_docstring
+- **Calls**: str, ast.walk, results.append, ast.parse, isinstance, SymbolMetrics, full.read_text, ast.get_docstring
 
 ### regix.backends.radon_backend.RadonBackend.collect
-- **Calls**: results.append, full.read_text, mi_visit, cc_visit, SymbolMetrics, results.append, full.exists, SymbolMetrics
+- **Calls**: str, results.append, mi_visit, cc_visit, SymbolMetrics, results.append, full.read_text, SymbolMetrics
+
+### regix.benchmark.ImportProbe.run
+- **Calls**: range, min, BenchmarkResult, time.perf_counter, BenchmarkResult, subprocess.run, times.append, time.perf_counter
+
+### regix.benchmark.CLIProbe.run
+- **Calls**: range, min, BenchmarkResult, time.perf_counter, BenchmarkResult, subprocess.run, times.append, time.perf_counter
+
+### regix.benchmark.ThroughputProbe.run
+- **Calls**: BenchmarkResult, self.setup, time.perf_counter, range, float, self.fn, time.perf_counter, BenchmarkResult
+
+### regix.benchmark.main
+- **Calls**: argparse.ArgumentParser, parser.add_argument, parser.add_argument, parser.add_argument, parser.add_argument, parser.parse_args, regix.benchmark.build_regix_suite, suite.run
 
 ### regix.backends.coverage_backend.CoverageBackend._from_coverage_file
 - **Calls**: cov_lib.Coverage, cov.load, cov.get_data, data.measured_files, data.lines, len, results.append, str
 
-### regix.backends.coverage_backend.CoverageBackend._from_json
-- **Calls**: data.get, file_data.items, json.loads, str, finfo.get, summary.get, path.read_text, results.append
+### regix.benchmark.UnitTestProbe.run
+- **Calls**: time.perf_counter, output.splitlines, BenchmarkResult, str, subprocess.run, None.strip, time.perf_counter, BenchmarkResult
+
+### regix.benchmark.BackendProbe._generate_files
+> Create synthetic Python files with various constructs.
+- **Calls**: textwrap.dedent, max, range, int, template.format, fpath.write_text, files.append, len
+
+### regix.git.checkout_temporary
+> Context manager: create a git worktree at *ref* in a temp directory.
+
+The original working tree is never modified.
+Prefer :func:`read_tree_sources` fo
+- **Calls**: Path, regix.git.resolve_ref, Path, tempfile.mkdtemp, regix.git._run_git, regix.git._run_git, tmp.exists, shutil.rmtree
 
 ### regix.models.Snapshot.load
 > Deserialise from JSON.
 - **Calls**: json.loads, cls, None.read_text, SymbolMetrics, data.get, data.get, datetime.fromisoformat, data.get
 
+### regix.backends.coverage_backend.CoverageBackend._from_json
+- **Calls**: data.get, file_data.items, json.loads, str, finfo.get, summary.get, path.read_text, results.append
+
 ### regix.config.RegressionConfig._from_pyproject
 - **Calls**: None.get, cls.from_dict, open, tomllib.load, cls, data.get, cls, open
-
-### regix.cli.init
-> Create a default regix.yaml in the project root.
-- **Calls**: app.command, typer.Option, None.resolve, target.exists, target.write_text, typer.echo, typer.echo, SystemExit
-
-### regix.cache.store
-> Store a snapshot in the cache, return its path.
-- **Calls**: regix.cache._cache_dir, regix.cache._cache_key, json.dumps, path.write_bytes, ValueError, gzip.compress, snapshot.timestamp.isoformat, str
-
-### regix.Regix.__init__
-- **Calls**: isinstance, str, self.config.apply_env_overrides, RegressionConfig.from_file, None.resolve, RegressionConfig.from_file, Path, RegressionConfig
-
-### regix.backends.lizard_backend.LizardBackend.collect
-- **Calls**: lizard.analyze_file, results.append, full.exists, full.is_file, str, SymbolMetrics, str, len
-
-### regix.models.RegressionReport.filter
-> Return a filtered copy of this report.
-- **Calls**: RegressionReport, _match_reg, _match_imp, _match_smell, sum, sum, sum, sum
-
-### regix.git.get_dirty_files
-> Return files with uncommitted changes (modified + untracked).
-- **Calls**: Path, regix.git._run_git, None.splitlines, result.stdout.strip, None.split, files.append, Path
-
-### regix.cache.lookup
-> Return cached snapshot or None.
-- **Calls**: regix.cache._cache_dir, regix.cache._cache_key, path.exists, None.decode, json.loads, gzip.decompress, path.read_bytes
-
-### regix.models.Snapshot.save
-> Serialise snapshot to JSON.
-- **Calls**: Path, p.parent.mkdir, p.write_text, self.timestamp.isoformat, str, json.dumps, asdict
-
-### regix.backends.structure_backend._CallVisitor.visit_Call
-- **Calls**: isinstance, self.generic_visit, isinstance, self.called_names.add, isinstance, self.called_names.add, self.called_names.add
-
-### regix.backends.structure_backend.StructureBackend._collect_functions
-> Walk the AST and collect all function/method definitions with qualified names.
-- **Calls**: ast.iter_child_nodes, isinstance, out.append, self._collect_functions, isinstance, self._collect_functions
 
 ## Process Flows
 
 Key execution flows identified:
 
-### Flow 1: to_toon
+### Flow 1: from_dict
 ```
-to_toon [regix.models.RegressionReport]
-```
-
-### Flow 2: compare
-```
-compare [regix.compare]
-  └─ →> detect_smells
+from_dict [regix.config.RegressionConfig]
 ```
 
-### Flow 3: collect
+### Flow 2: collect
 ```
 collect [regix.backends.architecture_backend.ArchitectureBackend]
 ```
 
-### Flow 4: diff
+### Flow 3: print_rich
 ```
-diff [regix.cli]
+print_rich [regix.benchmark.BenchmarkReporter]
 ```
 
-### Flow 5: _parse
+### Flow 4: to_toon
 ```
-_parse [regix.integrations.RegixCollector]
+to_toon [regix.models.RegressionReport]
+```
+
+### Flow 5: compare
+```
+compare [regix.cli]
 ```
 
 ### Flow 6: status
@@ -254,37 +258,43 @@ status [regix.cli]
   └─> _load_config
 ```
 
-### Flow 7: from_dict
+### Flow 7: diff
 ```
-from_dict [regix.config.RegressionConfig]
-```
-
-### Flow 8: snapshot
-```
-snapshot [regix.cli]
+diff [regix.cli]
 ```
 
-### Flow 9: history
-```
-history [regix.cli]
-```
-
-### Flow 10: gates
+### Flow 8: gates
 ```
 gates [regix.cli]
 ```
 
-## Key Classes
+### Flow 9: run
+```
+run [regix.benchmark.BackendProbe]
+  └─ →> get_backend
+```
 
-### regix.models.RegressionReport
-> Aggregated result of a comparison between two snapshots.
-- **Methods**: 9
-- **Key Methods**: regix.models.RegressionReport.has_errors, regix.models.RegressionReport.has_regressions, regix.models.RegressionReport.passed, regix.models.RegressionReport.summary, regix.models.RegressionReport.to_dict, regix.models.RegressionReport.to_json, regix.models.RegressionReport.to_yaml, regix.models.RegressionReport.to_toon, regix.models.RegressionReport.filter
+### Flow 10: _parse
+```
+_parse [regix.integrations.RegixCollector]
+```
+
+## Key Classes
 
 ### regix.config.RegressionConfig
 > All user-configurable values for a Regix run.
-- **Methods**: 8
-- **Key Methods**: regix.config.RegressionConfig.from_file, regix.config.RegressionConfig.from_dict, regix.config.RegressionConfig.delta_thresholds, regix.config.RegressionConfig.is_lower_better, regix.config.RegressionConfig._find_config, regix.config.RegressionConfig._from_yaml, regix.config.RegressionConfig._from_pyproject, regix.config.RegressionConfig.apply_env_overrides
+- **Methods**: 26
+- **Key Methods**: regix.config.RegressionConfig.cc_max, regix.config.RegressionConfig.cc_max, regix.config.RegressionConfig.mi_min, regix.config.RegressionConfig.mi_min, regix.config.RegressionConfig.coverage_min, regix.config.RegressionConfig.coverage_min, regix.config.RegressionConfig.length_max, regix.config.RegressionConfig.length_max, regix.config.RegressionConfig.docstring_min, regix.config.RegressionConfig.docstring_min
+
+### regix.models.RegressionReport
+> Aggregated result of a comparison between two snapshots.
+- **Methods**: 11
+- **Key Methods**: regix.models.RegressionReport.has_errors, regix.models.RegressionReport.has_regressions, regix.models.RegressionReport.passed, regix.models.RegressionReport.summary, regix.models.RegressionReport.to_dict, regix.models.RegressionReport.to_json, regix.models.RegressionReport.to_yaml, regix.models.RegressionReport._toon_regression_section, regix.models.RegressionReport._toon_smell_section, regix.models.RegressionReport.to_toon
+
+### regix.benchmark.BenchmarkReporter
+> Prints results as a rich table or plain text.
+- **Methods**: 7
+- **Key Methods**: regix.benchmark.BenchmarkReporter.__init__, regix.benchmark.BenchmarkReporter._format_result_details, regix.benchmark.BenchmarkReporter.print_rich, regix.benchmark.BenchmarkReporter.print_plain, regix.benchmark.BenchmarkReporter.print_json, regix.benchmark.BenchmarkReporter.print, regix.benchmark.BenchmarkReporter.any_failed
 
 ### regix.Regix
 > Main entry point — wraps snapshot, compare, and history.
@@ -317,6 +327,11 @@ gates [regix.cli]
 - **Key Methods**: regix.backends.docstring_backend.DocstringBackend.is_available, regix.backends.docstring_backend.DocstringBackend.version, regix.backends.docstring_backend.DocstringBackend.collect
 - **Inherits**: BackendBase
 
+### regix.models.GateResult
+> Aggregate gate evaluation result.
+- **Methods**: 3
+- **Key Methods**: regix.models.GateResult.all_passed, regix.models.GateResult.errors, regix.models.GateResult.warnings
+
 ### regix.backends.radon_backend.RadonBackend
 - **Methods**: 3
 - **Key Methods**: regix.backends.radon_backend.RadonBackend.is_available, regix.backends.radon_backend.RadonBackend.version, regix.backends.radon_backend.RadonBackend.collect
@@ -338,10 +353,20 @@ gates [regix.cli]
 - **Key Methods**: regix.backends.lizard_backend.LizardBackend.is_available, regix.backends.lizard_backend.LizardBackend.version, regix.backends.lizard_backend.LizardBackend.collect
 - **Inherits**: BackendBase
 
-### regix.models.GateResult
-> Aggregate gate evaluation result.
+### regix.benchmark.BenchmarkResult
 - **Methods**: 3
-- **Key Methods**: regix.models.GateResult.all_passed, regix.models.GateResult.errors, regix.models.GateResult.warnings
+- **Key Methods**: regix.benchmark.BenchmarkResult.passed, regix.benchmark.BenchmarkResult.status, regix.benchmark.BenchmarkResult.to_dict
+
+### regix.benchmark.BackendProbe
+> Measures a single regix backend's collect() throughput on synthetic files.
+- **Methods**: 3
+- **Key Methods**: regix.benchmark.BackendProbe.__init__, regix.benchmark.BackendProbe._generate_files, regix.benchmark.BackendProbe.run
+- **Inherits**: BenchmarkProbe
+
+### regix.benchmark.BenchmarkSuite
+> Collects probes and runs them.
+- **Methods**: 3
+- **Key Methods**: regix.benchmark.BenchmarkSuite.__init__, regix.benchmark.BenchmarkSuite.add, regix.benchmark.BenchmarkSuite.run
 
 ### regix.integrations.RegixCollector
 > GateSet-compatible metric collector for pyqual.
@@ -357,34 +382,11 @@ Reads ``.regix/report.toon.yaml`` and returns
 - **Key Methods**: regix.backends.structure_backend._CallVisitor.__init__, regix.backends.structure_backend._CallVisitor.visit_Call
 - **Inherits**: ast.NodeVisitor
 
-### regix.exceptions.GitRefError
-> Raised when a git ref cannot be resolved.
-- **Methods**: 1
-- **Key Methods**: regix.exceptions.GitRefError.__init__
-- **Inherits**: RegixError
-
-### regix.exceptions.GitDirtyError
-> Raised when the working tree is dirty and the operation requires a clean state.
-- **Methods**: 1
-- **Key Methods**: regix.exceptions.GitDirtyError.__init__
-- **Inherits**: RegixError
-
-### regix.exceptions.BackendError
-> Raised when a backend fails to produce output.
-- **Methods**: 1
-- **Key Methods**: regix.exceptions.BackendError.__init__
-- **Inherits**: RegixError
-
-### regix.exceptions.ConfigError
-> Raised when the configuration file is invalid.
-- **Methods**: 1
-- **Key Methods**: regix.exceptions.ConfigError.__init__
-- **Inherits**: RegixError
-
-### regix.exceptions.RegixError
-> Base exception for all Regix errors.
-- **Methods**: 0
-- **Inherits**: Exception
+### regix.benchmark.ImportProbe
+> Measures import time of a Python module in a fresh process.
+- **Methods**: 2
+- **Key Methods**: regix.benchmark.ImportProbe.__init__, regix.benchmark.ImportProbe.run
+- **Inherits**: BenchmarkProbe
 
 ## Data Transformation Functions
 
@@ -392,6 +394,14 @@ Key functions that process and transform data:
 
 ### regix.integrations.RegixCollector._parse
 - **Output to**: path.read_text, text.splitlines, json.loads, line.strip, line.startswith
+
+### regix.benchmark.BenchmarkReporter._format_result_details
+> Build the details string for a single benchmark result.
+- **Output to**: None.join, parts.append, parts.append
+
+### regix.benchmark._make_config_parse_probe
+> Benchmark config parsing throughput.
+- **Output to**: ThroughputProbe, tempfile.mkdtemp, cfg_path.write_text, str, RegressionConfig.from_file
 
 ## Behavioral Patterns
 
@@ -404,46 +414,46 @@ Key functions that process and transform data:
 
 Functions exposed as public API (no underscore prefix):
 
-- `regix.models.RegressionReport.to_toon` - 32 calls
-- `regix.compare.compare` - 27 calls
+- `regix.benchmark.build_regix_suite` - 42 calls
+- `regix.config.RegressionConfig.from_dict` - 38 calls
 - `regix.backends.architecture_backend.ArchitectureBackend.collect` - 27 calls
-- `regix.history.build_history` - 25 calls
+- `regix.benchmark.BenchmarkReporter.print_rich` - 26 calls
+- `regix.models.RegressionReport.to_toon` - 24 calls
 - `regix.cli.compare` - 23 calls
+- `regix.cli.status` - 23 calls
 - `regix.cli.diff` - 22 calls
-- `regix.snapshot.capture` - 19 calls
-- `regix.cli.status` - 18 calls
-- `regix.config.RegressionConfig.from_dict` - 17 calls
+- `regix.compare.compare` - 21 calls
+- `regix.cli.gates` - 21 calls
+- `regix.snapshot.capture` - 21 calls
+- `regix.benchmark.BackendProbe.run` - 21 calls
 - `regix.cli.snapshot` - 17 calls
-- `regix.smells.detect_smells` - 17 calls
 - `regix.cli.history` - 16 calls
-- `regix.cli.gates` - 16 calls
 - `regix.report.render_history` - 16 calls
 - `regix.backends.vallm_backend.VallmBackend.collect` - 15 calls
 - `scripts.check_regression.check_regression` - 14 calls
 - `regix.backends.structure_backend.StructureBackend.collect` - 14 calls
+- `regix.benchmark.BenchmarkReporter.print_plain` - 14 calls
+- `regix.git.read_tree_sources` - 12 calls
 - `regix.backends.docstring_backend.DocstringBackend.collect` - 12 calls
-- `regix.backends.radon_backend.RadonBackend.collect` - 11 calls
+- `regix.backends.radon_backend.RadonBackend.collect` - 12 calls
+- `regix.benchmark.ImportProbe.run` - 12 calls
+- `regix.benchmark.CLIProbe.run` - 12 calls
+- `regix.benchmark.ThroughputProbe.run` - 12 calls
+- `regix.benchmark.main` - 12 calls
+- `regix.benchmark.UnitTestProbe.run` - 11 calls
+- `regix.gates.check_gates` - 10 calls
 - `regix.git.checkout_temporary` - 10 calls
 - `regix.report.render` - 10 calls
 - `regix.models.Snapshot.load` - 10 calls
 - `regix.cli.init` - 9 calls
 - `regix.cache.store` - 9 calls
+- `regix.smells.detect_smells` - 9 calls
+- `regix.backends.lizard_backend.LizardBackend.collect` - 9 calls
 - `regix.git.list_commits` - 8 calls
-- `regix.backends.lizard_backend.LizardBackend.collect` - 8 calls
 - `regix.models.RegressionReport.filter` - 8 calls
+- `regix.benchmark.benchmark_library` - 8 calls
 - `regix.git.get_dirty_files` - 7 calls
-- `regix.cache.lookup` - 7 calls
-- `regix.models.Snapshot.save` - 7 calls
-- `regix.backends.structure_backend._CallVisitor.visit_Call` - 7 calls
-- `regix.gates.check_gates` - 5 calls
-- `regix.config.RegressionConfig.from_file` - 5 calls
-- `regix.config.RegressionConfig.apply_env_overrides` - 5 calls
-- `regix.git.resolve_ref` - 5 calls
-- `regix.models.RegressionReport.to_dict` - 5 calls
-- `scripts.check_regression.load_json_file` - 4 calls
-- `regix.config.RegressionConfig.delta_thresholds` - 4 calls
-- `regix.git.get_changed_files` - 4 calls
-- `regix.backends.coverage_backend.CoverageBackend.collect` - 4 calls
+- `regix.history.build_history` - 7 calls
 
 ## System Interactions
 
@@ -451,36 +461,36 @@ How components interact:
 
 ```mermaid
 graph TD
-    to_toon --> strftime
-    to_toon --> append
-    compare --> monotonic
-    compare --> sorted
-    compare --> sum
-    compare --> detect_smells
+    from_dict --> get
+    collect --> str
     collect --> walk
     collect --> append
-    collect --> read_text
     collect --> parse
     collect --> sum
+    print_rich --> Console
+    print_rich --> print
+    print_rich --> items
+    print_rich --> len
+    to_toon --> strftime
+    to_toon --> append
     compare --> command
     compare --> Argument
     compare --> Option
-    diff --> command
-    diff --> Argument
-    diff --> Option
-    _parse --> read_text
-    _parse --> splitlines
-    _parse --> loads
-    _parse --> strip
-    _parse --> startswith
     status --> command
     status --> Option
     status --> _load_config
     status --> echo
-    from_dict --> get
-    snapshot --> command
-    snapshot --> Argument
-    snapshot --> Option
+    diff --> command
+    diff --> Argument
+    diff --> Option
+    compare --> monotonic
+    compare --> sorted
+    compare --> sum
+    compare --> detect_smells
+    gates --> command
+    gates --> Option
+    run --> get_backend
+    run --> Path
 ```
 
 ## Reverse Engineering Guidelines

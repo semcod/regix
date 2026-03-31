@@ -1,24 +1,23 @@
-# code2llm | 24f 3321L | python:23,shell:1 | 2026-03-31
-# CC̄=5.4 | critical:11/103 | dups:0 | cycles:1
+# code2llm | 25f 4720L | python:24,shell:1 | 2026-03-31
+# CC̄=4.9 | critical:8/157 | dups:0 | cycles:1
 
-HEALTH[11]:
+HEALTH[9]:
+  🔴 GOD   regix/benchmark.py = 936L, 9 classes, 31m, max CC=12
   🟡 CC    _compute_delta CC=16 (limit:15)
-  🟡 CC    compare CC=24 (limit:15)
-  🟡 CC    from_dict CC=27 (limit:15)
+  🟡 CC    compare CC=16 (limit:15)
+  🟡 CC    from_dict CC=44 (limit:15)
   🟡 CC    diff CC=15 (limit:15)
-  🟡 CC    build_history CC=18 (limit:15)
-  🟡 CC    collect CC=16 (limit:15)
-  🟡 CC    detect_smells CC=23 (limit:15)
-  🟡 CC    _check_god_function CC=20 (limit:15)
-  🟡 CC    _check_hallucination_proxy CC=19 (limit:15)
-  🟡 CC    to_toon CC=27 (limit:15)
+  🟡 CC    capture CC=17 (limit:15)
+  🟡 CC    collect CC=19 (limit:15)
+  🟡 CC    detect_smells CC=17 (limit:15)
   🟡 CC    filter CC=15 (limit:15)
 
-REFACTOR[2]:
-  1. split 11 high-CC methods  (CC>15)
-  2. break 1 circular dependencies
+REFACTOR[3]:
+  1. split regix/benchmark.py  (god module)
+  2. split 8 high-CC methods  (CC>15)
+  3. break 1 circular dependencies
 
-PIPELINES[58]:
+PIPELINES[83]:
   [1] Src [__init__]: __init__
       PURITY: 100% pure
   [2] Src [__init__]: __init__
@@ -31,38 +30,43 @@ PIPELINES[58]:
       PURITY: 100% pure
 
 LAYERS:
-  scripts/                        CC̄=5.7    ←in:0  →out:0
-  │ check_regression            95L  0C    3m  CC=14     ←0
+  scripts/                        CC̄=5.7    ←in:0  →out:3
+  │ check_regression            96L  0C    3m  CC=14     ←0
   │
-  regix/                          CC̄=5.4    ←in:0  →out:0
-  │ !! models                     441L  13C    8m  CC=27     ←0
-  │ !! smells                     415L  0C    8m  CC=23     ←1
-  │ !! cli                        297L  0C    8m  CC=15     ←0
-  │ !! config                     234L  1C    8m  CC=27     ←2
-  │ !! compare                    186L  0C    2m  CC=24     ←0
-  │ snapshot                   141L  0C    3m  CC=13     ←3
-  │ structure_backend          139L  2C    7m  CC=8      ←0
-  │ __init__                   135L  1C    6m  CC=4      ←0
+  regix/                          CC̄=4.9    ←in:3  →out:0
+  │ !! benchmark                  936L  9C   31m  CC=12     ←1
+  │ !! config                     456L  2C   15m  CC=44     ←3
+  │ !! models                     456L  13C   10m  CC=15     ←0
+  │ !! smells                     428L  0C   14m  CC=17     ←1
+  │ !! cli                        334L  0C    8m  CC=15     ←0
+  │ !! compare                    201L  0C    4m  CC=16     ←0
+  │ !! snapshot                   182L  0C    4m  CC=17     ←4
+  │ git                        179L  1C    9m  CC=6      ←2
+  │ structure_backend          147L  2C    7m  CC=11     ←0
+  │ __init__                   134L  1C    6m  CC=4      ←0
   │ report                     133L  0C    3m  CC=14     ←1
-  │ !! architecture_backend       125L  1C    3m  CC=16     ←0
-  │ git                        121L  1C    7m  CC=4      ←2
-  │ coverage_backend           110L  1C    5m  CC=7      ←0
-  │ !! history                    100L  0C    2m  CC=18     ←2
+  │ !! architecture_backend       133L  1C    3m  CC=19     ←0
+  │ coverage_backend           111L  1C    5m  CC=7      ←0
+  │ history                    103L  0C    4m  CC=8      ←2
   │ cache                       97L  0C    5m  CC=3      ←0
-  │ radon_backend               92L  1C    3m  CC=9      ←0
-  │ vallm_backend               74L  1C    3m  CC=11     ←0
-  │ lizard_backend              71L  1C    3m  CC=7      ←0
-  │ docstring_backend           66L  1C    3m  CC=11     ←0
+  │ radon_backend               97L  1C    3m  CC=11     ←0
+  │ vallm_backend               75L  1C    3m  CC=11     ←0
+  │ lizard_backend              75L  1C    3m  CC=9      ←0
+  │ docstring_backend           74L  1C    3m  CC=14     ←0
   │ __init__                    64L  1C    2m  CC=9      ←0
+  │ gates                       60L  0C    2m  CC=6      ←2
+  │ __init__                    59L  1C    6m  CC=1      ←3
   │ exceptions                  54L  5C    4m  CC=2      ←0
-  │ __init__                    54L  1C    6m  CC=1      ←2
-  │ gates                       52L  0C    1m  CC=7      ←1
   │
   ./                              CC̄=0.0    ←in:0  →out:0
-  │ project.sh                  25L  0C    0m  CC=0.0    ←0
+  │ project.sh                  36L  0C    0m  CC=0.0    ←0
   │
 
-COUPLING: no cross-package imports detected
+COUPLING:
+             regix  scripts
+    regix       ──       ←3
+  scripts        3       ──
+  CYCLES: 1
 
 EXTERNAL:
   validation: run `vallm batch .` → validation.toon

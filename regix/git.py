@@ -6,11 +6,11 @@ import subprocess
 import tempfile
 from contextlib import contextmanager
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import datetime
 from pathlib import Path
 from typing import Iterator
 
-from regix.exceptions import GitDirtyError, GitRefError
+from regix.exceptions import GitRefError
 
 
 @dataclass

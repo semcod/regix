@@ -10,6 +10,22 @@ from typing import Any
 import yaml
 
 
+# ── Default gate threshold constants ─────────────────────────────────────────
+DEFAULT_CC_HARD = 15.0
+DEFAULT_MI_HARD = 20.0
+DEFAULT_COVERAGE_HARD = 80.0
+DEFAULT_LENGTH_HARD = 100.0
+DEFAULT_DOCSTRING_HARD = 60.0
+DEFAULT_QUALITY_HARD = 0.85
+
+DEFAULT_CC_TARGET = 10.0
+DEFAULT_MI_TARGET = 30.0
+DEFAULT_COVERAGE_TARGET = 90.0
+DEFAULT_LENGTH_TARGET = 50.0
+DEFAULT_DOCSTRING_TARGET = 80.0
+DEFAULT_QUALITY_TARGET = 0.95
+
+
 # ── Metric direction: True means "lower is better" ──────────────────────────
 METRIC_DIRECTIONS: dict[str, bool] = {
     "cc": True,          # lower CC is better → positive delta = regression
@@ -35,50 +51,186 @@ METRIC_THRESHOLDS: dict[str, tuple[float, float]] = {
     "node_type_diversity": (1.0, 2.0),  # losing 1 type = warn, 2 = error
 }
 
+# ── Metric names used by gates (bare name → model attr, operator) ────────────
+GATE_METRICS: list[tuple[str, str, str]] = [
+    # (gate_key, SymbolMetrics attr, operator)
+    ("cc", "cc", "le"),
+    ("mi", "mi", "ge"),
+    ("coverage", "coverage", "ge"),
+    ("length", "length", "le"),
+    ("docstring", "docstring_coverage", "ge"),
+    ("quality", "quality_score", "ge"),
+]
+
+
+@dataclass
+class GateThresholds:
+    """Threshold set for a single tier (hard or target).
+
+    Keys use **bare metric names** (``cc``, ``mi``, ``coverage``, …).
+    The direction (``≤`` or ``≥``) is defined by :data:`METRIC_DIRECTIONS`
+    and :data:`GATE_METRICS`.
+    """
+
+    cc: float = DEFAULT_CC_HARD
+    mi: float = DEFAULT_MI_HARD
+    coverage: float = DEFAULT_COVERAGE_HARD
+    length: float = DEFAULT_LENGTH_HARD
+    docstring: float = DEFAULT_DOCSTRING_HARD
+    quality: float = DEFAULT_QUALITY_HARD
+
+    def get(self, key: str) -> float:
+        """Look up a threshold by bare metric name."""
+        return getattr(self, key)
+
+
+# ── Default tiers ────────────────────────────────────────────────────────────
+_HARD_DEFAULTS = GateThresholds(
+    cc=DEFAULT_CC_HARD, mi=DEFAULT_MI_HARD, coverage=DEFAULT_COVERAGE_HARD,
+    length=DEFAULT_LENGTH_HARD, docstring=DEFAULT_DOCSTRING_HARD, quality=DEFAULT_QUALITY_HARD,
+)
+_TARGET_DEFAULTS = GateThresholds(
+    cc=DEFAULT_CC_TARGET, mi=DEFAULT_MI_TARGET, coverage=DEFAULT_COVERAGE_TARGET,
+    length=DEFAULT_LENGTH_TARGET, docstring=DEFAULT_DOCSTRING_TARGET, quality=DEFAULT_QUALITY_TARGET,
+)
+
 
 @dataclass
 class RegressionConfig:
     """All user-configurable values for a Regix run."""
 
-    cc_max: float = 15.0
-    mi_min: float = 20.0
-    coverage_min: float = 80.0
-    length_max: int = 100
-    docstring_min: float = 60.0
-    quality_min: float = 0.85
+    # ── Gate thresholds ───────────────────────────────────────────────────────
+    hard: GateThresholds = field(default_factory=lambda: GateThresholds(
+        cc=DEFAULT_CC_HARD, mi=DEFAULT_MI_HARD, coverage=DEFAULT_COVERAGE_HARD,
+        length=DEFAULT_LENGTH_HARD, docstring=DEFAULT_DOCSTRING_HARD, quality=DEFAULT_QUALITY_HARD,
+    ))
+    target: GateThresholds = field(default_factory=lambda: GateThresholds(
+        cc=DEFAULT_CC_TARGET, mi=DEFAULT_MI_TARGET, coverage=DEFAULT_COVERAGE_TARGET,
+        length=DEFAULT_LENGTH_TARGET, docstring=DEFAULT_DOCSTRING_TARGET, quality=DEFAULT_QUALITY_TARGET,
+    ))
+
+    # ── Delta thresholds (relative change between commits) ────────────────────
     delta_warn: float = 2.0
     delta_error: float = 5.0
     per_metric: dict[str, dict[str, float]] = field(default_factory=dict)
+
+    # ── File filtering ────────────────────────────────────────────────────────
     exclude: list[str] = field(default_factory=lambda: [
         "tests/**", "docs/**", "examples/**", ".venv/**", "venv/**",
         "build/**", "dist/**", "**/migrations/**", "**/*_pb2.py",
     ])
     include: list[str] = field(default_factory=list)
+
+    # ── Backends ──────────────────────────────────────────────────────────────
     backends: dict[str, str] = field(default_factory=lambda: {
         "cc": "lizard", "mi": "radon", "coverage": "pytest-cov",
         "quality": "vallm", "docstring": "builtin",
     })
     backends_parallel: bool = False
+
+    # ── Pipeline behaviour ────────────────────────────────────────────────────
     on_regression: str = "warn"
     fail_exit_code: int = 1
+
+    # ── Output ────────────────────────────────────────────────────────────────
     show_improvements: bool = True
     output_format: str = "rich"
     output_dir: str = ".regix/"
     max_symbols: int = 100
+
+    # ── Cache ─────────────────────────────────────────────────────────────────
     cache_enabled: bool = True
     cache_dir: str = "~/.cache/regix"
+
+    # ── Misc ──────────────────────────────────────────────────────────────────
     stagnation_window: int = 2
     workdir: str | Path = "."
     metric_directions: dict[str, bool] = field(
         default_factory=lambda: dict(METRIC_DIRECTIONS)
     )
-    # ── Architectural smell thresholds ───────────────────────────────────────
-    stub_max_lines: int = 5             # max lines to qualify as a stub
-    stub_shrink_ratio: float = 0.50     # function shrank to <50% → stub candidate
-    min_logic_density: float = 0.20     # statements/lines below this = sparse
-    min_node_diversity: int = 2         # unique stmt types below this = homogeneous
-    god_func_length_min: int = 30       # minimum lines to be a god-function candidate
-    hallucination_max_lines: int = 6    # max lines for hallucination proxy signal
+
+    # ── Architectural smell thresholds ────────────────────────────────────────
+    stub_max_lines: int = 5
+    stub_shrink_ratio: float = 0.50
+    min_logic_density: float = 0.20
+    min_node_diversity: int = 2
+    god_func_length_min: int = 30
+    hallucination_max_lines: int = 6
+
+    # ── Backward-compatible aliases ───────────────────────────────────────────
+    # Code that reads cfg.cc_max still works.
+
+    @property
+    def cc_max(self) -> float:
+        return self.hard.cc
+
+    @cc_max.setter
+    def cc_max(self, v: float) -> None:
+        self.hard.cc = v
+
+    @property
+    def mi_min(self) -> float:
+        return self.hard.mi
+
+    @mi_min.setter
+    def mi_min(self, v: float) -> None:
+        self.hard.mi = v
+
+    @property
+    def coverage_min(self) -> float:
+        return self.hard.coverage
+
+    @coverage_min.setter
+    def coverage_min(self, v: float) -> None:
+        self.hard.coverage = v
+
+    @property
+    def length_max(self) -> float:
+        return self.hard.length
+
+    @length_max.setter
+    def length_max(self, v: float) -> None:
+        self.hard.length = v
+
+    @property
+    def docstring_min(self) -> float:
+        return self.hard.docstring
+
+    @docstring_min.setter
+    def docstring_min(self, v: float) -> None:
+        self.hard.docstring = v
+
+    @property
+    def quality_min(self) -> float:
+        return self.hard.quality
+
+    @quality_min.setter
+    def quality_min(self, v: float) -> None:
+        self.hard.quality = v
+
+    @property
+    def cc_target(self) -> float:
+        return self.target.cc
+
+    @property
+    def mi_target(self) -> float:
+        return self.target.mi
+
+    @property
+    def coverage_target(self) -> float:
+        return self.target.coverage
+
+    @property
+    def length_target(self) -> float:
+        return self.target.length
+
+    @property
+    def docstring_target(self) -> float:
+        return self.target.docstring
+
+    @property
+    def quality_target(self) -> float:
+        return self.target.quality
 
     # ── Loaders ──────────────────────────────────────────────────────────────
 
@@ -94,22 +246,86 @@ class RegressionConfig:
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> RegressionConfig:
-        """Build config from a flat or nested dict."""
+        """Build config from a flat or nested dict.
+
+        Supports two config layouts:
+
+        **New (recommended)**::
+
+            gates:
+              hard:  {cc: 30, mi: 15, ...}
+              target: {cc: 10, mi: 30, ...}
+            deltas: {warn: 2, error: 5}
+
+        **Legacy**::
+
+            metrics: {cc_max: 30, mi_min: 15, cc_target: 10, ...}
+            thresholds: {delta_warn: 2, delta_error: 5}
+        """
         root = data.get("regix", data)
         kwargs: dict[str, Any] = {}
+
         if "workdir" in root:
             kwargs["workdir"] = root["workdir"]
+
+        # ── Gates (new nested format) ────────────────────────────────────
+        gates_cfg = root.get("gates", {})
+        if "hard" in gates_cfg and isinstance(gates_cfg["hard"], dict):
+            kwargs["hard"] = GateThresholds(**{
+                k: float(v) for k, v in gates_cfg["hard"].items()
+                if hasattr(GateThresholds, k)
+            })
+        if "target" in gates_cfg and isinstance(gates_cfg["target"], dict):
+            kwargs["target"] = GateThresholds(**{
+                k: float(v) for k, v in gates_cfg["target"].items()
+                if hasattr(GateThresholds, k)
+            })
+        if "on_regression" in gates_cfg:
+            kwargs["on_regression"] = gates_cfg["on_regression"]
+        if "fail_exit_code" in gates_cfg:
+            kwargs["fail_exit_code"] = int(gates_cfg["fail_exit_code"])
+
+        # ── Legacy flat metrics ──────────────────────────────────────────
         metrics = root.get("metrics", {})
-        for key in ("cc_max", "mi_min", "coverage_min", "length_max",
-                     "docstring_min", "quality_min"):
-            if key in metrics:
-                kwargs[key] = float(metrics[key])
+        if metrics:
+            _LEGACY_HARD = {"cc_max": "cc", "mi_min": "mi", "coverage_min": "coverage",
+                            "length_max": "length", "docstring_min": "docstring",
+                            "quality_min": "quality"}
+            _LEGACY_TARGET = {"cc_target": "cc", "mi_target": "mi",
+                              "coverage_target": "coverage", "length_target": "length",
+                              "docstring_target": "docstring", "quality_target": "quality"}
+            if "hard" not in kwargs:
+                hard_vals = {}
+                for old_key, new_key in _LEGACY_HARD.items():
+                    if old_key in metrics:
+                        hard_vals[new_key] = float(metrics[old_key])
+                if hard_vals:
+                    kwargs["hard"] = GateThresholds(**hard_vals)
+            if "target" not in kwargs:
+                tgt_vals = {}
+                for old_key, new_key in _LEGACY_TARGET.items():
+                    if old_key in metrics:
+                        tgt_vals[new_key] = float(metrics[old_key])
+                if tgt_vals:
+                    kwargs["target"] = GateThresholds(**tgt_vals)
+
+        # ── Deltas (new format) ──────────────────────────────────────────
+        deltas = root.get("deltas", {})
+        if "warn" in deltas:
+            kwargs["delta_warn"] = float(deltas["warn"])
+        if "error" in deltas:
+            kwargs["delta_error"] = float(deltas["error"])
+
+        # ── Legacy thresholds ────────────────────────────────────────────
         thresholds = root.get("thresholds", {})
-        for key in ("delta_warn", "delta_error"):
-            if key in thresholds:
-                kwargs[key] = float(thresholds[key])
+        if "delta_warn" in thresholds:
+            kwargs.setdefault("delta_warn", float(thresholds["delta_warn"]))
+        if "delta_error" in thresholds:
+            kwargs.setdefault("delta_error", float(thresholds["delta_error"]))
         if "per_metric" in thresholds:
             kwargs["per_metric"] = thresholds["per_metric"]
+
+        # ── Smells ───────────────────────────────────────────────────────
         smells_cfg = root.get("smells", {})
         for key in ("stub_max_lines", "min_node_diversity", "god_func_length_min",
                     "hallucination_max_lines"):
@@ -118,10 +334,14 @@ class RegressionConfig:
         for key in ("stub_shrink_ratio", "min_logic_density"):
             if key in smells_cfg:
                 kwargs[key] = float(smells_cfg[key])
+
+        # ── Files ────────────────────────────────────────────────────────
         if "exclude" in root:
             kwargs["exclude"] = root["exclude"]
         if "include" in root:
             kwargs["include"] = root["include"]
+
+        # ── Backends ─────────────────────────────────────────────────────
         if "backends" in root:
             bk = root["backends"]
             if isinstance(bk, dict):
@@ -130,6 +350,8 @@ class RegressionConfig:
                 }
                 if "parallel" in bk:
                     kwargs["backends_parallel"] = bk["parallel"]
+
+        # ── Output ───────────────────────────────────────────────────────
         output = root.get("output", {})
         if "format" in output:
             kwargs["output_format"] = output["format"]
@@ -139,19 +361,19 @@ class RegressionConfig:
             kwargs["show_improvements"] = output["show_improvements"]
         if "max_symbols" in output:
             kwargs["max_symbols"] = output["max_symbols"]
+
+        # ── Cache ────────────────────────────────────────────────────────
         cache = root.get("cache", {})
         if "enabled" in cache:
             kwargs["cache_enabled"] = cache["enabled"]
         if "dir" in cache:
             kwargs["cache_dir"] = cache["dir"]
-        gates = root.get("gates", {})
-        if "on_regression" in gates:
-            kwargs["on_regression"] = gates["on_regression"]
-        if "fail_exit_code" in gates:
-            kwargs["fail_exit_code"] = int(gates["fail_exit_code"])
+
+        # ── Loop ─────────────────────────────────────────────────────────
         loop = root.get("loop", {})
         if "stagnation_window" in loop:
             kwargs["stagnation_window"] = int(loop["stagnation_window"])
+
         return cls(**kwargs)
 
     # ── Helpers ──────────────────────────────────────────────────────────────

@@ -4,6 +4,8 @@ Detect, measure and report code quality regressions between git versions
 at function, class and line granularity.
 """
 
+from pathlib import Path
+
 from regix.config import RegressionConfig
 from regix.models import (
     ArchSmell,
@@ -52,8 +54,6 @@ class Regix:
         config: RegressionConfig | str | None = None,
         workdir: str = ".",
     ):
-        from pathlib import Path
-
         if isinstance(config, str):
             self.config = RegressionConfig.from_file(config)
         elif config is None:
@@ -68,7 +68,6 @@ class Regix:
 
     def snapshot(self, ref: str = "HEAD", use_cache: bool = True) -> Snapshot:
         """Capture metrics at a git ref."""
-        from pathlib import Path
         from regix.snapshot import capture
 
         return capture(ref, Path(self.config.workdir), self.config)
@@ -97,7 +96,6 @@ class Regix:
         metrics: list[str] | None = None,
     ) -> HistoryReport:
         """Walk commits and return a metric timeline."""
-        from pathlib import Path
         from regix.history import build_history
 
         return build_history(
@@ -133,4 +131,4 @@ __all__ = [
     "ArchSmell",
 ]
 
-__version__ = "0.1.6"
+__version__ = "0.1.7"

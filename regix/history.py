@@ -9,9 +9,49 @@ from regix.git import list_commits
 from regix.models import (
     CommitMetrics,
     HistoryReport,
-    HistoryRegression,
     TrendLine,
 )
+
+
+def _aggregate_snapshot_metrics(
+    symbols: list,
+) -> dict[str, float]:
+    """Aggregate per-symbol metrics into summary stats."""
+    buckets: dict[str, list[float]] = {"cc": [], "mi": [], "coverage": []}
+    for sm in symbols:
+        for key in buckets:
+            val = getattr(sm, key, None)
+            if val is not None:
+                buckets[key].append(val)
+
+    agg: dict[str, float] = {}
+    if buckets["cc"]:
+        agg["cc_avg"] = round(sum(buckets["cc"]) / len(buckets["cc"]), 2)
+        agg["cc_max"] = max(buckets["cc"])
+    if buckets["mi"]:
+        agg["mi_avg"] = round(sum(buckets["mi"]) / len(buckets["mi"]), 2)
+    if buckets["coverage"]:
+        agg["coverage"] = round(sum(buckets["coverage"]) / len(buckets["coverage"]), 2)
+    return agg
+
+
+def _compute_trends(
+    commit_metrics_list: list[CommitMetrics],
+    metric_keys: list[str],
+) -> dict[str, TrendLine]:
+    """Compute linear trends for each metric across commits."""
+    trends: dict[str, TrendLine] = {}
+    for mk in metric_keys:
+        values = [cm.metrics.get(mk, 0.0) for cm in commit_metrics_list]
+        if len(values) < 2:
+            continue
+        slope = _linear_slope(values)
+        lower_better = mk.startswith("cc") or mk.startswith("length")
+        is_degrading = (slope > 0 and lower_better) or (slope < 0 and not lower_better)
+        trends[mk] = TrendLine(
+            metric=mk, values=values, slope=round(slope, 4), is_degrading=is_degrading,
+        )
+    return trends
 
 
 def build_history(
@@ -33,55 +73,18 @@ def build_history(
         except Exception:
             continue
 
-        # Aggregate metrics across all symbols
-        cc_values: list[float] = []
-        mi_values: list[float] = []
-        cov_values: list[float] = []
-        for sm in snap.symbols:
-            if sm.cc is not None:
-                cc_values.append(sm.cc)
-            if sm.mi is not None:
-                mi_values.append(sm.mi)
-            if sm.coverage is not None:
-                cov_values.append(sm.coverage)
-
-        agg: dict[str, float] = {}
-        if cc_values:
-            agg["cc_avg"] = round(sum(cc_values) / len(cc_values), 2)
-            agg["cc_max"] = max(cc_values)
-        if mi_values:
-            agg["mi_avg"] = round(sum(mi_values) / len(mi_values), 2)
-        if cov_values:
-            agg["coverage"] = round(sum(cov_values) / len(cov_values), 2)
-
         cm = CommitMetrics(
-            sha=ci.sha,
-            ref=None,
-            timestamp=ci.timestamp,
-            author=ci.author,
-            message=ci.message,
-            metrics=agg,
+            sha=ci.sha, ref=None, timestamp=ci.timestamp,
+            author=ci.author, message=ci.message,
+            metrics=_aggregate_snapshot_metrics(snap.symbols),
         )
         commit_metrics_list.append(cm)
 
-    # Compute trends
-    trends: dict[str, TrendLine] = {}
     metric_keys = metrics_filter or ["cc_avg", "cc_max", "mi_avg", "coverage"]
-    for mk in metric_keys:
-        values = [cm.metrics.get(mk, 0.0) for cm in commit_metrics_list]
-        if len(values) >= 2:
-            slope = _linear_slope(values)
-            # For cc/length: positive slope = degrading; for mi/coverage: negative = degrading
-            lower_better = mk.startswith("cc") or mk.startswith("length")
-            is_degrading = (slope > 0 and lower_better) or (slope < 0 and not lower_better)
-            trends[mk] = TrendLine(
-                metric=mk, values=values, slope=round(slope, 4), is_degrading=is_degrading
-            )
-
     return HistoryReport(
         commits=commit_metrics_list,
-        regressions=[],  # TODO: detect multi-commit regressions
-        trends=trends,
+        regressions=[],
+        trends=_compute_trends(commit_metrics_list, metric_keys),
     )
 
 

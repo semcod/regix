@@ -238,6 +238,36 @@ class RegressionReport:
     def to_yaml(self) -> str:
         return yaml.dump(self.to_dict(), default_flow_style=False, sort_keys=False)
 
+    @staticmethod
+    def _toon_regression_section(
+        label: str, items: list[Regression],
+    ) -> list[str]:
+        """Format a TOON section for regressions (ERRORS or WARNINGS)."""
+        if not items:
+            return []
+        lines = [f"{label}[{len(items)}]{{file,symbol,metric,before,after,delta}}:"]
+        for r in items:
+            sign = "+" if r.delta > 0 else ""
+            lines.append(
+                f"  {r.file},{r.symbol or '(module)'},{r.metric},"
+                f"{r.before},{r.after},{sign}{r.delta}"
+            )
+        lines.append("")
+        return lines
+
+    @staticmethod
+    def _toon_smell_section(
+        label: str, items: list[ArchSmell],
+    ) -> list[str]:
+        """Format a TOON section for architectural smells."""
+        if not items:
+            return []
+        lines = [f"{label}[{len(items)}]{{file,symbol,smell,detail}}:"]
+        for s in items:
+            lines.append(f"  {s.file},{s.symbol or '(module)'},{s.smell},{s.detail}")
+        lines.append("")
+        return lines
+
     def to_toon(self) -> str:
         """TOON format — machine-readable plain text."""
         lines: list[str] = []
@@ -255,38 +285,17 @@ class RegressionReport:
             f"improvements: {len(self.improvements)}"
         )
         lines.append("")
+
         errs = [r for r in self.regressions if r.severity == "error"]
-        if errs:
-            lines.append(f"ERRORS[{len(errs)}]{{file,symbol,metric,before,after,delta}}:")
-            for r in errs:
-                sign = "+" if r.delta > 0 else ""
-                lines.append(
-                    f"  {r.file},{r.symbol or '(module)'},{r.metric},"
-                    f"{r.before},{r.after},{sign}{r.delta}"
-                )
-            lines.append("")
+        warns = [r for r in self.regressions if r.severity == "warning"]
         smell_errs = [s for s in self.smells if s.severity == "error"]
         smell_warns = [s for s in self.smells if s.severity == "warning"]
-        if smell_errs:
-            lines.append(f"SMELL_ERRORS[{len(smell_errs)}]{{file,symbol,smell,detail}}:")
-            for s in smell_errs:
-                lines.append(f"  {s.file},{s.symbol or '(module)'},{s.smell},{s.detail}")
-            lines.append("")
-        if smell_warns:
-            lines.append(f"SMELL_WARNINGS[{len(smell_warns)}]{{file,symbol,smell,detail}}:")
-            for s in smell_warns:
-                lines.append(f"  {s.file},{s.symbol or '(module)'},{s.smell},{s.detail}")
-            lines.append("")
-        warns = [r for r in self.regressions if r.severity == "warning"]
-        if warns:
-            lines.append(f"WARNINGS[{len(warns)}]{{file,symbol,metric,before,after,delta}}:")
-            for r in warns:
-                sign = "+" if r.delta > 0 else ""
-                lines.append(
-                    f"  {r.file},{r.symbol or '(module)'},{r.metric},"
-                    f"{r.before},{r.after},{sign}{r.delta}"
-                )
-            lines.append("")
+
+        lines.extend(self._toon_regression_section("ERRORS", errs))
+        lines.extend(self._toon_smell_section("SMELL_ERRORS", smell_errs))
+        lines.extend(self._toon_smell_section("SMELL_WARNINGS", smell_warns))
+        lines.extend(self._toon_regression_section("WARNINGS", warns))
+
         if self.improvements:
             lines.append(
                 f"IMPROVEMENTS[{len(self.improvements)}]"
@@ -420,6 +429,7 @@ class GateCheck:
     operator: str  # "le" | "ge" | "eq"
     passed: bool
     source: str = "snapshot"  # "snapshot" | "comparison"
+    severity: str = "error"   # "error" (hard-gate) | "warning" (target-gate)
 
 
 @dataclass
@@ -430,12 +440,17 @@ class GateResult:
 
     @property
     def all_passed(self) -> bool:
-        return all(c.passed for c in self.checks)
+        """True when all hard-gates pass (ignores target-gate warnings)."""
+        return not any(
+            not c.passed and c.severity == "error" for c in self.checks
+        )
 
     @property
     def errors(self) -> list[GateCheck]:
-        return [c for c in self.checks if not c.passed]
+        """Hard-gate violations that block the pipeline."""
+        return [c for c in self.checks if not c.passed and c.severity == "error"]
 
     @property
     def warnings(self) -> list[GateCheck]:
-        return []  # future: separate warn vs error gates
+        """Target-gate misses — reported but do not block."""
+        return [c for c in self.checks if not c.passed and c.severity == "warning"]

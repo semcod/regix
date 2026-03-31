@@ -1,41 +1,33 @@
-# vallm batch | 68f | 38✓ 6⚠ 0✗ | 2026-03-31
+# vallm batch | 32f | 31✓ 5⚠ 1✗ | 2026-03-31
 
 SUMMARY:
-  scanned: 68  passed: 38 (55.9%)  warnings: 6  errors: 0  unsupported: 30
+  scanned: 32  passed: 31 (96.9%)  warnings: 5  errors: 1  unsupported: 0
 
-WARNINGS[6]{path,score}:
-  regix/smells.py,0.90
-    issues[6]{rule,severity,message,line}:
-      complexity.cyclomatic,warning,detect_smells has cyclomatic complexity 23 (max: 15),20
-      complexity.cyclomatic,warning,_check_god_function has cyclomatic complexity 20 (max: 15),120
-      complexity.cyclomatic,warning,_check_hallucination_proxy has cyclomatic complexity 19 (max: 15),354
-      complexity.lizard_cc,warning,detect_smells: CC=23 exceeds limit 15,20
-      complexity.lizard_cc,warning,_check_god_function: CC=20 exceeds limit 15,120
-      complexity.lizard_cc,warning,_check_hallucination_proxy: CC=17 exceeds limit 15,354
+WARNINGS[5]{path,score}:
   regix/compare.py,0.93
     issues[4]{rule,severity,message,line}:
-      complexity.cyclomatic,warning,_compute_delta has cyclomatic complexity 16 (max: 15),26
-      complexity.cyclomatic,warning,compare has cyclomatic complexity 24 (max: 15),74
-      complexity.lizard_cc,warning,_compute_delta: CC=16 exceeds limit 15,26
-      complexity.lizard_cc,warning,compare: CC=24 exceeds limit 15,74
+      complexity.cyclomatic,warning,_compute_delta has cyclomatic complexity 16 (max: 15),25
+      complexity.cyclomatic,warning,compare has cyclomatic complexity 16 (max: 15),137
+      complexity.lizard_cc,warning,_compute_delta: CC=16 exceeds limit 15,25
+      complexity.lizard_cc,warning,compare: CC=16 exceeds limit 15,137
   regix/backends/architecture_backend.py,0.97
     issues[2]{rule,severity,message,line}:
-      complexity.cyclomatic,warning,collect has cyclomatic complexity 16 (max: 15),47
-      complexity.lizard_cc,warning,collect: CC=16 exceeds limit 15,47
-  regix/config.py,0.97
+      complexity.cyclomatic,warning,collect has cyclomatic complexity 19 (max: 15),47
+      complexity.lizard_cc,warning,collect: CC=19 exceeds limit 15,47
+  regix/smells.py,0.97
     issues[2]{rule,severity,message,line}:
-      complexity.cyclomatic,warning,from_dict has cyclomatic complexity 27 (max: 15),96
-      complexity.lizard_cc,warning,from_dict: CC=27 exceeds limit 15,96
-  regix/history.py,0.97
+      complexity.cyclomatic,warning,detect_smells has cyclomatic complexity 17 (max: 15),20
+      complexity.lizard_cc,warning,detect_smells: CC=17 exceeds limit 15,20
+  regix/snapshot.py,0.97
     issues[2]{rule,severity,message,line}:
-      complexity.cyclomatic,warning,build_history has cyclomatic complexity 18 (max: 15),17
-      complexity.lizard_cc,warning,build_history: CC=18 exceeds limit 15,17
-  regix/models.py,0.97
-    issues[2]{rule,severity,message,line}:
-      complexity.cyclomatic,warning,to_toon has cyclomatic complexity 27 (max: 15),241
-      complexity.lizard_cc,warning,to_toon: CC=22 exceeds limit 15,241
+      complexity.cyclomatic,warning,capture has cyclomatic complexity 17 (max: 15),111
+      complexity.lizard_cc,warning,capture: CC=17 exceeds limit 15,111
+  regix/benchmark.py,0.98
+    issues[1]{rule,severity,message,line}:
+      complexity.maintainability,warning,Low maintainability index: 15.0 (threshold: 20),
 
-UNSUPPORTED[3]{bucket,count}:
-  *.md,22
-  *.txt,1
-  other,7
+ERRORS[1]{path,score}:
+  regix/config.py,0.95
+    issues[1]{rule,severity,message,line}:
+      python.import.resolvable,error,Module 'tomli' not found,423
+

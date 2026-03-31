@@ -95,7 +95,8 @@ class TestGates:
             timestamp=datetime.now(timezone.utc), workdir=".",
             symbols=[SymbolMetrics(file="a.py", symbol="f", cc=10)],
         )
-        cfg = RegressionConfig(cc_max=15)
+        from regix.config import GateThresholds
+        cfg = RegressionConfig(hard=GateThresholds(cc=15))
         result = check_gates(snap, cfg)
         assert result.all_passed
 
@@ -109,7 +110,8 @@ class TestGates:
             timestamp=datetime.now(timezone.utc), workdir=".",
             symbols=[SymbolMetrics(file="a.py", symbol="f", cc=20)],
         )
-        cfg = RegressionConfig(cc_max=15)
+        from regix.config import GateThresholds
+        cfg = RegressionConfig(hard=GateThresholds(cc=15))
         result = check_gates(snap, cfg)
         assert not result.all_passed
         assert len(result.errors) == 1

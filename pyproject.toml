@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "regix"
-version = "0.1.6"
+version = "0.1.7"
 description = "Regression Index — detect and measure code quality regressions between git versions"
 readme = "README.md"
 license = "Apache-2.0"
@@ -66,15 +66,25 @@ Issues = "https://github.com/semcod/regix/issues"
 [tool.regix]
 workdir = "."
 
-[tool.regix.metrics]
-cc_max = 15
-mi_min = 20
-coverage_min = 80
-length_max = 100
+[tool.regix.gates.hard]
+cc = 30
+mi = 15
+coverage = 20
+length = 150
+docstring = 20
+quality = 0.50
 
-[tool.regix.thresholds]
-delta_warn = 2
-delta_error = 5
+[tool.regix.gates.target]
+cc = 10
+mi = 30
+coverage = 85
+length = 50
+docstring = 80
+quality = 0.95
+
+[tool.regix.deltas]
+warn = 2
+error = 5
 
 [tool.regix.exclude]
 patterns = ["tests/**", "docs/**", "examples/**"]

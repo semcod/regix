@@ -8,6 +8,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.10] - 2026-03-31
 
 ### Fixed
+- Fix string-concat issues (ticket-57e00386)
+- Fix unused-imports issues (ticket-61231e5d)
+- Fix duplicate-imports issues (ticket-b6ae509a)
+- Fix magic-numbers issues (ticket-e44c3780)
+- Fix ai-boilerplate issues (ticket-053eeda2)
+
+## [0.1.10] - 2026-03-31
+
+### Fixed
 - Fix unused-imports issues (ticket-0bde17f3)
 - Fix string-concat issues (ticket-6db3468c)
 - Fix unused-imports issues (ticket-e5c3279d)
@@ -51,6 +60,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix ai-boilerplate issues (ticket-576e3028)
 
 ## [Unreleased]
+
+## [0.1.7] - 2026-03-31
+
+### Docs
+- Update CHANGELOG.md
+- Update README.md
+- Update TODO.md
+- Update project/README.md
+- Update project/context.md
+
+### Test
+- Update tests/test_backends.py
+
+### Other
+- Update planfile.yaml
+- Update project.sh
+- Update project/analysis.toon.yaml
+- Update project/calls.mmd
+- Update project/compact_flow.mmd
+- Update project/evolution.toon.yaml
+- Update project/flow.mmd
+- Update project/index.html
+- Update project/map.toon.yaml
+- Update project/project.toon.yaml
+- ... and 18 more files
 
 ## [0.1.6] - 2026-03-31
 

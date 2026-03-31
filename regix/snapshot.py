@@ -14,7 +14,6 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from regix.config import RegressionConfig
-from regix.exceptions import BackendError
 from regix.models import Snapshot, SymbolMetrics
 
 

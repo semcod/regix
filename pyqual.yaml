@@ -1,7 +1,7 @@
 pipeline:
   name: regix-regression-loop
 
-  # Quality gates - regression is detected when these fail
+  # Quality gates — DO NOT lower these thresholds to pass!
   metrics:
     cc_max: 10           # cyclomatic complexity per function
     vallm_pass_min: 95   # vallm validation pass rate (%)
@@ -15,7 +15,7 @@ pipeline:
       timeout: 0  # No timeout for large repos
       
     - name: validate
-      run: vallm batch regix tests --recursive --format toon --output .pyqual
+      run: vallm batch regix tests --recursive --format toon --output project
       when: always
       timeout: 600
       
@@ -31,8 +31,8 @@ pipeline:
       
     - name: fix_regression
       run: |
-        # Use llx to fix detected issues
-        llx fix . --apply --verbose --model openrouter/qwen/qwen3-coder-next
+        # Use llx to fix detected issues (scope to regix/ only, protect config files)
+        llx fix regix/ --apply --verbose --model openrouter/qwen/qwen3-coder-next
       when: metrics_fail
       timeout: 1800
       
@@ -44,7 +44,7 @@ pipeline:
     - name: benchmark
       run: |
         mkdir -p .pyqual
-        python -m regix.benchmark --json > .pyqual/benchmark.json
+        python3 -m regix.benchmark --json > .pyqual/benchmark.json
       when: always
       optional: true
       timeout: 300
@@ -62,7 +62,7 @@ pipeline:
         fi
         if [ -f .pyqual/benchmark.json ]; then
           echo "Benchmark:"
-          python -c "import json; d=json.load(open('.pyqual/benchmark.json')); print(f'  probes: {len(d)}, failed: {sum(1 for r in d if r[\"status\"] in (\"FAIL\",\"ERROR\"))}')"
+          python3 -c "import json; d=json.load(open('.pyqual/benchmark.json')); print(f'  probes: {len(d)}, failed: {sum(1 for r in d if r[\"status\"] in (\"FAIL\",\"ERROR\"))}')"
         fi
         echo "========================"
       when: after_verify_fix

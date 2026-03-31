@@ -1,53 +1,53 @@
-# regix | 103 func | 23f | 4275L | python | 2026-03-31
+# regix | 157 func | 24f | 5820L | python | 2026-03-31
 
 HEALTH:
-  CC̄=5.4  critical=19 (limit:10)  dup=0  cycles=1
+  CC̄=4.9  critical=22 (limit:10)  dup=0  cycles=1
 
 ALERTS[20]:
-  !!! cc_exceeded      RegressionConfig.from_dict = 27 (limit:15)
-  !!! cc_exceeded      RegressionReport.to_toon = 27 (limit:15)
-  !!  cc_exceeded      compare = 24 (limit:15)
-  !!  cc_exceeded      detect_smells = 23 (limit:15)
-  !!  cc_exceeded      _check_god_function = 20 (limit:15)
-  !!  high_fan_out     compare = 18 (limit:10)
-  !!  high_fan_out     build_history = 16 (limit:10)
-  !!  high_fan_out     capture = 16 (limit:10)
-  !   cc_exceeded      _check_hallucination_proxy = 19 (limit:15)
-  !   cc_exceeded      build_history = 18 (limit:15)
+  !!! cc_exceeded      RegressionConfig.from_dict = 44 (limit:15)
+  !!  high_fan_out     capture = 18 (limit:10)
+  !!  high_fan_out     compare = 15 (limit:10)
+  !!  high_fan_out     BackendProbe.run = 15 (limit:10)
+  !!  high_fan_out     BenchmarkReporter.print_rich = 15 (limit:10)
+  !   cc_exceeded      ArchitectureBackend.collect = 19 (limit:15)
+  !   cc_exceeded      capture = 17 (limit:15)
+  !   cc_exceeded      detect_smells = 17 (limit:15)
+  !   cc_exceeded      _compute_delta = 16 (limit:15)
+  !   cc_exceeded      compare = 16 (limit:15)
 
-MODULES[24] (top by size):
-  M[regix/models.py] 441L C:13 F:8 CC↑27 D:0 (python)
-  M[regix/smells.py] 415L C:0 F:8 CC↑23 D:1 (python)
-  M[regix/cli.py] 297L C:0 F:8 CC↑15 D:0 (python)
-  M[regix/config.py] 234L C:1 F:8 CC↑27 D:0 (python)
-  M[regix/compare.py] 186L C:0 F:2 CC↑24 D:0 (python)
-  M[regix/snapshot.py] 141L C:0 F:3 CC↑13 D:3 (python)
-  M[regix/backends/structure_backend.py] 139L C:2 F:7 CC↑8 D:0 (python)
-  M[regix/__init__.py] 135L C:1 F:6 CC↑4 D:0 (python)
+MODULES[25] (top by size):
+  M[regix/benchmark.py] 936L C:9 F:31 CC↑12 D:1 (python)
+  M[regix/config.py] 456L C:2 F:15 CC↑44 D:0 (python)
+  M[regix/models.py] 456L C:13 F:10 CC↑15 D:0 (python)
+  M[regix/smells.py] 428L C:0 F:14 CC↑17 D:1 (python)
+  M[regix/cli.py] 334L C:0 F:8 CC↑15 D:0 (python)
+  M[regix/compare.py] 201L C:0 F:4 CC↑16 D:0 (python)
+  M[regix/snapshot.py] 182L C:0 F:4 CC↑17 D:4 (python)
+  M[regix/git.py] 179L C:1 F:9 CC↑6 D:2 (python)
+  M[regix/backends/structure_backend.py] 147L C:2 F:7 CC↑11 D:0 (python)
+  M[regix/__init__.py] 134L C:1 F:6 CC↑4 D:0 (python)
+  M[regix/backends/architecture_backend.py] 133L C:1 F:3 CC↑19 D:0 (python)
   M[regix/report.py] 133L C:0 F:3 CC↑14 D:1 (python)
-  M[regix/backends/architecture_backend.py] 125L C:1 F:3 CC↑16 D:0 (python)
-  M[regix/git.py] 121L C:1 F:7 CC↑4 D:2 (python)
-  M[regix/backends/coverage_backend.py] 110L C:1 F:5 CC↑7 D:0 (python)
-  M[regix/history.py] 100L C:0 F:2 CC↑18 D:2 (python)
-  M[regix/cache.py] 97L C:0 F:5 CC↑3 D:0 (python)
-  M[scripts/check_regression.py] 95L C:0 F:3 CC↑14 D:0 (python)
-  LANGS: python:23/shell:1
+  M[regix/backends/coverage_backend.py] 111L C:1 F:5 CC↑7 D:0 (python)
+  M[regix/history.py] 103L C:0 F:4 CC↑8 D:2 (python)
+  M[regix/backends/radon_backend.py] 97L C:1 F:3 CC↑11 D:0 (python)
+  LANGS: python:24/shell:1
 
 HOTSPOTS[10]:
-  ★ compare fan=18  // Compare two snapshots and produce a regression report.
-  ★ build_history fan=16  // Walk ``depth`` commits and return a HistoryReport with metric timeline.
-  ★ capture fan=16  // Capture a snapshot at a git ref or the local working tree.
+  ★ capture fan=18  // Capture a snapshot at a git ref or the local working tree.
 
-For non-local refs, 
+All file contents ar
+  ★ compare fan=15  // Compare two snapshots and produce a regression report.
+  ★ BackendProbe.run fan=15  // Orchestrates 15 calls
+  ★ BenchmarkReporter.print_rich fan=15  // Orchestrates 15 calls
   ★ ArchitectureBackend.collect fan=14  // Orchestrates 14 calls
-  ★ snapshot fan=13  // Capture and store a snapshot without comparing.
 
-REFACTOR[15]:
-  [1] H/L Split RegressionConfig.from_dict (CC=27 → target CC<10)
-  [2] H/L Split RegressionReport.to_toon (CC=27 → target CC<10)
+REFACTOR[13]:
+  [1] H/L Split RegressionConfig.from_dict (CC=44 → target CC<10)
+  [2] H/H Split god module regix/benchmark.py (936L, 9 classes)
   [3] M/L Split _compute_delta (CC=16 → target CC<10)
-  [4] M/L Split compare (CC=24 → target CC<10)
+  [4] M/L Split compare (CC=16 → target CC<10)
   [5] M/L Split diff (CC=15 → target CC<10)
 
 EVOLUTION:
-  2026-03-31 CC̄=5.4 crit=19 4275L // Automated analysis
+  2026-03-31 CC̄=4.9 crit=22 5820L // Automated analysis

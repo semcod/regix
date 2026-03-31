@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import sys
 from pathlib import Path
 from typing import Optional
 
@@ -43,7 +42,7 @@ def compare(
     errors_only: bool = typer.Option(False, "--errors-only", help="Suppress warnings"),
     fail_on: str = typer.Option("error", "--fail-on", help="Exit 1 on: error | warning"),
     workdir: str = typer.Option(".", "--workdir", "-w", help="Project root"),
-):
+) -> None:
     """Compare metrics between two git refs or local state."""
     from regix.compare import compare as do_compare
     from regix.report import render
@@ -86,7 +85,7 @@ def history(
     output: Optional[str] = typer.Option(None, "--output", "-o", help="Write to file"),
     config: Optional[str] = typer.Option(None, "--config", help="Path to regix.yaml"),
     workdir: str = typer.Option(".", "--workdir", "-w", help="Project root"),
-):
+) -> None:
     """Show metric timeline across N historical commits."""
     from regix.history import build_history
     from regix.report import render_history
@@ -112,7 +111,7 @@ def snapshot(
     output: Optional[str] = typer.Option(None, "--output", "-o", help="Write to file"),
     config: Optional[str] = typer.Option(None, "--config", help="Path to regix.yaml"),
     workdir: str = typer.Option(".", "--workdir", "-w", help="Project root"),
-):
+) -> None:
     """Capture and store a snapshot without comparing."""
     from regix.snapshot import capture
 
@@ -205,16 +204,31 @@ def gates(
     snap = capture(ref, wd, cfg)
     result = check_gates(snap, cfg)
 
-    if result.all_passed:
-        typer.echo("✓ All quality gates passed.")
-    else:
-        typer.echo(f"✗ {len(result.errors)} gate violation(s):")
-        for gc in result.errors:
+    errs = result.errors
+    warns = result.warnings
+
+    if errs:
+        typer.echo(f"✗ {len(errs)} hard-gate violation(s):")
+        for gc in errs:
             op_str = {"le": "≤", "ge": "≥", "eq": "="}.get(gc.operator, gc.operator)
             typer.echo(
                 f"  {gc.metric}: {gc.value} (threshold: {op_str} {gc.threshold})"
             )
-        raise SystemExit(cfg.fail_exit_code)
+    if warns:
+        typer.echo(f"⚠ {len(warns)} target-gate miss(es):")
+        for gc in warns:
+            op_str = {"le": "≤", "ge": "≥", "eq": "="}.get(gc.operator, gc.operator)
+            typer.echo(
+                f"  {gc.metric}: {gc.value} (target: {op_str} {gc.threshold})"
+            )
+    if not errs and not warns:
+        typer.echo("✓ All quality gates passed (hard + target).")
+    elif not errs:
+        typer.echo("✓ Hard-gates passed. Target-gates have warnings above.")
+    else:
+        should_fail = fail_on == "any" or (fail_on == "error" and errs)
+        if should_fail:
+            raise SystemExit(cfg.fail_exit_code)
 
 
 @app.command()
@@ -230,10 +244,15 @@ def status(
     typer.echo("Regix status")
     typer.echo("─" * 40)
     typer.echo(f"  workdir:   {cfg.workdir}")
-    typer.echo(f"  cc_max:    {cfg.cc_max}")
-    typer.echo(f"  mi_min:    {cfg.mi_min}")
-    typer.echo(f"  coverage:  {cfg.coverage_min}")
     typer.echo(f"  format:    {cfg.output_format}")
+    typer.echo("")
+    typer.echo("Gates (hard / target):")
+    typer.echo(f"  cc:        ≤ {cfg.hard.cc}  /  ≤ {cfg.target.cc}")
+    typer.echo(f"  mi:        ≥ {cfg.hard.mi}  /  ≥ {cfg.target.mi}")
+    typer.echo(f"  coverage:  ≥ {cfg.hard.coverage}  /  ≥ {cfg.target.coverage}")
+    typer.echo(f"  docstring: ≥ {cfg.hard.docstring}  /  ≥ {cfg.target.docstring}")
+    typer.echo(f"  length:    ≤ {cfg.hard.length}  /  ≤ {cfg.target.length}")
+    typer.echo(f"  quality:   ≥ {cfg.hard.quality}  /  ≥ {cfg.target.quality}")
     typer.echo("")
     typer.echo("Backends:")
     for name in available_backends():
@@ -258,16 +277,35 @@ def init(
 regix:
   workdir: .
 
-  metrics:
-    cc_max: 15
-    mi_min: 20
-    coverage_min: 80
-    length_max: 100
+  # ── Quality gates ──────────────────────────────────────────
+  gates:
+    # Hard — violations block the pipeline (exit code 1)
+    hard:
+      cc: 15
+      mi: 20
+      coverage: 80
+      length: 100
+      docstring: 60
+      quality: 0.85
 
-  thresholds:
-    delta_warn: 2
-    delta_error: 5
+    # Target — aspirational goals, reported as warnings
+    target:
+      cc: 10
+      mi: 30
+      coverage: 90
+      length: 50
+      docstring: 80
+      quality: 0.95
 
+    on_regression: warn
+    fail_exit_code: 1
+
+  # ── Delta thresholds (relative change between commits) ─────
+  deltas:
+    warn: 2
+    error: 5
+
+  # ── Backends ───────────────────────────────────────────────
   backends:
     cc: lizard
     mi: radon
@@ -275,19 +313,18 @@ regix:
     quality: none
     docstring: builtin
 
+  # ── File filtering ─────────────────────────────────────────
   exclude:
     - "tests/**"
     - "docs/**"
     - "examples/**"
     - ".venv/**"
 
+  # ── Output ─────────────────────────────────────────────────
   output:
     format: rich
     dir: .regix/
     show_improvements: true
-
-  gates:
-    on_regression: warn
 """
     target.write_text(default_config, encoding="utf-8")
     typer.echo(f"Created {target}")

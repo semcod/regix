@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import time
-from typing import Any
 
 from regix.config import RegressionConfig
 from regix.models import (
@@ -71,6 +70,70 @@ def _compute_delta(
     )
 
 
+def _collect_deleted_symbol(
+    m_before: SymbolMetrics,
+    file_path: str,
+    symbol_name: str | None,
+    config: RegressionConfig,
+    ref_before: str,
+    ref_after: str,
+) -> list[Improvement]:
+    """Collect improvements for a deleted symbol."""
+    result: list[Improvement] = []
+    for metric in _TRACKED_METRICS:
+        val = getattr(m_before, metric)
+        if val is not None:
+            result.append(Improvement(
+                file=file_path,
+                symbol=symbol_name,
+                line=m_before.line_start,
+                metric=metric,
+                before=val,
+                after=0.0,
+                delta=-val if config.is_lower_better(metric) else val,
+                ref_before=ref_before,
+                ref_after=ref_after,
+            ))
+    return result
+
+
+def _compare_symbol_metrics(
+    m_before: SymbolMetrics,
+    m_after: SymbolMetrics,
+    file_path: str,
+    symbol_name: str | None,
+    config: RegressionConfig,
+    ref_before: str,
+    ref_after: str,
+) -> tuple[list[Regression], list[Improvement], bool]:
+    """Compare metrics for a single symbol between two snapshots."""
+    regs: list[Regression] = []
+    imps: list[Improvement] = []
+    changed = False
+    for metric in _TRACKED_METRICS:
+        md = _compute_delta(metric, getattr(m_before, metric), getattr(m_after, metric), config)
+        if md is None:
+            continue
+        if md.is_regression and md.severity in ("error", "warning"):
+            regs.append(Regression(
+                file=file_path, symbol=symbol_name, line=m_after.line_start,
+                metric=metric, before=md.before, after=md.after,  # type: ignore[arg-type]
+                delta=md.delta, severity=md.severity,  # type: ignore[arg-type]
+                threshold=md.threshold,  # type: ignore[arg-type]
+                ref_before=ref_before, ref_after=ref_after,
+            ))
+            changed = True
+        elif md.is_improvement:
+            imps.append(Improvement(
+                file=file_path, symbol=symbol_name, line=m_after.line_start,
+                metric=metric, before=md.before, after=md.after,  # type: ignore[arg-type]
+                delta=md.delta,  # type: ignore[arg-type]
+                ref_before=ref_before, ref_after=ref_after,
+            ))
+            changed = True
+    return regs, imps, changed
+
+
 def compare(
     snap_before: Snapshot,
     snap_after: Snapshot,
@@ -79,7 +142,6 @@ def compare(
     """Compare two snapshots and produce a regression report."""
     t0 = time.monotonic()
 
-    # Build symbol indexes: (file, symbol) → SymbolMetrics
     idx_before: dict[tuple[str, str | None], SymbolMetrics] = {
         (s.file, s.symbol): s for s in snap_before.symbols
     }
@@ -88,7 +150,6 @@ def compare(
     }
 
     all_keys = set(idx_before.keys()) | set(idx_after.keys())
-
     regressions: list[Regression] = []
     improvements: list[Improvement] = []
     unchanged = 0
@@ -99,74 +160,28 @@ def compare(
         file_path, symbol_name = key
 
         if m_before is None:
-            # New symbol — not a regression (it is an absolute violation if over threshold)
             continue
         if m_after is None:
-            # Deleted symbol — implicit improvement
-            for metric in _TRACKED_METRICS:
-                val = getattr(m_before, metric)
-                if val is not None:
-                    improvements.append(Improvement(
-                        file=file_path,
-                        symbol=symbol_name,
-                        line=m_before.line_start,
-                        metric=metric,
-                        before=val,
-                        after=0.0,
-                        delta=-val if config.is_lower_better(metric) else val,
-                        ref_before=snap_before.ref,
-                        ref_after=snap_after.ref,
-                    ))
+            improvements.extend(_collect_deleted_symbol(
+                m_before, file_path, symbol_name, config,
+                snap_before.ref, snap_after.ref,
+            ))
             continue
 
-        symbol_changed = False
-        for metric in _TRACKED_METRICS:
-            val_before = getattr(m_before, metric)
-            val_after = getattr(m_after, metric)
-            md = _compute_delta(metric, val_before, val_after, config)
-            if md is None:
-                continue
-
-            if md.is_regression and md.severity in ("error", "warning"):
-                regressions.append(Regression(
-                    file=file_path,
-                    symbol=symbol_name,
-                    line=m_after.line_start,
-                    metric=metric,
-                    before=md.before,  # type: ignore[arg-type]
-                    after=md.after,  # type: ignore[arg-type]
-                    delta=md.delta,  # type: ignore[arg-type]
-                    severity=md.severity,
-                    threshold=md.threshold,  # type: ignore[arg-type]
-                    ref_before=snap_before.ref,
-                    ref_after=snap_after.ref,
-                ))
-                symbol_changed = True
-            elif md.is_improvement:
-                improvements.append(Improvement(
-                    file=file_path,
-                    symbol=symbol_name,
-                    line=m_after.line_start,
-                    metric=metric,
-                    before=md.before,  # type: ignore[arg-type]
-                    after=md.after,  # type: ignore[arg-type]
-                    delta=md.delta,  # type: ignore[arg-type]
-                    ref_before=snap_before.ref,
-                    ref_after=snap_after.ref,
-                ))
-                symbol_changed = True
-
-        if not symbol_changed:
+        regs, imps, changed = _compare_symbol_metrics(
+            m_before, m_after, file_path, symbol_name, config,
+            snap_before.ref, snap_after.ref,
+        )
+        regressions.extend(regs)
+        improvements.extend(imps)
+        if not changed:
             unchanged += 1
 
     errors = sum(1 for r in regressions if r.severity == "error")
     warnings = sum(1 for r in regressions if r.severity == "warning")
-
     smells = detect_smells(snap_before, snap_after, config)
     smell_errors = sum(1 for s in smells if s.severity == "error")
     smell_warnings = sum(1 for s in smells if s.severity == "warning")
-
-    duration = time.monotonic() - t0
 
     return RegressionReport(
         ref_before=snap_before.ref,
@@ -182,5 +197,5 @@ def compare(
         smell_errors=smell_errors,
         smell_warnings=smell_warnings,
         stagnated=False,
-        duration=round(duration, 3),
+        duration=round(time.monotonic() - t0, 3),
     )

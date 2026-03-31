@@ -24,7 +24,7 @@ def _cache_dir(config_dir: str = "~/.cache/regix") -> Path:
 
 def _cache_key(commit_sha: str, backend_versions: dict[str, str]) -> str:
     """Compute cache key from commit SHA and backend versions."""
-    raw = commit_sha + ":" + json.dumps(sorted(backend_versions.items()))
+    raw = f"{commit_sha}:{json.dumps(sorted(backend_versions.items()))}"
     return hashlib.sha256(raw.encode()).hexdigest()[:24]
 
 

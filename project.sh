@@ -11,6 +11,7 @@ if [ ! -f "$PIP" ]; then
 fi
 
 $PIP install -e . --quiet
+#$PIP install regix --upgrade --quiet
 $PIP install pyqual --upgrade --quiet
 $PIP install prefact --upgrade --quiet
 $PIP install vallm --upgrade --quiet
@@ -32,4 +33,4 @@ $VENV/bin/redup scan . --format toon --output ./project
 #$VENV/bin/vallm batch ./src --recursive --semantic --model qwen2.5-coder:7b
 #$VENV/bin/vallm batch --parallel .
 $VENV/bin/vallm batch . --recursive --format toon --output ./project
-$VENV/bin/prefact -a
+$VENV/bin/prefact -a -e "examples/**"

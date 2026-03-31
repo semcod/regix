@@ -550,3 +550,81 @@ sprints:
     model_hints:
       planning: balanced
       implementation: balanced
+  - id: ticket-57e00386
+    name: Fix string-concat issues
+    description: Resolve 1 string-concat issues in regix/benchmark.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - regix/benchmark.py
+    rule_id: string-concat
+    count: 1
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-61231e5d
+    name: Fix unused-imports issues
+    description: Resolve 2 unused-imports issues in regix/benchmark.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - regix/benchmark.py
+    rule_id: unused-imports
+    count: 2
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-b6ae509a
+    name: Fix duplicate-imports issues
+    description: Resolve 7 duplicate-imports issues in regix/benchmark.py
+    task_type: prefactor
+    priority: high
+    estimate: 2d
+    files:
+    - regix/benchmark.py
+    rule_id: duplicate-imports
+    count: 7
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-e44c3780
+    name: Fix magic-numbers issues
+    description: Resolve 26 magic-numbers issues in regix/benchmark.py
+    task_type: prefactor
+    priority: high
+    estimate: 3d
+    files:
+    - regix/benchmark.py
+    rule_id: magic-numbers
+    count: 26
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-053eeda2
+    name: Fix ai-boilerplate issues
+    description: Resolve 1 ai-boilerplate issues in regix/benchmark.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - regix/benchmark.py
+    rule_id: ai-boilerplate
+    count: 1
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-5bffe6eb
+    name: Fix outdated-dependency issues
+    description: Resolve 1 outdated-dependency issues in pyproject.toml
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - pyproject.toml
+    rule_id: outdated-dependency
+    count: 1
+    model_hints:
+      planning: balanced
+      implementation: balanced

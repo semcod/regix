@@ -8,21 +8,22 @@ import json
 import sys
 import subprocess
 from pathlib import Path
+from typing import Any, Optional
 
-def run_command(cmd):
-    """Run a command and return its output"""
+def run_command(cmd: str) -> tuple[int, str, str]:
+    """Run a command and return its output."""
     result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
     return result.returncode, result.stdout, result.stderr
 
-def load_json_file(filepath):
-    """Load JSON file if it exists"""
+def load_json_file(filepath: str) -> Optional[Any]:
+    """Load JSON file if it exists."""
     if Path(filepath).exists():
         with open(filepath, 'r') as f:
             return json.load(f)
     return None
 
-def check_regression():
-    """Main regression check function"""
+def check_regression() -> None:
+    """Main regression check function."""
     # Load current metrics
     current_metrics = load_json_file('.pyqual/metrics.json')
     baseline_metrics = load_json_file('.pyqual/baseline.json')

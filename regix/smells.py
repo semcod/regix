@@ -62,44 +62,40 @@ def detect_smells(
         # ── Per-symbol checks ─────────────────────────────────────────────────
         for sym, m_after in funcs_after.items():
             m_before = funcs_before.get(sym)
-
-            if m_before is not None:
-                s = _check_stub_regression(
-                    file, sym, m_before, m_after, config,
-                    snap_before.ref, snap_after.ref,
-                )
-                if s:
-                    smells.append(s)
-
-                s = _check_logic_density_drop(
-                    file, sym, m_before, m_after, config,
-                    snap_before.ref, snap_after.ref,
-                )
-                if s:
-                    smells.append(s)
-
-                s = _check_cohesion_loss(
-                    file, sym, m_before, m_after, config,
-                    snap_before.ref, snap_after.ref,
-                )
-                if s:
-                    smells.append(s)
-
-                s = _check_no_delegation(
-                    file, sym, m_before, m_after, config,
-                    snap_before.ref, snap_after.ref,
-                )
-                if s:
-                    smells.append(s)
-
-            s = _check_hallucination_proxy(
+            smells.extend(_check_symbol_smells(
                 file, sym, m_before, m_after, config,
                 snap_before.ref, snap_after.ref,
-            )
-            if s:
-                smells.append(s)
+            ))
 
     return smells
+
+
+def _check_symbol_smells(
+    file: str,
+    sym: str,
+    m_before: SymbolMetrics | None,
+    m_after: SymbolMetrics,
+    config: RegressionConfig,
+    ref_b: str,
+    ref_a: str,
+) -> list[ArchSmell]:
+    """Run all per-symbol smell checks and return detected smells."""
+    results: list[ArchSmell] = []
+    _PAIRED_CHECKS = (
+        _check_stub_regression,
+        _check_logic_density_drop,
+        _check_cohesion_loss,
+        _check_no_delegation,
+    )
+    if m_before is not None:
+        for check in _PAIRED_CHECKS:
+            s = check(file, sym, m_before, m_after, config, ref_b, ref_a)
+            if s:
+                results.append(s)
+    s = _check_hallucination_proxy(file, sym, m_before, m_after, config, ref_b, ref_a)
+    if s:
+        results.append(s)
+    return results
 
 
 # ── Helper ────────────────────────────────────────────────────────────────────
@@ -117,6 +113,39 @@ def _func_length(m: SymbolMetrics) -> int | None:
 # ── Smell detectors ───────────────────────────────────────────────────────────
 
 
+def _function_count_drop(
+    mod_before: SymbolMetrics | None,
+    mod_after: SymbolMetrics | None,
+) -> tuple[int, int, float] | None:
+    """Return (fc_before, fc_dropped, drop_ratio) or None if not applicable."""
+    fc_before = mod_before.raw.get("function_count") if mod_before else None
+    fc_after = mod_after.raw.get("function_count") if mod_after else None
+    if fc_before is None or fc_after is None:
+        return None
+    if fc_before <= 1 or fc_after >= fc_before:
+        return None
+    fc_dropped = fc_before - fc_after
+    drop_ratio = fc_dropped / fc_before
+    if drop_ratio < 0.30:
+        return None
+    return fc_before, fc_dropped, drop_ratio
+
+
+def _avg_func_length(funcs: dict[str, SymbolMetrics]) -> float | None:
+    """Return average function length or None if no lengths available."""
+    lengths = [ln for m in funcs.values() if (ln := _func_length(m)) is not None]
+    return sum(lengths) / len(lengths) if lengths else None
+
+
+def _largest_function(funcs: dict[str, SymbolMetrics]) -> tuple[str, SymbolMetrics, int] | None:
+    """Return (name, metrics, length) of the largest function, or None."""
+    candidates = [(sym, m) for sym, m in funcs.items() if _func_length(m) is not None]
+    if not candidates:
+        return None
+    sym, m = max(candidates, key=lambda t: _func_length(t[1]) or 0)
+    return sym, m, _func_length(m) or 0
+
+
 def _check_god_function(
     file: str,
     funcs_before: dict[str, SymbolMetrics],
@@ -128,47 +157,25 @@ def _check_god_function(
     ref_a: str,
 ) -> list[ArchSmell]:
     """Detect when function count dropped and one function grew disproportionately."""
-    fc_before = mod_before.raw.get("function_count") if mod_before else None
-    fc_after = mod_after.raw.get("function_count") if mod_after else None
-
-    if fc_before is None or fc_after is None:
+    drop = _function_count_drop(mod_before, mod_after)
+    if drop is None:
         return []
-    if fc_before <= 1 or fc_after >= fc_before:
-        return []
+    fc_before, fc_dropped, drop_ratio = drop
+    fc_after = fc_before - fc_dropped
 
-    fc_dropped = fc_before - fc_after
-    drop_ratio = fc_dropped / fc_before
-    if drop_ratio < 0.30:
+    avg_before = _avg_func_length(funcs_before)
+    if avg_before is None:
         return []
 
-    # Average length of functions before
-    lengths_before = [
-        ln for m in funcs_before.values() if (ln := _func_length(m)) is not None
-    ]
-    if not lengths_before:
+    largest = _largest_function(funcs_after)
+    if largest is None:
         return []
-    avg_before = sum(lengths_before) / len(lengths_before)
+    largest_sym, largest_m, largest_len = largest
 
-    # Largest function in after snapshot
-    candidates = [
-        (sym, m) for sym, m in funcs_after.items()
-        if _func_length(m) is not None
-    ]
-    if not candidates:
-        return []
-    largest_sym, largest_m = max(candidates, key=lambda t: _func_length(t[1]) or 0)
-    largest_len = _func_length(largest_m) or 0
-
-    if largest_len < config.god_func_length_min:
-        return []
-    if largest_len <= avg_before * 1.5:
+    if largest_len < config.god_func_length_min or largest_len <= avg_before * 1.5:
         return []
 
-    severity = (
-        "error"
-        if largest_len > avg_before * 2.5 or fc_dropped >= 2
-        else "warning"
-    )
+    severity = "error" if largest_len > avg_before * 2.5 or fc_dropped >= 2 else "warning"
     return [
         ArchSmell(
             smell="god_function",
@@ -351,6 +358,35 @@ def _check_cohesion_loss(
     )
 
 
+def _count_hollow_signals(
+    m: SymbolMetrics, config: RegressionConfig,
+) -> int:
+    """Count how many hollow-code indicators a symbol exhibits."""
+    signals = 0
+    length = _func_length(m)
+    if length is not None and length <= config.hallucination_max_lines:
+        signals += 1
+    if m.logic_density is not None and m.logic_density < config.min_logic_density:
+        signals += 1
+    if m.cc is not None and m.cc <= 1:
+        signals += 1
+    return signals
+
+
+def _was_already_hollow(
+    m_before: SymbolMetrics, config: RegressionConfig,
+) -> bool:
+    """Return True if the function was already hollow before the change."""
+    calls_b = m_before.call_count
+    ld_b = m_before.logic_density
+    len_b = _func_length(m_before)
+    return (
+        (calls_b is None or calls_b == 0)
+        and (ld_b is None or ld_b < config.min_logic_density)
+        and (len_b is None or len_b <= config.hallucination_max_lines)
+    )
+
+
 def _check_hallucination_proxy(
     file: str,
     sym: str,
@@ -364,41 +400,18 @@ def _check_hallucination_proxy(
 
     Only fires as a regression when the function was not already hollow before.
     """
-    calls_a = m_after.call_count
-    ld_a = m_after.logic_density
+    if m_after.call_count is None or m_after.logic_density is None:
+        return None
+    if m_after.call_count > 0:
+        return None
+
+    if _count_hollow_signals(m_after, config) < 2:
+        return None
+
+    if m_before is not None and _was_already_hollow(m_before, config):
+        return None
+
     len_a = _func_length(m_after)
-    cc_a = m_after.cc
-
-    if calls_a is None or ld_a is None:
-        return None
-    if calls_a > 0:
-        return None  # Has external calls — not hollow
-
-    # Require at least two hollow signals to avoid false positives
-    hollow_signals = 0
-    if len_a is not None and len_a <= config.hallucination_max_lines:
-        hollow_signals += 1
-    if ld_a < config.min_logic_density:
-        hollow_signals += 1
-    if cc_a is not None and cc_a <= 1:
-        hollow_signals += 1
-
-    if hollow_signals < 2:
-        return None
-
-    # Skip if it was already hollow before (only report regression)
-    if m_before is not None:
-        calls_b = m_before.call_count
-        ld_b = m_before.logic_density
-        len_b = _func_length(m_before)
-        already_hollow = (
-            (calls_b is None or calls_b == 0)
-            and (ld_b is None or ld_b < config.min_logic_density)
-            and (len_b is None or len_b <= config.hallucination_max_lines)
-        )
-        if already_hollow:
-            return None
-
     return ArchSmell(
         smell="hallucination_proxy",
         file=file,
@@ -406,8 +419,8 @@ def _check_hallucination_proxy(
         line=m_after.line_start,
         severity="warning",
         detail=(
-            f"'{sym}': calls=0, density={ld_a:.2f}, "
-            f"length={len_a or '?'}, cc={cc_a or '?'} — "
+            f"'{sym}': calls=0, density={m_after.logic_density:.2f}, "
+            f"length={len_a or '?'}, cc={m_after.cc or '?'} — "
             "appears hollow (stub or placeholder)"
         ),
         ref_before=ref_b,

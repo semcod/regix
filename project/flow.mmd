@@ -17,20 +17,20 @@ flowchart TD
     subgraph Core
         regix__compare___compute_delta{{_compute_delta CC=16}}
         regix__compare__compare["compare"]
+        regix__git___run_git["_run_git"]
+        regix__git__resolve_ref["resolve_ref"]
+        regix__git__is_clean["is_clean"]
+        regix__git__get_dirty_files["get_dirty_files"]
+        regix__git__get_changed_files["get_changed_files"]
+        regix__git__checkout_temporary["checkout_temporary"]
+        regix__git__read_tree_sources["read_tree_sources"]
         regix__Regix__snapshot["snapshot"]
         regix__Regix__compare["compare"]
         regix__Regix__compare_local["compare_local"]
         regix__Regix__history["history"]
-        regix__config__RegressionConfig__from_file["from_file"]
-        regix__config__RegressionConfig__from_dict["from_dict"]
-        regix__config__RegressionConfig__delta_thresholds["delta_thresholds"]
-        regix__config__RegressionConfig__is_lower_better["is_lower_better"]
-        regix__config__RegressionConfig___find_config["_find_config"]
-        regix__config__RegressionConfig___from_yaml["_from_yaml"]
-        regix__config__RegressionConfig___from_pyproject["_from_pyproject"]
-        regix__config__RegressionConfig__apply_env_overrides["apply_env_overrides"]
-        regix__history__build_history{{build_history CC=18}}
-        ...["+52 more"]
+        regix__config__GateThresholds__get["get"]
+        regix__config__RegressionConfig__cc_max["cc_max"]
+        ...["+82 more"]
     end
 
-    class regix__compare__compare,regix__Regix__snapshot,regix__Regix__compare,regix__Regix__compare_local,regix__Regix__history,regix__config__RegressionConfig__from_file,regix__config__RegressionConfig__from_dict,regix__config__RegressionConfig__delta_thresholds,regix__config__RegressionConfig__is_lower_better,regix__config__RegressionConfig___find_config entry
+    class regix__compare__compare,regix__git__is_clean,regix__git__get_dirty_files,regix__git__get_changed_files,regix__git__checkout_temporary,regix__Regix__snapshot,regix__Regix__compare,regix__Regix__compare_local,regix__Regix__history,regix__config__GateThresholds__get entry
