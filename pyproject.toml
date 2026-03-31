@@ -1,0 +1,122 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name = "regix"
+version = "0.1.0"
+description = "Regression Index — detect and measure code quality regressions between git versions"
+readme = "README.md"
+license = "MIT"
+authors = [{ name = "Tom Sapletta", email = "tom@sapletta.com" }]
+keywords = ["regression", "refactoring", "code-quality", "git", "cyclomatic-complexity", "CI"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Quality Assurance",
+    "Topic :: Software Development :: Testing",
+    "Topic :: Software Development :: Version Control :: Git",
+]
+requires-python = ">=3.9"
+
+dependencies = [
+    "pyyaml>=6.0",
+    "typer>=0.12",
+    "rich>=13.0",
+]
+
+[project.optional-dependencies]
+lizard = ["lizard>=1.17"]
+radon = ["radon>=6.0"]
+coverage = ["coverage[toml]>=7.0"]
+vallm = ["vallm>=0.1"]
+docstring = []                    # built-in (ast), no extra deps
+full = [
+    "lizard>=1.17",
+    "radon>=6.0",
+    "coverage[toml]>=7.0",
+    "vallm>=0.1",
+]
+pyqual = ["pyqual>=0.1.50"]
+dev = [
+    "pytest>=8.0",
+    "pytest-cov>=5.0",
+    "lizard>=1.17",
+    "radon>=6.0",
+    "coverage[toml,"goal>=2.1.0", "costs>=0.1.20", "pfix>=0.1.60"]>=7.0",
+]
+
+[project.scripts]
+regix = "regix.cli:app"
+
+[project.urls]
+Homepage = "https://github.com/semcod/regix"
+Documentation = "https://github.com/semcod/regix/tree/main/docs"
+Repository = "https://github.com/semcod/regix"
+Issues = "https://github.com/semcod/regix/issues"
+
+# ── Tool configuration ────────────────────────────────────────────────────────
+
+[tool.regix]
+workdir = "."
+
+[tool.regix.metrics]
+cc_max = 15
+mi_min = 20
+coverage_min = 80
+length_max = 100
+
+[tool.regix.thresholds]
+delta_warn = 2
+delta_error = 5
+
+[tool.regix.exclude]
+patterns = ["tests/**", "docs/**", "examples/**"]
+
+[tool.regix.output]
+format = "rich"
+dir = ".regix/"
+show_improvements = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--cov=regix --cov-report=json:.regix/coverage.json --cov-report=term-missing"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["regix*"]
+
+[tool.pfix]
+# Self-healing Python configuration
+model = "openrouter/qwen/qwen3-coder-next"
+auto_apply = true
+auto_install_deps = true
+auto_restart = false
+max_retries = 3
+create_backups = false
+git_auto_commit = false
+
+[tool.pfix.runtime_todo]
+enabled = true
+todo_file = "TODO.md"
+min_severity = "low"
+deduplicate = true
+
+[tool.costs]
+# AI Cost tracking configuration
+badge = true
+update_readme = true
+readme_path = "README.md"
+default_model = "openrouter/qwen/qwen3-coder-next"
+analysis_mode = "byok"
+full_history = true
+max_commits = 500
+
+# Cost thresholds for badge colors (USD)
+badge_color_thresholds = { low = 1.0, medium = 5.0, high = 10.0, critical = 50.0 }
