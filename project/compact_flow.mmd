@@ -4,7 +4,7 @@ flowchart TD
     regix__benchmark["regix.benchmark<br/>31 funcs"]
     regix__cli["regix.cli<br/>8 funcs"]
     regix__compare["regix.compare<br/>4 funcs"]
-    regix__config["regix.config<br/>15 funcs"]
+    regix__config["regix.config<br/>24 funcs"]
     regix__gates["regix.gates<br/>2 funcs"]
     regix__git["regix.git<br/>9 funcs"]
     regix__history["regix.history<br/>4 funcs"]
@@ -17,17 +17,17 @@ flowchart TD
     scripts__check_regression -->|3| regix__benchmark
     regix__snapshot -->|3| regix__git
     regix__benchmark -->|3| regix__snapshot
-    regix__Regix -->|2| regix__config
     regix__cli -->|2| regix__config
     regix__cli -->|2| regix__report
     regix__cli -->|2| regix__backends
+    regix__Regix -->|2| regix__config
     regix__compare -->|1| regix__smells
+    regix__cli -->|1| regix__history
+    regix__cli -->|1| regix__gates
     regix__history -->|1| regix__git
     regix__history -->|1| regix__snapshot
     regix__Regix -->|1| regix__snapshot
     regix__Regix -->|1| regix__history
-    regix__cli -->|1| regix__history
-    regix__cli -->|1| regix__gates
     regix__snapshot -->|1| regix__backends
     regix__benchmark -->|1| regix__backends
     regix__benchmark -->|1| regix__gates

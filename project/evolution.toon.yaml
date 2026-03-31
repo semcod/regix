@@ -1,31 +1,27 @@
-# code2llm/evolution | 154 func | 23f | 2026-03-31
+# code2llm/evolution | 163 func | 23f | 2026-03-31
 
-NEXT[7] (ranked by impact):
+NEXT[6] (ranked by impact):
   [1] !! SPLIT           regix/benchmark.py
       WHY: 936L, 9 classes, max CC=12
       EFFORT: ~4h  IMPACT: 11232
 
-  [2] !! SPLIT-FUNC      RegressionConfig.from_dict  CC=44  fan=13
-      WHY: CC=44 exceeds 15
-      EFFORT: ~1h  IMPACT: 572
-
-  [3] !  SPLIT-FUNC      capture  CC=17  fan=18
+  [2] !  SPLIT-FUNC      capture  CC=17  fan=18
       WHY: CC=17 exceeds 15
       EFFORT: ~1h  IMPACT: 306
 
-  [4] !  SPLIT-FUNC      ArchitectureBackend.collect  CC=19  fan=14
+  [3] !  SPLIT-FUNC      ArchitectureBackend.collect  CC=19  fan=14
       WHY: CC=19 exceeds 15
       EFFORT: ~1h  IMPACT: 266
 
-  [5] !  SPLIT-FUNC      compare  CC=16  fan=15
+  [4] !  SPLIT-FUNC      compare  CC=16  fan=15
       WHY: CC=16 exceeds 15
       EFFORT: ~1h  IMPACT: 240
 
-  [6] !  SPLIT-FUNC      diff  CC=15  fan=12
+  [5] !  SPLIT-FUNC      diff  CC=15  fan=12
       WHY: CC=15 exceeds 15
       EFFORT: ~1h  IMPACT: 180
 
-  [7] !  SPLIT-FUNC      detect_smells  CC=17  fan=7
+  [6] !  SPLIT-FUNC      detect_smells  CC=17  fan=7
       WHY: CC=17 exceeds 15
       EFFORT: ~1h  IMPACT: 119
 
@@ -34,10 +30,10 @@ RISKS[1]:
   ⚠ Splitting regix/benchmark.py may break 31 import paths
 
 METRICS-TARGET:
-  CC̄:          4.9 → ≤3.4
-  max-CC:      44 → ≤20
+  CC̄:          4.6 → ≤3.2
+  max-CC:      19 → ≤9
   god-modules: 1 → 0
-  high-CC(≥15): 8 → ≤4
+  high-CC(≥15): 7 → ≤3
   hub-types:   0 → ≤0
 
 PATTERNS (language parser shared logic):
@@ -65,4 +61,4 @@ PATTERNS (language parser shared logic):
     - Standardized FunctionInfo/ClassInfo models
 
 HISTORY:
-  prev CC̄=4.9 → now CC̄=4.9
+  prev CC̄=4.9 → now CC̄=4.6

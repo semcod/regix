@@ -96,7 +96,7 @@ show_improvements = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-addopts = "--cov=regix --cov-report=term-missing"
+addopts = "--cov=regix --cov-report=term-missing --cov-report=json:.pyqual/coverage.json"
 
 [tool.setuptools.packages.find]
 where = ["."]

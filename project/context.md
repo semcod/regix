@@ -6,10 +6,10 @@
 - **Primary Language**: python
 - **Languages**: python: 24, shell: 1
 - **Analysis Mode**: static
-- **Total Functions**: 157
+- **Total Functions**: 166
 - **Total Classes**: 41
 - **Modules**: 25
-- **Entry Points**: 111
+- **Entry Points**: 120
 
 ## Architecture by Module
 
@@ -19,7 +19,7 @@
 - **File**: `benchmark.py`
 
 ### regix.config
-- **Functions**: 15
+- **Functions**: 24
 - **Classes**: 2
 - **File**: `config.py`
 
@@ -95,31 +95,19 @@
 - **Classes**: 1
 - **File**: `architecture_backend.py`
 
-### regix.backends.radon_backend
-- **Functions**: 3
-- **Classes**: 1
-- **File**: `radon_backend.py`
-
 ### regix.backends.docstring_backend
 - **Functions**: 3
 - **Classes**: 1
 - **File**: `docstring_backend.py`
 
+### regix.backends.vallm_backend
+- **Functions**: 3
+- **Classes**: 1
+- **File**: `vallm_backend.py`
+
 ## Key Entry Points
 
 Main execution flows into the system:
-
-### regix.config.RegressionConfig.from_dict
-> Build config from a flat or nested dict.
-
-Supports two config layouts:
-
-**New (recommended)**::
-
-    gates:
-      hard:  {cc: 30, mi: 15, ...}
-      t
-- **Calls**: data.get, root.get, root.get, root.get, root.get, root.get, root.get, root.get
 
 ### regix.backends.architecture_backend.ArchitectureBackend.collect
 - **Calls**: str, ast.walk, results.append, ast.parse, sum, len, getattr, max
@@ -166,6 +154,7 @@ Supports two config layouts:
 - **Calls**: app.command, typer.Option, typer.Option, typer.Option, typer.Option, typer.Option, typer.Option, typer.Option
 
 ### regix.backends.vallm_backend.VallmBackend.collect
+> Run ``vallm batch`` and collect quality scores per file.
 - **Calls**: self.is_available, subprocess.run, json.loads, set, isinstance, data.get, entry.get, entry.get
 
 ### scripts.check_regression.check_regression
@@ -173,16 +162,23 @@ Supports two config layouts:
 - **Calls**: scripts.check_regression.load_json_file, scripts.check_regression.load_json_file, scripts.check_regression.load_json_file, None.append, open, json.dump, regix.benchmark.BenchmarkReporter.print, sys.exit
 
 ### regix.backends.structure_backend.StructureBackend.collect
+> Collect fan_out, call_count per function and symbol_count per file.
 - **Calls**: str, self._collect_functions, results.append, ast.parse, SymbolMetrics, regix.backends.structure_backend._analyse_function, results.append, full.read_text
 
 ### regix.benchmark.BenchmarkReporter.print_plain
 - **Calls**: suites.items, None.append, regix.benchmark.BenchmarkReporter.print, regix.benchmark.BenchmarkReporter.print, regix.benchmark.BenchmarkReporter.print, regix.benchmark.BenchmarkReporter.print, regix.benchmark.BenchmarkReporter.print, regix.benchmark.BenchmarkReporter.print
 
-### regix.backends.radon_backend.RadonBackend.collect
-- **Calls**: str, results.append, mi_visit, cc_visit, SymbolMetrics, results.append, full.read_text, SymbolMetrics
+### regix.cache.lookup
+> Return cached snapshot or None.
+- **Calls**: regix.cache._cache_dir, regix.cache._cache_key, path.exists, None.decode, json.loads, Snapshot, SymbolMetrics, gzip.decompress
 
 ### regix.backends.docstring_backend.DocstringBackend.collect
+> Compute docstring coverage per file.
 - **Calls**: str, ast.walk, results.append, ast.parse, isinstance, SymbolMetrics, full.read_text, ast.get_docstring
+
+### regix.backends.radon_backend.RadonBackend.collect
+> Collect MI (module-level) and CC (per-function) using radon.
+- **Calls**: str, results.append, mi_visit, cc_visit, SymbolMetrics, results.append, full.read_text, SymbolMetrics
 
 ### regix.benchmark.ImportProbe.run
 - **Calls**: range, min, BenchmarkResult, time.perf_counter, BenchmarkResult, subprocess.run, times.append, time.perf_counter
@@ -195,6 +191,18 @@ Supports two config layouts:
 
 ### regix.benchmark.main
 - **Calls**: argparse.ArgumentParser, parser.add_argument, parser.add_argument, parser.add_argument, parser.add_argument, parser.parse_args, regix.benchmark.build_regix_suite, suite.run
+
+### regix.config.RegressionConfig.from_dict
+> Build config from a flat or nested dict.
+
+Supports two config layouts:
+
+**New (recommended)**::
+
+    gates:
+      hard:  {cc: 30, mi: 15, ...}
+      t
+- **Calls**: data.get, cls._parse_gates, cls._parse_legacy_metrics, cls._parse_deltas, cls._parse_smells, cls._parse_files, cls._parse_backends, cls._parse_output
 
 ### regix.backends.coverage_backend.CoverageBackend._from_coverage_file
 - **Calls**: cov_lib.Coverage, cov.load, cov.get_data, data.measured_files, data.lines, len, results.append, str
@@ -213,77 +221,74 @@ The original working tree is never modified.
 Prefer :func:`read_tree_sources` fo
 - **Calls**: Path, regix.git.resolve_ref, Path, tempfile.mkdtemp, regix.git._run_git, regix.git._run_git, tmp.exists, shutil.rmtree
 
-### regix.models.Snapshot.load
-> Deserialise from JSON.
-- **Calls**: json.loads, cls, None.read_text, SymbolMetrics, data.get, data.get, datetime.fromisoformat, data.get
-
 ### regix.backends.coverage_backend.CoverageBackend._from_json
 - **Calls**: data.get, file_data.items, json.loads, str, finfo.get, summary.get, path.read_text, results.append
 
-### regix.config.RegressionConfig._from_pyproject
-- **Calls**: None.get, cls.from_dict, open, tomllib.load, cls, data.get, cls, open
+### regix.models.Snapshot.load
+> Deserialise from JSON.
+- **Calls**: json.loads, cls, None.read_text, SymbolMetrics, data.get, data.get, datetime.fromisoformat, data.get
 
 ## Process Flows
 
 Key execution flows identified:
 
-### Flow 1: from_dict
-```
-from_dict [regix.config.RegressionConfig]
-```
-
-### Flow 2: collect
+### Flow 1: collect
 ```
 collect [regix.backends.architecture_backend.ArchitectureBackend]
 ```
 
-### Flow 3: print_rich
+### Flow 2: print_rich
 ```
 print_rich [regix.benchmark.BenchmarkReporter]
 ```
 
-### Flow 4: to_toon
+### Flow 3: to_toon
 ```
 to_toon [regix.models.RegressionReport]
 ```
 
-### Flow 5: compare
+### Flow 4: compare
 ```
 compare [regix.cli]
 ```
 
-### Flow 6: status
+### Flow 5: status
 ```
 status [regix.cli]
   └─> _load_config
 ```
 
-### Flow 7: diff
+### Flow 6: diff
 ```
 diff [regix.cli]
 ```
 
-### Flow 8: gates
+### Flow 7: gates
 ```
 gates [regix.cli]
 ```
 
-### Flow 9: run
+### Flow 8: run
 ```
 run [regix.benchmark.BackendProbe]
   └─ →> get_backend
 ```
 
-### Flow 10: _parse
+### Flow 9: _parse
 ```
 _parse [regix.integrations.RegixCollector]
+```
+
+### Flow 10: snapshot
+```
+snapshot [regix.cli]
 ```
 
 ## Key Classes
 
 ### regix.config.RegressionConfig
 > All user-configurable values for a Regix run.
-- **Methods**: 26
+- **Methods**: 35
 - **Key Methods**: regix.config.RegressionConfig.cc_max, regix.config.RegressionConfig.cc_max, regix.config.RegressionConfig.mi_min, regix.config.RegressionConfig.mi_min, regix.config.RegressionConfig.coverage_min, regix.config.RegressionConfig.coverage_min, regix.config.RegressionConfig.length_max, regix.config.RegressionConfig.length_max, regix.config.RegressionConfig.docstring_min, regix.config.RegressionConfig.docstring_min
 
 ### regix.models.RegressionReport
@@ -312,14 +317,10 @@ _parse [regix.integrations.RegixCollector]
 - **Key Methods**: regix.models.Snapshot.metrics, regix.models.Snapshot.get, regix.models.Snapshot.save, regix.models.Snapshot.load
 
 ### regix.backends.structure_backend.StructureBackend
+> AST-based structural metrics: fan_out, call_count, symbol_count.
 - **Methods**: 4
 - **Key Methods**: regix.backends.structure_backend.StructureBackend.is_available, regix.backends.structure_backend.StructureBackend.version, regix.backends.structure_backend.StructureBackend.collect, regix.backends.structure_backend.StructureBackend._collect_functions
 - **Inherits**: BackendBase
-
-### regix.models.GateResult
-> Aggregate gate evaluation result.
-- **Methods**: 3
-- **Key Methods**: regix.models.GateResult.all_passed, regix.models.GateResult.errors, regix.models.GateResult.warnings
 
 ### regix.backends.architecture_backend.ArchitectureBackend
 > Computes per-function structural metrics via AST for smell detection.
@@ -327,9 +328,16 @@ _parse [regix.integrations.RegixCollector]
 - **Key Methods**: regix.backends.architecture_backend.ArchitectureBackend.is_available, regix.backends.architecture_backend.ArchitectureBackend.version, regix.backends.architecture_backend.ArchitectureBackend.collect
 - **Inherits**: BackendBase
 
-### regix.backends.radon_backend.RadonBackend
+### regix.backends.docstring_backend.DocstringBackend
+> Measure docstring coverage using the ``ast`` module.
 - **Methods**: 3
-- **Key Methods**: regix.backends.radon_backend.RadonBackend.is_available, regix.backends.radon_backend.RadonBackend.version, regix.backends.radon_backend.RadonBackend.collect
+- **Key Methods**: regix.backends.docstring_backend.DocstringBackend.is_available, regix.backends.docstring_backend.DocstringBackend.version, regix.backends.docstring_backend.DocstringBackend.collect
+- **Inherits**: BackendBase
+
+### regix.backends.vallm_backend.VallmBackend
+> LLM-based code quality scoring via the ``vallm`` CLI tool.
+- **Methods**: 3
+- **Key Methods**: regix.backends.vallm_backend.VallmBackend.is_available, regix.backends.vallm_backend.VallmBackend.version, regix.backends.vallm_backend.VallmBackend.collect
 - **Inherits**: BackendBase
 
 ### regix.backends.BackendBase
@@ -338,20 +346,22 @@ _parse [regix.integrations.RegixCollector]
 - **Key Methods**: regix.backends.BackendBase.is_available, regix.backends.BackendBase.collect, regix.backends.BackendBase.version
 - **Inherits**: ABC
 
-### regix.backends.docstring_backend.DocstringBackend
+### regix.backends.radon_backend.RadonBackend
+> Maintainability index and cyclomatic complexity via ``radon``.
 - **Methods**: 3
-- **Key Methods**: regix.backends.docstring_backend.DocstringBackend.is_available, regix.backends.docstring_backend.DocstringBackend.version, regix.backends.docstring_backend.DocstringBackend.collect
-- **Inherits**: BackendBase
-
-### regix.backends.vallm_backend.VallmBackend
-- **Methods**: 3
-- **Key Methods**: regix.backends.vallm_backend.VallmBackend.is_available, regix.backends.vallm_backend.VallmBackend.version, regix.backends.vallm_backend.VallmBackend.collect
+- **Key Methods**: regix.backends.radon_backend.RadonBackend.is_available, regix.backends.radon_backend.RadonBackend.version, regix.backends.radon_backend.RadonBackend.collect
 - **Inherits**: BackendBase
 
 ### regix.backends.lizard_backend.LizardBackend
+> Cyclomatic complexity and function length via the ``lizard`` library.
 - **Methods**: 3
 - **Key Methods**: regix.backends.lizard_backend.LizardBackend.is_available, regix.backends.lizard_backend.LizardBackend.version, regix.backends.lizard_backend.LizardBackend.collect
 - **Inherits**: BackendBase
+
+### regix.models.GateResult
+> Aggregate gate evaluation result.
+- **Methods**: 3
+- **Key Methods**: regix.models.GateResult.all_passed, regix.models.GateResult.errors, regix.models.GateResult.warnings
 
 ### regix.benchmark.BenchmarkResult
 - **Methods**: 3
@@ -392,6 +402,41 @@ Reads ``.regix/report.toon.yaml`` and returns
 
 Key functions that process and transform data:
 
+### regix.config.RegressionConfig._parse_gates
+> Parse gates.hard / gates.target (new format).
+- **Output to**: root.get, int, isinstance, GateThresholds, float
+
+### regix.config.RegressionConfig._parse_legacy_metrics
+> Parse legacy flat metrics: cc_max, mi_min, cc_target, …
+- **Output to**: root.get, _MAP.items, float, GateThresholds, mapping.items
+
+### regix.config.RegressionConfig._parse_deltas
+> Parse deltas (new) and thresholds (legacy).
+- **Output to**: root.get, root.get, float, float, kwargs.setdefault
+
+### regix.config.RegressionConfig._parse_smells
+> Parse architectural smell thresholds.
+- **Output to**: root.get, int, float
+
+### regix.config.RegressionConfig._parse_files
+> Parse include/exclude patterns.
+
+### regix.config.RegressionConfig._parse_backends
+> Parse backend configuration.
+- **Output to**: isinstance, bk.items
+
+### regix.config.RegressionConfig._parse_output
+> Parse output format settings.
+- **Output to**: root.get, _KEYS.items
+
+### regix.config.RegressionConfig._parse_cache
+> Parse cache settings.
+- **Output to**: root.get
+
+### regix.config.RegressionConfig._parse_loop
+> Parse loop settings.
+- **Output to**: root.get, int
+
 ### regix.integrations.RegixCollector._parse
 - **Output to**: path.read_text, text.splitlines, json.loads, line.strip, line.startswith
 
@@ -415,7 +460,6 @@ Key functions that process and transform data:
 Functions exposed as public API (no underscore prefix):
 
 - `regix.benchmark.build_regix_suite` - 42 calls
-- `regix.config.RegressionConfig.from_dict` - 38 calls
 - `regix.backends.architecture_backend.ArchitectureBackend.collect` - 27 calls
 - `regix.benchmark.BenchmarkReporter.print_rich` - 26 calls
 - `regix.models.RegressionReport.to_toon` - 24 calls
@@ -433,13 +477,15 @@ Functions exposed as public API (no underscore prefix):
 - `scripts.check_regression.check_regression` - 14 calls
 - `regix.backends.structure_backend.StructureBackend.collect` - 14 calls
 - `regix.benchmark.BenchmarkReporter.print_plain` - 14 calls
+- `regix.cache.lookup` - 13 calls
 - `regix.git.read_tree_sources` - 12 calls
-- `regix.backends.radon_backend.RadonBackend.collect` - 12 calls
 - `regix.backends.docstring_backend.DocstringBackend.collect` - 12 calls
+- `regix.backends.radon_backend.RadonBackend.collect` - 12 calls
 - `regix.benchmark.ImportProbe.run` - 12 calls
 - `regix.benchmark.CLIProbe.run` - 12 calls
 - `regix.benchmark.ThroughputProbe.run` - 12 calls
 - `regix.benchmark.main` - 12 calls
+- `regix.config.RegressionConfig.from_dict` - 11 calls
 - `regix.benchmark.UnitTestProbe.run` - 11 calls
 - `regix.gates.check_gates` - 10 calls
 - `regix.git.checkout_temporary` - 10 calls
@@ -452,7 +498,6 @@ Functions exposed as public API (no underscore prefix):
 - `regix.git.list_commits` - 8 calls
 - `regix.models.RegressionReport.filter` - 8 calls
 - `regix.benchmark.benchmark_library` - 8 calls
-- `regix.git.get_dirty_files` - 7 calls
 - `regix.history.build_history` - 7 calls
 
 ## System Interactions
@@ -461,7 +506,6 @@ How components interact:
 
 ```mermaid
 graph TD
-    from_dict --> get
     collect --> str
     collect --> walk
     collect --> append
@@ -491,6 +535,7 @@ graph TD
     gates --> Option
     run --> get_backend
     run --> Path
+    run --> BenchmarkResult
 ```
 
 ## Reverse Engineering Guidelines

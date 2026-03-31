@@ -20,7 +20,7 @@ pipeline:
       timeout: 600
       
     - name: test
-      tool: pytest
+      run: pytest --cov=regix --cov-report=json:.pyqual/coverage.json -q
       optional: true
       timeout: 300
       
@@ -67,6 +67,34 @@ pipeline:
         echo "========================"
       when: after_verify_fix
       timeout: 60
+
+    # Push & publish (run only when all gates pass)
+    - name: push
+      run: |
+        git add -A
+        if ! git diff --cached --quiet; then
+          git commit -m "chore: pyqual auto-fix iteration"
+          git push origin HEAD
+        else
+          echo "No changes to push."
+        fi
+      when: metrics_pass
+      optional: true
+      timeout: 120
+
+    - name: publish
+      run: |
+        # Bump patch version and publish to PyPI (if twine available)
+        CURRENT=$(python3 -c "import regix; print(regix.__version__)")
+        echo "Current version: $CURRENT"
+        if command -v twine &>/dev/null; then
+          python3 -m build && twine upload dist/*
+        else
+          echo "twine not installed — skipping publish"
+        fi
+      when: metrics_pass
+      optional: true
+      timeout: 300
 
   # Loop behavior - continue until regression is fixed
   loop:
