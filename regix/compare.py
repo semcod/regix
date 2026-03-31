@@ -90,7 +90,7 @@ def compare(
     improvements: list[Improvement] = []
     unchanged = 0
 
-    for key in sorted(all_keys):
+    for key in sorted(all_keys, key=lambda k: (k[0], k[1] or "")):
         m_before = idx_before.get(key)
         m_after = idx_after.get(key)
         file_path, symbol_name = key

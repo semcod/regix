@@ -3,10 +3,10 @@
 
 ## AI Cost Tracking
 
-![PyPI](https://img.shields.io/badge/pypi-costs-blue) ![Version](https://img.shields.io/badge/version-0.1.2-blue) ![Python](https://img.shields.io/badge/python-3.9+-blue) ![License](https://img.shields.io/badge/license-Apache--2.0-green)
-![AI Cost](https://img.shields.io/badge/AI%20Cost-$0.30-orange) ![Human Time](https://img.shields.io/badge/Human%20Time-2.0h-blue) ![Model](https://img.shields.io/badge/Model-openrouter%2Fqwen%2Fqwen3--coder--next-lightgrey)
+![PyPI](https://img.shields.io/badge/pypi-costs-blue) ![Version](https://img.shields.io/badge/version-0.1.3-blue) ![Python](https://img.shields.io/badge/python-3.9+-blue) ![License](https://img.shields.io/badge/license-Apache--2.0-green)
+![AI Cost](https://img.shields.io/badge/AI%20Cost-$0.45-orange) ![Human Time](https://img.shields.io/badge/Human%20Time-2.0h-blue) ![Model](https://img.shields.io/badge/Model-openrouter%2Fqwen%2Fqwen3--coder--next-lightgrey)
 
-- 🤖 **LLM usage:** $0.3000 (2 commits)
+- 🤖 **LLM usage:** $0.4500 (3 commits)
 - 👤 **Human dev:** ~$200 (2.0h @ $100/h, 30min dedup)
 
 Generated on 2026-03-31 using [openrouter/qwen/qwen3-coder-next](https://openrouter.ai/qwen/qwen3-coder-next)
@@ -323,7 +323,7 @@ See [configuration.md](configuration.md) for the full reference.
 
 ---
 
-## CI Integration
+## Integration with CI
 
 ### GitHub Actions
 
@@ -339,6 +339,7 @@ See [configuration.md](configuration.md) for the full reference.
 ### Pre-commit hook
 
 ```yaml
+# .pre-commit-config.yaml
 repos:
   - repo: local
     hooks:
@@ -349,17 +350,43 @@ repos:
         pass_filenames: false
 ```
 
+### pyqual integration
+
+Regix ships a pyqual-compatible stage preset and gate collector:
+
+```yaml
+# pyqual.yaml
+stages:
+  - name: regression-check
+    tool: regix
+    when: metrics_fail
+
+metrics:
+  regression_errors_max: 0
+  regression_warnings_max: 5
+```
+
+The `regix` preset runs `regix compare HEAD~1 HEAD --format toon --output .regix/` and the gate collector reads `.regix/report.toon.yaml` for `regression_errors` and `regression_warnings` metrics.
+
 ---
 
-## Design principles
+## Design principles (lessons from pyqual)
 
-1. **Fix the measurement before fixing the code.** Regix measures only what it can actually analyse.
-2. **Report at symbol granularity.** A file-level average of CC=6.4 masks individual functions with CC=19+.
-3. **Distinguish regression from absolute violation.** CC=18 that was CC=18 last week is an existing issue, not a new regression.
-4. **Stagnation is a signal.** If metrics are identical across iterations, continuing wastes time.
-5. **Make improvements visible too.** Hiding improvements creates a discouraging feedback loop.
-6. **Historical depth is essential.** A single before/after comparison misses the trend.
-7. **Output must be machine-readable.** JSON, YAML, TOON — all stable and versioned.
+These principles were derived from running iterative quality pipelines and observing failure modes:
+
+1. **Fix the measurement before fixing the code.** If the tool counts unsupported files in the pass-rate denominator, the metric is misleading. Regix measures only what it can actually analyse.
+
+2. **Report at symbol granularity, not file granularity.** A file-level CC average of 6.4 masks individual functions with CC 19+. Regix always links a regression to the smallest attributable unit.
+
+3. **Distinguish regression from absolute violation.** A function with CC=18 that was CC=18 last week is not a *new* regression — it is an existing issue. A function that went CC=10 → CC=18 in this PR *is* a regression. Both should be reportable, but separately.
+
+4. **Stagnation is a signal.** If a fix pass runs twice and produces identical metric values, continuing to iterate wastes time. Regix exposes `report.stagnated` so callers can exit early.
+
+5. **Make the improvement visible too.** Refactoring that improves CC from 22 → 14 in three functions while worsening one from 12 → 16 still net-positive. Hiding improvements creates a discouraging feedback loop.
+
+6. **Historical depth is essential.** A single before/after comparison misses the *trend*. The `history` command lets you see that coverage has been falling 1 % per week for six weeks, not just that it is below the gate today.
+
+7. **Output must be machine-readable.** Every report format (JSON, YAML, TOON) is stable and versioned so downstream tools (dashboards, ticket systems, fix agents) can consume regression data programmatically.
 
 ---
 
@@ -367,45 +394,57 @@ repos:
 
 ```
 regix/
-├── __init__.py          # Public API: Regix, Snapshot, RegressionReport
-├── cli.py               # Typer CLI (compare, history, diff, gates, ...)
-├── config.py            # RegressionConfig + YAML/TOML loader
-├── models.py            # Snapshot, Regression, Improvement, Report, etc.
-├── snapshot.py          # Snapshot capture, git worktree, file collection
-├── compare.py           # Core comparison engine
+├── __init__.py          # Public API: Regix, Snapshot, RegressionReport, ...
+├── cli.py               # Typer-based CLI (compare, history, diff, gates, ...)
+├── config.py            # RegressionConfig dataclass + YAML loader
+├── snapshot.py          # Snapshot capture, caching, git checkout logic
+├── compare.py           # Core comparison engine: produces RegressionReport
 ├── history.py           # Multi-commit timeline builder
-├── report.py            # Rendering: rich, JSON, YAML, TOON
-├── gates.py             # Absolute gate evaluation
-├── cache.py             # Content-addressed snapshot cache
-├── git.py               # Git helpers: worktree, ref resolution, diff
-├── exceptions.py        # Typed exceptions
+├── report.py            # Rendering: rich tables, JSON/YAML/TOON serialisation
+├── gates.py             # Gate evaluation (pass/fail) from RegressionReport
 ├── backends/
-│   ├── __init__.py      # BackendBase ABC + registry
-│   ├── lizard_backend.py
-│   ├── radon_backend.py
-│   ├── coverage_backend.py
-│   ├── docstring_backend.py
-│   └── vallm_backend.py
+│   ├── __init__.py
+│   ├── lizard.py        # CC + function length via lizard
+│   ├── radon.py         # MI + raw metrics via radon
+│   ├── coverage.py      # Coverage via pytest-cov JSON output
+│   ├── vallm.py         # LLM quality score via vallm batch
+│   └── base.py          # Backend ABC: collect(path) → SymbolMetrics
+├── git.py               # Git helpers: checkout, stash, diff, log
+├── cache.py             # Content-addressed snapshot cache (~/.cache/regix/)
 └── integrations/
-    └── __init__.py      # pyqual preset + gate collector
+    ├── pyqual.py        # pyqual preset + gate collector
+    └── github.py        # GitHub Actions annotations formatter
 ```
+
+See [architecture.md](architecture.md) for a detailed description of each module.
 
 ---
 
-## Ecosystem
+## Comparison with related tools
 
-Regix is part of the **semcod/wronai** AI-assisted development toolchain:
+| Tool | What it measures | Regression detection | Git-aware | Symbol-level |
+|------|-----------------|---------------------|-----------|--------------|
+| **Regix** | CC, MI, coverage, length, quality | ✅ first-class | ✅ | ✅ |
+| pylint | Style, errors | ❌ | ❌ | ❌ |
+| radon | CC, MI raw | ❌ | ❌ | ✅ |
+| lizard | CC, length | ❌ | ❌ | ✅ |
+| pytest-cov | Coverage | ❌ | ❌ | ❌ |
+| pyqual | Quality gates (pipeline) | partial (gate-level) | ❌ | ❌ |
+| diff-cover | Coverage diff | partial (line-level) | ✅ | ❌ |
+| xenon | CC thresholds | ❌ | ❌ | ❌ |
 
-| Package | Role |
-|---|---|
-| **code2llm** | Static analysis engine |
-| **vallm** | LLM code validator |
-| **regix** | Regression detection layer |
-| **devloop** | Declarative pipeline runner |
-| **planfile** | Universal ticket standard |
-| **llx** | Intelligent LLM router |
-| **proxym** | Dashboard layer |
-| **costs** | AI cost tracker |
+Regix is designed to sit **above** analysis tools (lizard, radon, vallm) as the comparison and regression-detection layer, and **alongside** gate tools (pyqual) as a complementary data source.
+
+---
+
+## Roadmap
+
+- [ ] `v0.1` — Core compare/history CLI, lizard + radon backends, JSON/rich output
+- [ ] `v0.2` — pytest-cov backend, configuration file, CI presets
+- [ ] `v0.3` — vallm backend, pyqual integration preset
+- [ ] `v0.4` — Symbol-level caching, incremental snapshots for large repos
+- [ ] `v0.5` — Web dashboard (static HTML report), trend charts
+- [ ] `v1.0` — Stable API, full docs, PyPI release
 
 ---
 
