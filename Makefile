@@ -18,7 +18,7 @@ FLAKE8 = python3 -m flake8
 COVERAGE = python3 -m coverage
 PART = patch
 
-.PHONY: help install dev test build publish clean push benchmark benchmark-ci benchmark-json
+.PHONY: help install dev test build publish clean push benchmark benchmark-ci benchmark-json deps-cache deps-lock test-offline
 
 help:
 	@echo "Targets:"
@@ -29,9 +29,12 @@ help:
 	@echo "  make publish  - build and upload to PyPI"
 	@echo "  make clean    - remove build artifacts"
 	@echo "  make push     - use goal to push changes"
-	@echo "  make benchmark     - run performance benchmark"
-	@echo "  make benchmark-ci  - benchmark for CI (plain, threshold)"
+	@echo "  make benchmark      - run performance benchmark"
+	@echo "  make benchmark-ci   - benchmark for CI (plain, threshold)"
 	@echo "  make benchmark-json - benchmark JSON output"
+	@echo "  make deps-cache     - download all deps to local wheel cache"
+	@echo "  make deps-lock      - freeze current versions to requirements-lock.txt"
+	@echo "  make test-offline   - run tests without network (uses cached deps)"
 
 install:
 	pip install .
@@ -72,6 +75,36 @@ benchmark-json:
 
 docker-matrix:
 	bash integration/run_docker_matrix.sh
+
+
+# ── Dependency caching ──────────────────────────────────────────────────────
+
+WHEEL_CACHE := .wheels
+
+deps-cache:
+	@echo "${YELLOW}Downloading all deps to local wheel cache...${RESET}"
+	mkdir -p $(WHEEL_CACHE)
+	$(PIP) download -d $(WHEEL_CACHE) -e ".[dev]"
+	@echo "${GREEN}Cached $$(ls $(WHEEL_CACHE) | wc -l) wheels in $(WHEEL_CACHE)/${RESET}"
+
+deps-lock:
+	@echo "${YELLOW}Freezing current versions...${RESET}"
+	$(PIP) freeze --exclude-editable > requirements-lock.txt
+	@echo "${GREEN}Wrote requirements-lock.txt${RESET}"
+
+test-offline:
+	@echo "${YELLOW}Running tests offline (no network)...${RESET}"
+	$(PYTHON) -m pytest tests/ -q --tb=short -p no:cacheprovider
+	@echo "${GREEN}Offline tests complete${RESET}"
+
+# ── Install from local cache (no internet) ──────────────────────────────────
+
+install-offline:
+	@if [ ! -d "$(WHEEL_CACHE)" ]; then \
+		echo "${YELLOW}No wheel cache found. Run 'make deps-cache' first.${RESET}"; \
+		exit 1; \
+	fi
+	$(PIP) install --no-index --find-links=$(WHEEL_CACHE) -e ".[dev]"
 
 
 ## Bump version (e.g., make bump-version PART=patch)
