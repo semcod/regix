@@ -20,7 +20,7 @@ pipeline:
       timeout: 600
       
     - name: test
-      run: pytest --cov=regix --cov-report=json:.pyqual/coverage.json -q
+      run: .venv/bin/pytest --cov=regix --cov-report=json:.pyqual/coverage.json -q
       optional: true
       timeout: 300
       

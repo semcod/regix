@@ -17,17 +17,17 @@ flowchart TD
     scripts__check_regression -->|3| regix__benchmark
     regix__snapshot -->|3| regix__git
     regix__benchmark -->|3| regix__snapshot
+    regix__Regix -->|2| regix__config
     regix__cli -->|2| regix__config
     regix__cli -->|2| regix__report
     regix__cli -->|2| regix__backends
-    regix__Regix -->|2| regix__config
     regix__compare -->|1| regix__smells
-    regix__cli -->|1| regix__history
-    regix__cli -->|1| regix__gates
     regix__history -->|1| regix__git
     regix__history -->|1| regix__snapshot
     regix__Regix -->|1| regix__snapshot
     regix__Regix -->|1| regix__history
+    regix__cli -->|1| regix__history
+    regix__cli -->|1| regix__gates
     regix__snapshot -->|1| regix__backends
     regix__benchmark -->|1| regix__backends
     regix__benchmark -->|1| regix__gates

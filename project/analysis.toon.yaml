@@ -7,9 +7,9 @@ HEALTH[8]:
   🟡 CC    compare CC=16 (limit:15)
   🟡 CC    diff CC=15 (limit:15)
   🟡 CC    capture CC=17 (limit:15)
+  🟡 CC    filter CC=15 (limit:15)
   🟡 CC    collect CC=19 (limit:15)
   🟡 CC    detect_smells CC=17 (limit:15)
-  🟡 CC    filter CC=15 (limit:15)
 
 REFACTOR[3]:
   1. split regix/benchmark.py  (god module)

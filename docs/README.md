@@ -1,7 +1,7 @@
 <!-- code2docs:start --># regix
 
-![version](https://img.shields.io/badge/version-0.1.0-blue) ![python](https://img.shields.io/badge/python-%3E%3D3.9-blue) ![coverage](https://img.shields.io/badge/coverage-unknown-lightgrey) ![functions](https://img.shields.io/badge/functions-157-green)
-> **157** functions | **41** classes | **25** files | CC̄ = 4.9
+![version](https://img.shields.io/badge/version-0.1.0-blue) ![python](https://img.shields.io/badge/python-%3E%3D3.9-blue) ![coverage](https://img.shields.io/badge/coverage-unknown-lightgrey) ![functions](https://img.shields.io/badge/functions-166-green)
+> **166** functions | **41** classes | **25** files | CC̄ = 4.6
 
 > Auto-generated project documentation from source code analysis.
 
@@ -153,7 +153,7 @@ Content outside the markers is preserved when regenerating. Enable this with `sy
 
 ```
 regix/
-├── project    ├── check_regression    ├── gates    ├── exceptions    ├── compare    ├── config    ├── history    ├── cli    ├── git    ├── snapshot    ├── report├── regix/    ├── cache        ├── architecture_backend    ├── smells        ├── docstring_backend        ├── vallm_backend    ├── backends/        ├── radon_backend        ├── coverage_backend        ├── lizard_backend    ├── integrations/    ├── models        ├── structure_backend    ├── benchmark```
+├── project    ├── check_regression    ├── gates    ├── exceptions    ├── compare├── regix/    ├── history    ├── git    ├── cli    ├── snapshot    ├── config    ├── report    ├── cache    ├── smells        ├── architecture_backend        ├── docstring_backend        ├── radon_backend        ├── vallm_backend    ├── backends/        ├── coverage_backend    ├── models    ├── integrations/        ├── lizard_backend        ├── structure_backend    ├── benchmark```
 
 ## API Overview
 
@@ -164,18 +164,16 @@ regix/
 - **`GitDirtyError`** — Raised when the working tree is dirty and the operation requires a clean state.
 - **`BackendError`** — Raised when a backend fails to produce output.
 - **`ConfigError`** — Raised when the configuration file is invalid.
+- **`Regix`** — Main entry point — wraps snapshot, compare, and history.
+- **`CommitInfo`** — Lightweight commit metadata.
 - **`GateThresholds`** — Threshold set for a single tier (hard or target).
 - **`RegressionConfig`** — All user-configurable values for a Regix run.
-- **`CommitInfo`** — Lightweight commit metadata.
-- **`Regix`** — Main entry point — wraps snapshot, compare, and history.
 - **`ArchitectureBackend`** — Computes per-function structural metrics via AST for smell detection.
-- **`DocstringBackend`** — —
-- **`VallmBackend`** — —
+- **`DocstringBackend`** — Measure docstring coverage using the ``ast`` module.
+- **`RadonBackend`** — Maintainability index and cyclomatic complexity via ``radon``.
+- **`VallmBackend`** — LLM-based code quality scoring via the ``vallm`` CLI tool.
 - **`BackendBase`** — Interface that all analysis backends must implement.
-- **`RadonBackend`** — —
 - **`CoverageBackend`** — —
-- **`LizardBackend`** — —
-- **`RegixCollector`** — GateSet-compatible metric collector for pyqual.
 - **`SymbolMetrics`** — All tracked metrics for a single symbol (function, class, or module).
 - **`MetricDelta`** — Change in a single metric between two snapshots.
 - **`ArchSmell`** — An architectural regression smell detected by cross-symbol analysis.
@@ -189,7 +187,9 @@ regix/
 - **`HistoryReport`** — Multi-commit metric timeline.
 - **`GateCheck`** — Single gate threshold check.
 - **`GateResult`** — Aggregate gate evaluation result.
-- **`StructureBackend`** — —
+- **`RegixCollector`** — GateSet-compatible metric collector for pyqual.
+- **`LizardBackend`** — Cyclomatic complexity and function length via the ``lizard`` library.
+- **`StructureBackend`** — AST-based structural metrics: fan_out, call_count, symbol_count.
 - **`BenchmarkResult`** — —
 - **`BenchmarkProbe`** — Abstract benchmark probe.
 - **`ImportProbe`** — Measures import time of a Python module in a fresh process.
@@ -208,13 +208,6 @@ regix/
 - `check_gates(snapshot, config)` — Evaluate absolute quality gates against a single snapshot.
 - `compare(snap_before, snap_after, config)` — Compare two snapshots and produce a regression report.
 - `build_history(depth, ref, workdir, config)` — Walk ``depth`` commits and return a HistoryReport with metric timeline.
-- `compare(ref_a, ref_b, local, config)` — Compare metrics between two git refs or local state.
-- `history(depth, ref, metric, fmt)` — Show metric timeline across N historical commits.
-- `snapshot(ref, fmt, output, config)` — Capture and store a snapshot without comparing.
-- `diff(ref_a, ref_b, threshold, metric)` — Show symbol-by-symbol metric diff (like git diff for metrics).
-- `gates(ref, fail_on, config, workdir)` — Check current state against configured quality gates (absolute thresholds).
-- `status(config, workdir)` — Show Regix configuration and available backends.
-- `init(workdir)` — Create a default regix.yaml in the project root.
 - `resolve_ref(ref, workdir)` — Resolve a symbolic ref to a commit SHA.
 - `list_commits(ref, depth, workdir)` — Return commit history starting from *ref*, newest first.
 - `is_clean(workdir)` — Return True if there are no uncommitted changes.
@@ -223,6 +216,13 @@ regix/
 - `checkout_temporary(ref, workdir)` — Context manager: create a git worktree at *ref* in a temp directory.
 - `read_tree_sources(ref, workdir, suffix)` — Read all files matching *suffix* from a git ref entirely in RAM.
 - `read_local_sources(workdir, files)` — Read source code for *files* from the local working tree into RAM.
+- `compare(ref_a, ref_b, local, config)` — Compare metrics between two git refs or local state.
+- `history(depth, ref, metric, fmt)` — Show metric timeline across N historical commits.
+- `snapshot(ref, fmt, output, config)` — Capture and store a snapshot without comparing.
+- `diff(ref_a, ref_b, threshold, metric)` — Show symbol-by-symbol metric diff (like git diff for metrics).
+- `gates(ref, fail_on, config, workdir)` — Check current state against configured quality gates (absolute thresholds).
+- `status(config, workdir)` — Show Regix configuration and available backends.
+- `init(workdir)` — Create a default regix.yaml in the project root.
 - `capture(ref, workdir, config, backend_names)` — Capture a snapshot at a git ref or the local working tree.
 - `render(report, fmt, output)` — Render a regression report in the specified format.
 - `render_history(report, fmt)` — Render a history report.
@@ -254,7 +254,7 @@ regix/
 📄 `regix.cache` (5 functions)
 📄 `regix.cli` (8 functions)
 📄 `regix.compare` (4 functions)
-📄 `regix.config` (15 functions, 2 classes)
+📄 `regix.config` (24 functions, 2 classes)
 📄 `regix.exceptions` (4 functions, 5 classes)
 📄 `regix.gates` (2 functions)
 📄 `regix.git` (9 functions, 1 classes)

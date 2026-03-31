@@ -2,7 +2,7 @@
 # stats: 166 func | 0 cls | 25 mod | CC̄=4.6 | critical:7 | cycles:0
 # alerts[5]: CC ArchitectureBackend.collect=19; fan-out capture=18; CC capture=17; CC detect_smells=17; CC _compute_delta=16
 # hotspots[5]: capture fan=18; compare fan=15; BackendProbe.run fan=15; BenchmarkReporter.print_rich fan=15; ArchitectureBackend.collect fan=14
-# evolution: CC̄ 4.9→4.6 (improved -0.3)
+# evolution: CC̄ 4.6→4.6 (flat 0.0)
 # Keys: M=modules, D=details, i=imports, e=exports, c=classes, f=functions, m=methods
 M[25]:
   project.sh,36
@@ -119,12 +119,12 @@ D:
     _make_gates_probe()
     benchmark_library(module;cli_commands;test_path;threshold_import;threshold_cli;threshold_tests)
     main()
-  regix/backends/vallm_backend.py:
-    e: VallmBackend
-    VallmBackend(BackendBase): is_available(0),version(0),collect(4)  # LLM-based code quality scoring via the ``vallm`` CLI tool...
   regix/backends/radon_backend.py:
     e: RadonBackend
     RadonBackend(BackendBase): is_available(0),version(0),collect(4)  # Maintainability index and cyclomatic complexity via ``radon`...
+  regix/backends/vallm_backend.py:
+    e: VallmBackend
+    VallmBackend(BackendBase): is_available(0),version(0),collect(4)  # LLM-based code quality scoring via the ``vallm`` CLI tool...
   regix/backends/structure_backend.py:
     e: _CallVisitor,StructureBackend,_analyse_function
     _CallVisitor(ast.NodeVisitor): __init__(0),visit_Call(1)  # Collect call_count and fan_out from a function body...
@@ -138,18 +138,18 @@ D:
     RegixCollector: collect(1),_parse(1)  # GateSet-compatible metric collector for pyqual.
 
 Reads ``.re...
-  regix/config.py:
-    e: GateThresholds,RegressionConfig
-    GateThresholds: get(1)  # Threshold set for a single tier (hard or target).
-
-Keys use ...
-    RegressionConfig: cc_max(1),cc_max(1),mi_min(1),mi_min(1),coverage_min(1),coverage_min(1),length_max(1),length_max(1),docstring_min(1),docstring_min(1),quality_min(1),quality_min(1),from_file(1),from_dict(1),_parse_gates(1),_parse_legacy_metrics(1),_parse_deltas(1),_parse_smells(1),_parse_files(1),_parse_backends(1),_parse_output(1),_parse_cache(1),_parse_loop(1),delta_thresholds(1),is_lower_better(1),_find_config(1),_from_yaml(1),_from_pyproject(1),apply_env_overrides(0)  # All user-configurable values for a Regix run...
   regix/history.py:
     e: _aggregate_snapshot_metrics,_compute_trends,build_history,_linear_slope
     _aggregate_snapshot_metrics(symbols)
     _compute_trends(commit_metrics_list;metric_keys)
     build_history(depth;ref;workdir;config;metrics_filter)
     _linear_slope(values)
+  regix/config.py:
+    e: GateThresholds,RegressionConfig
+    GateThresholds: get(1)  # Threshold set for a single tier (hard or target).
+
+Keys use ...
+    RegressionConfig: cc_max(1),cc_max(1),mi_min(1),mi_min(1),coverage_min(1),coverage_min(1),length_max(1),length_max(1),docstring_min(1),docstring_min(1),quality_min(1),quality_min(1),from_file(1),from_dict(1),_parse_gates(1),_parse_legacy_metrics(1),_parse_deltas(1),_parse_smells(1),_parse_files(1),_parse_backends(1),_parse_output(1),_parse_cache(1),_parse_loop(1),delta_thresholds(1),is_lower_better(1),_find_config(1),_from_yaml(1),_from_pyproject(1),apply_env_overrides(0)  # All user-configurable values for a Regix run...
   regix/backends/coverage_backend.py:
     e: CoverageBackend
     CoverageBackend(BackendBase): is_available(0),version(0),collect(4),_from_json(2),_from_coverage_file(3)

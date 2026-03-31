@@ -17,20 +17,20 @@ flowchart TD
     subgraph Core
         regix__compare___compute_delta{{_compute_delta CC=16}}
         regix__compare__compare["compare"]
+        regix__git___run_git["_run_git"]
+        regix__git__resolve_ref["resolve_ref"]
+        regix__git__is_clean["is_clean"]
+        regix__git__get_dirty_files["get_dirty_files"]
+        regix__git__get_changed_files["get_changed_files"]
+        regix__git__checkout_temporary["checkout_temporary"]
+        regix__git__read_tree_sources["read_tree_sources"]
+        regix__Regix__snapshot["snapshot"]
+        regix__Regix__compare["compare"]
+        regix__Regix__compare_local["compare_local"]
+        regix__Regix__history["history"]
+        regix__snapshot__capture{{capture CC=17}}
         regix__config__GateThresholds__get["get"]
-        regix__config__RegressionConfig__cc_max["cc_max"]
-        regix__config__RegressionConfig__mi_min["mi_min"]
-        regix__config__RegressionConfig__coverage_min["coverage_min"]
-        regix__config__RegressionConfig__length_max["length_max"]
-        regix__config__RegressionConfig__docstring_min["docstring_min"]
-        regix__config__RegressionConfig__quality_min["quality_min"]
-        regix__config__RegressionConfig__from_file["from_file"]
-        regix__config__RegressionConfig__from_dict["from_dict"]
-        regix__config__RegressionConfig___parse_gates["_parse_gates"]
-        regix__config__RegressionConfig___parse_legacy_metrics["_parse_legacy_metrics"]
-        regix__config__RegressionConfig___parse_deltas["_parse_deltas"]
-        regix__config__RegressionConfig___parse_smells["_parse_smells"]
         ...["+91 more"]
     end
 
-    class regix__compare__compare,regix__config__GateThresholds__get,regix__config__RegressionConfig__cc_max,regix__config__RegressionConfig__mi_min,regix__config__RegressionConfig__coverage_min,regix__config__RegressionConfig__length_max,regix__config__RegressionConfig__docstring_min,regix__config__RegressionConfig__quality_min,regix__config__RegressionConfig__from_file,regix__config__RegressionConfig__from_dict entry
+    class regix__compare__compare,regix__git__is_clean,regix__git__get_dirty_files,regix__git__get_changed_files,regix__git__checkout_temporary,regix__Regix__snapshot,regix__Regix__compare,regix__Regix__compare_local,regix__Regix__history,regix__cli___load_config entry
