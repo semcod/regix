@@ -14,10 +14,13 @@ from regix.models import (
     Snapshot,
     SymbolMetrics,
 )
+from regix.smells import detect_smells
 
 # Metrics to compare, in order
 _TRACKED_METRICS = ("cc", "mi", "coverage", "length", "docstring_coverage",
-                    "quality_score", "imports")
+                    "quality_score", "imports",
+                    "fan_out", "call_count", "symbol_count",
+                    "logic_density", "node_type_diversity")
 
 
 def _compute_delta(
@@ -158,6 +161,11 @@ def compare(
 
     errors = sum(1 for r in regressions if r.severity == "error")
     warnings = sum(1 for r in regressions if r.severity == "warning")
+
+    smells = detect_smells(snap_before, snap_after, config)
+    smell_errors = sum(1 for s in smells if s.severity == "error")
+    smell_warnings = sum(1 for s in smells if s.severity == "warning")
+
     duration = time.monotonic() - t0
 
     return RegressionReport(
@@ -167,9 +175,12 @@ def compare(
         snapshot_after=snap_after,
         regressions=regressions,
         improvements=improvements,
+        smells=smells,
         unchanged=unchanged,
         errors=errors,
         warnings=warnings,
+        smell_errors=smell_errors,
+        smell_warnings=smell_warnings,
         stagnated=False,
         duration=round(duration, 3),
     )

@@ -1,1 +1,26 @@
 flowchart TD
+    regix__Regix["regix.Regix<br/>6 funcs"]
+    regix__backends["regix.backends<br/>33 funcs"]
+    regix__cli["regix.cli<br/>8 funcs"]
+    regix__compare["regix.compare<br/>2 funcs"]
+    regix__config["regix.config<br/>8 funcs"]
+    regix__gates["regix.gates<br/>1 funcs"]
+    regix__git["regix.git<br/>7 funcs"]
+    regix__history["regix.history<br/>2 funcs"]
+    regix__report["regix.report<br/>3 funcs"]
+    regix__smells["regix.smells<br/>8 funcs"]
+    regix__snapshot["regix.snapshot<br/>3 funcs"]
+    regix__cli ==>|6| regix__snapshot
+    regix__Regix -->|2| regix__config
+    regix__cli -->|2| regix__config
+    regix__cli -->|2| regix__report
+    regix__cli -->|2| regix__backends
+    regix__snapshot -->|2| regix__git
+    regix__compare -->|1| regix__smells
+    regix__Regix -->|1| regix__snapshot
+    regix__Regix -->|1| regix__history
+    regix__cli -->|1| regix__history
+    regix__cli -->|1| regix__gates
+    regix__history -->|1| regix__git
+    regix__history -->|1| regix__snapshot
+    regix__snapshot -->|1| regix__backends

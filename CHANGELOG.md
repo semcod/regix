@@ -5,7 +5,80 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.10] - 2026-03-31
+
+### Fixed
+- Fix unused-imports issues (ticket-0bde17f3)
+- Fix string-concat issues (ticket-6db3468c)
+- Fix unused-imports issues (ticket-e5c3279d)
+- Fix unused-imports issues (ticket-c101a5d4)
+- Fix duplicate-imports issues (ticket-5b111a30)
+- Fix magic-numbers issues (ticket-3e9e5089)
+- Fix unused-imports issues (ticket-d2062800)
+- Fix unused-imports issues (ticket-69e5d148)
+- Fix duplicate-imports issues (ticket-17e7ab71)
+- Fix unused-imports issues (ticket-cc15ce69)
+- Fix duplicate-imports issues (ticket-8628573d)
+- Fix string-concat issues (ticket-258ef67d)
+- Fix unused-imports issues (ticket-c4827859)
+- Fix unused-imports issues (ticket-7368f1b0)
+- Fix string-concat issues (ticket-6382eedf)
+- Fix unused-imports issues (ticket-c22fdecd)
+- Fix smart-return-type issues (ticket-4fc3119c)
+- Fix unused-imports issues (ticket-32e4b358)
+- Fix duplicate-imports issues (ticket-c940fe15)
+- Fix magic-numbers issues (ticket-ef8db94a)
+- Fix ai-boilerplate issues (ticket-030c3bda)
+- Fix unused-imports issues (ticket-9727732c)
+- Fix unused-imports issues (ticket-92d71d68)
+- Fix unused-imports issues (ticket-82568973)
+- Fix duplicate-imports issues (ticket-1630346c)
+- Fix magic-numbers issues (ticket-582e504d)
+- Fix string-concat issues (ticket-2e46383f)
+- Fix unused-imports issues (ticket-3a01a30a)
+- Fix magic-numbers issues (ticket-f8ad41ba)
+- Fix unused-imports issues (ticket-9f496964)
+- Fix unused-imports issues (ticket-c416f3b1)
+- Fix unused-imports issues (ticket-816aeaae)
+- Fix string-concat issues (ticket-5bbc452f)
+- Fix unused-imports issues (ticket-958ddbeb)
+- Fix string-concat issues (ticket-de373714)
+- Fix unused-imports issues (ticket-fe79d7ce)
+- Fix string-concat issues (ticket-20155b8a)
+- Fix unused-imports issues (ticket-2054d593)
+- Fix unused-imports issues (ticket-3dc7c36c)
+- Fix smart-return-type issues (ticket-89e7133c)
+- Fix ai-boilerplate issues (ticket-576e3028)
+
 ## [Unreleased]
+
+## [0.1.4] - 2026-03-31
+
+### Docs
+- Update CHANGELOG.md
+- Update README.md
+- Update TODO.md
+- Update docs/README.md
+- Update docs/architecture.md
+- Update docs/configuration.md
+- Update project/README.md
+- Update project/context.md
+
+### Test
+- Update tests/test_smells.py
+
+### Other
+- Update planfile.yaml
+- Update project/analysis.toon.yaml
+- Update project/calls.mmd
+- Update project/calls.png
+- Update project/compact_flow.mmd
+- Update project/compact_flow.png
+- Update project/duplication.toon.yaml
+- Update project/evolution.toon.yaml
+- Update project/flow.mmd
+- Update project/flow.png
+- ... and 15 more files
 
 ## [0.1.3] - 2026-03-31
 

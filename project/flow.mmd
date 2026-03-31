@@ -3,3 +3,34 @@ flowchart TD
     %% Entry points (blue)
     classDef entry fill:#4dabf7,stroke:#1971c2,color:#fff
 
+    subgraph CLI
+        regix__cli___load_config["_load_config"]
+        regix__cli__compare["compare"]
+        regix__cli__history["history"]
+        regix__cli__snapshot["snapshot"]
+        regix__cli__diff["diff"]
+        regix__cli__gates["gates"]
+        regix__cli__status["status"]
+        regix__cli__init["init"]
+    end
+
+    subgraph Core
+        regix__compare___compute_delta{{_compute_delta CC=16}}
+        regix__compare__compare["compare"]
+        regix__Regix__snapshot["snapshot"]
+        regix__Regix__compare["compare"]
+        regix__Regix__compare_local["compare_local"]
+        regix__Regix__history["history"]
+        regix__config__RegressionConfig__from_file["from_file"]
+        regix__config__RegressionConfig__from_dict["from_dict"]
+        regix__config__RegressionConfig__delta_thresholds["delta_thresholds"]
+        regix__config__RegressionConfig__is_lower_better["is_lower_better"]
+        regix__config__RegressionConfig___find_config["_find_config"]
+        regix__config__RegressionConfig___from_yaml["_from_yaml"]
+        regix__config__RegressionConfig___from_pyproject["_from_pyproject"]
+        regix__config__RegressionConfig__apply_env_overrides["apply_env_overrides"]
+        regix__history__build_history{{build_history CC=18}}
+        ...["+52 more"]
+    end
+
+    class regix__compare__compare,regix__Regix__snapshot,regix__Regix__compare,regix__Regix__compare_local,regix__Regix__history,regix__config__RegressionConfig__from_file,regix__config__RegressionConfig__from_dict,regix__config__RegressionConfig__delta_thresholds,regix__config__RegressionConfig__is_lower_better,regix__config__RegressionConfig___find_config entry

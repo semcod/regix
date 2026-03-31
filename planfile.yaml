@@ -16,4 +16,537 @@ sprints:
   duration: 2 weeks
   objectives:
   - Fix code quality issues
-  task_patterns: []
+  task_patterns:
+  - id: ticket-0bde17f3
+    name: Fix unused-imports issues
+    description: Resolve 2 unused-imports issues in regix/backends/__init__.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - regix/backends/__init__.py
+    rule_id: unused-imports
+    count: 2
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-6db3468c
+    name: Fix string-concat issues
+    description: Resolve 5 string-concat issues in regix/backends/architecture_backend.py
+    task_type: prefactor
+    priority: medium
+    estimate: 2d
+    files:
+    - regix/backends/architecture_backend.py
+    rule_id: string-concat
+    count: 5
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-e5c3279d
+    name: Fix unused-imports issues
+    description: Resolve 2 unused-imports issues in regix/backends/architecture_backend.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - regix/backends/architecture_backend.py
+    rule_id: unused-imports
+    count: 2
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-c101a5d4
+    name: Fix unused-imports issues
+    description: Resolve 2 unused-imports issues in regix/backends/coverage_backend.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - regix/backends/coverage_backend.py
+    rule_id: unused-imports
+    count: 2
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-5b111a30
+    name: Fix duplicate-imports issues
+    description: Resolve 2 duplicate-imports issues in regix/__init__.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - regix/__init__.py
+    rule_id: duplicate-imports
+    count: 2
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-3e9e5089
+    name: Fix magic-numbers issues
+    description: Resolve 1 magic-numbers issues in regix/__init__.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - regix/__init__.py
+    rule_id: magic-numbers
+    count: 1
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-d2062800
+    name: Fix unused-imports issues
+    description: Resolve 2 unused-imports issues in regix/backends/docstring_backend.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - regix/backends/docstring_backend.py
+    rule_id: unused-imports
+    count: 2
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-69e5d148
+    name: Fix unused-imports issues
+    description: Resolve 4 unused-imports issues in regix/backends/lizard_backend.py
+    task_type: prefactor
+    priority: medium
+    estimate: 2d
+    files:
+    - regix/backends/lizard_backend.py
+    rule_id: unused-imports
+    count: 4
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-17e7ab71
+    name: Fix duplicate-imports issues
+    description: Resolve 2 duplicate-imports issues in regix/backends/lizard_backend.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - regix/backends/lizard_backend.py
+    rule_id: duplicate-imports
+    count: 2
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-cc15ce69
+    name: Fix unused-imports issues
+    description: Resolve 2 unused-imports issues in regix/backends/radon_backend.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - regix/backends/radon_backend.py
+    rule_id: unused-imports
+    count: 2
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-8628573d
+    name: Fix duplicate-imports issues
+    description: Resolve 2 duplicate-imports issues in regix/backends/radon_backend.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - regix/backends/radon_backend.py
+    rule_id: duplicate-imports
+    count: 2
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-258ef67d
+    name: Fix string-concat issues
+    description: Resolve 1 string-concat issues in regix/backends/structure_backend.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - regix/backends/structure_backend.py
+    rule_id: string-concat
+    count: 1
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-c4827859
+    name: Fix unused-imports issues
+    description: Resolve 2 unused-imports issues in regix/backends/structure_backend.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - regix/backends/structure_backend.py
+    rule_id: unused-imports
+    count: 2
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-7368f1b0
+    name: Fix unused-imports issues
+    description: Resolve 2 unused-imports issues in regix/backends/vallm_backend.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - regix/backends/vallm_backend.py
+    rule_id: unused-imports
+    count: 2
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-6382eedf
+    name: Fix string-concat issues
+    description: Resolve 2 string-concat issues in regix/cache.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - regix/cache.py
+    rule_id: string-concat
+    count: 2
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-c22fdecd
+    name: Fix unused-imports issues
+    description: Resolve 2 unused-imports issues in regix/cache.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - regix/cache.py
+    rule_id: unused-imports
+    count: 2
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-4fc3119c
+    name: Fix smart-return-type issues
+    description: Resolve 7 smart-return-type issues in regix/cli.py
+    task_type: prefactor
+    priority: high
+    estimate: 2d
+    files:
+    - regix/cli.py
+    rule_id: smart-return-type
+    count: 7
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-32e4b358
+    name: Fix unused-imports issues
+    description: Resolve 4 unused-imports issues in regix/cli.py
+    task_type: prefactor
+    priority: medium
+    estimate: 2d
+    files:
+    - regix/cli.py
+    rule_id: unused-imports
+    count: 4
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-c940fe15
+    name: Fix duplicate-imports issues
+    description: Resolve 4 duplicate-imports issues in regix/cli.py
+    task_type: prefactor
+    priority: medium
+    estimate: 2d
+    files:
+    - regix/cli.py
+    rule_id: duplicate-imports
+    count: 4
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-ef8db94a
+    name: Fix magic-numbers issues
+    description: Resolve 3 magic-numbers issues in regix/cli.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - regix/cli.py
+    rule_id: magic-numbers
+    count: 3
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-030c3bda
+    name: Fix ai-boilerplate issues
+    description: Resolve 1 ai-boilerplate issues in regix/cli.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - regix/cli.py
+    rule_id: ai-boilerplate
+    count: 1
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-9727732c
+    name: Fix unused-imports issues
+    description: Resolve 4 unused-imports issues in regix/compare.py
+    task_type: prefactor
+    priority: medium
+    estimate: 2d
+    files:
+    - regix/compare.py
+    rule_id: unused-imports
+    count: 4
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-92d71d68
+    name: Fix unused-imports issues
+    description: Resolve 2 unused-imports issues in regix/exceptions.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - regix/exceptions.py
+    rule_id: unused-imports
+    count: 2
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-82568973
+    name: Fix unused-imports issues
+    description: Resolve 2 unused-imports issues in regix/config.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - regix/config.py
+    rule_id: unused-imports
+    count: 2
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-1630346c
+    name: Fix duplicate-imports issues
+    description: Resolve 1 duplicate-imports issues in regix/config.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - regix/config.py
+    rule_id: duplicate-imports
+    count: 1
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-582e504d
+    name: Fix magic-numbers issues
+    description: Resolve 4 magic-numbers issues in regix/config.py
+    task_type: prefactor
+    priority: medium
+    estimate: 2d
+    files:
+    - regix/config.py
+    rule_id: magic-numbers
+    count: 4
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-2e46383f
+    name: Fix string-concat issues
+    description: Resolve 5 string-concat issues in regix/git.py
+    task_type: prefactor
+    priority: medium
+    estimate: 2d
+    files:
+    - regix/git.py
+    rule_id: string-concat
+    count: 5
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-3a01a30a
+    name: Fix unused-imports issues
+    description: Resolve 6 unused-imports issues in regix/git.py
+    task_type: prefactor
+    priority: high
+    estimate: 2d
+    files:
+    - regix/git.py
+    rule_id: unused-imports
+    count: 6
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-f8ad41ba
+    name: Fix magic-numbers issues
+    description: Resolve 1 magic-numbers issues in regix/git.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - regix/git.py
+    rule_id: magic-numbers
+    count: 1
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-9f496964
+    name: Fix unused-imports issues
+    description: Resolve 2 unused-imports issues in regix/gates.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - regix/gates.py
+    rule_id: unused-imports
+    count: 2
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-c416f3b1
+    name: Fix unused-imports issues
+    description: Resolve 4 unused-imports issues in regix/history.py
+    task_type: prefactor
+    priority: medium
+    estimate: 2d
+    files:
+    - regix/history.py
+    rule_id: unused-imports
+    count: 4
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-816aeaae
+    name: Fix unused-imports issues
+    description: Resolve 2 unused-imports issues in regix/integrations/__init__.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - regix/integrations/__init__.py
+    rule_id: unused-imports
+    count: 2
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-5bbc452f
+    name: Fix string-concat issues
+    description: Resolve 1 string-concat issues in regix/report.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - regix/report.py
+    rule_id: string-concat
+    count: 1
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-958ddbeb
+    name: Fix unused-imports issues
+    description: Resolve 2 unused-imports issues in regix/report.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - regix/report.py
+    rule_id: unused-imports
+    count: 2
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-de373714
+    name: Fix string-concat issues
+    description: Resolve 2 string-concat issues in regix/models.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - regix/models.py
+    rule_id: string-concat
+    count: 2
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-fe79d7ce
+    name: Fix unused-imports issues
+    description: Resolve 2 unused-imports issues in regix/models.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - regix/models.py
+    rule_id: unused-imports
+    count: 2
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-20155b8a
+    name: Fix string-concat issues
+    description: Resolve 1 string-concat issues in regix/smells.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - regix/smells.py
+    rule_id: string-concat
+    count: 1
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-2054d593
+    name: Fix unused-imports issues
+    description: Resolve 2 unused-imports issues in regix/smells.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - regix/smells.py
+    rule_id: unused-imports
+    count: 2
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-3dc7c36c
+    name: Fix unused-imports issues
+    description: Resolve 4 unused-imports issues in regix/snapshot.py
+    task_type: prefactor
+    priority: medium
+    estimate: 2d
+    files:
+    - regix/snapshot.py
+    rule_id: unused-imports
+    count: 4
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-89e7133c
+    name: Fix smart-return-type issues
+    description: Resolve 3 smart-return-type issues in scripts/check_regression.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - scripts/check_regression.py
+    rule_id: smart-return-type
+    count: 3
+    model_hints:
+      planning: balanced
+      implementation: balanced
+  - id: ticket-576e3028
+    name: Fix ai-boilerplate issues
+    description: Resolve 1 ai-boilerplate issues in scripts/check_regression.py
+    task_type: prefactor
+    priority: medium
+    estimate: 1d
+    files:
+    - scripts/check_regression.py
+    rule_id: ai-boilerplate
+    count: 1
+    model_hints:
+      planning: balanced
+      implementation: balanced

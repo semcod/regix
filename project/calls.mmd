@@ -1,1 +1,112 @@
 flowchart LR
+    subgraph regix__Regix
+        regix__Regix__history["history"]
+        regix__Regix____init__["__init__"]
+        regix__Regix__snapshot["snapshot"]
+    end
+    subgraph regix__backends
+        regix__backends__structure_backend___analyse_function["_analyse_function"]
+        regix__backends__structure_backend__StructureBackend__collect["collect"]
+        regix__backends__get_backend["get_backend"]
+    end
+    subgraph regix__cache
+        regix__cache___cache_key["_cache_key"]
+        regix__cache___cache_dir["_cache_dir"]
+        regix__cache__lookup["lookup"]
+        regix__cache__clear["clear"]
+        regix__cache__store["store"]
+    end
+    subgraph regix__cli
+        regix__cli__snapshot["snapshot"]
+        regix__cli___load_config["_load_config"]
+        regix__cli__history["history"]
+        regix__cli__gates["gates"]
+        regix__cli__diff["diff"]
+        regix__cli__status["status"]
+    end
+    subgraph regix__compare
+        regix__compare__compare["compare"]
+    end
+    subgraph regix__config
+        regix__config__RegressionConfig__from_file["from_file"]
+    end
+    subgraph regix__gates
+        regix__gates__check_gates["check_gates"]
+    end
+    subgraph regix__git
+        regix__git__is_clean["is_clean"]
+        regix__git__get_changed_files["get_changed_files"]
+        regix__git__resolve_ref["resolve_ref"]
+        regix__git__get_dirty_files["get_dirty_files"]
+        regix__git__list_commits["list_commits"]
+        regix__git___run_git["_run_git"]
+        regix__git__checkout_temporary["checkout_temporary"]
+    end
+    subgraph regix__history
+        regix__history__build_history["build_history"]
+    end
+    subgraph regix__report
+        regix__report__render["render"]
+        regix__report___render_rich["_render_rich"]
+    end
+    subgraph regix__smells
+        regix__smells___check_hallucination_proxy["_check_hallucination_proxy"]
+        regix__smells___func_length["_func_length"]
+        regix__smells__detect_smells["detect_smells"]
+        regix__smells___check_logic_density_drop["_check_logic_density_drop"]
+        regix__smells___check_stub_regression["_check_stub_regression"]
+        regix__smells___check_no_delegation["_check_no_delegation"]
+        regix__smells___check_god_function["_check_god_function"]
+    end
+    subgraph regix__snapshot
+        regix__snapshot___collect_files["_collect_files"]
+        regix__snapshot__capture["capture"]
+        regix__snapshot___merge_symbols["_merge_symbols"]
+    end
+    subgraph scripts__check_regression
+        scripts__check_regression__load_json_file["load_json_file"]
+        scripts__check_regression__check_regression["check_regression"]
+    end
+    scripts__check_regression__check_regression --> scripts__check_regression__load_json_file
+    regix__compare__compare --> regix__smells__detect_smells
+    regix__Regix____init__ --> regix__config__RegressionConfig__from_file
+    regix__Regix__snapshot --> regix__snapshot__capture
+    regix__Regix__history --> regix__history__build_history
+    regix__cli___load_config --> regix__config__RegressionConfig__from_file
+    regix__cli__history --> regix__cli___load_config
+    regix__cli__snapshot --> regix__cli___load_config
+    regix__cli__snapshot --> regix__snapshot__capture
+    regix__cli__diff --> regix__cli___load_config
+    regix__cli__diff --> regix__snapshot__capture
+    regix__cli__gates --> regix__cli___load_config
+    regix__cli__gates --> regix__snapshot__capture
+    regix__cli__gates --> regix__gates__check_gates
+    regix__cli__status --> regix__cli___load_config
+    regix__history__build_history --> regix__git__list_commits
+    regix__history__build_history --> regix__snapshot__capture
+    regix__git__resolve_ref --> regix__git___run_git
+    regix__git__list_commits --> regix__git___run_git
+    regix__git__is_clean --> regix__git___run_git
+    regix__git__get_dirty_files --> regix__git___run_git
+    regix__git__get_changed_files --> regix__git___run_git
+    regix__git__checkout_temporary --> regix__git__resolve_ref
+    regix__git__checkout_temporary --> regix__git___run_git
+    regix__cache__lookup --> regix__cache___cache_dir
+    regix__cache__lookup --> regix__cache___cache_key
+    regix__cache__store --> regix__cache___cache_dir
+    regix__cache__store --> regix__cache___cache_key
+    regix__cache__clear --> regix__cache___cache_dir
+    regix__snapshot__capture --> regix__git__resolve_ref
+    regix__snapshot__capture --> regix__backends__get_backend
+    regix__snapshot__capture --> regix__snapshot___collect_files
+    regix__snapshot__capture --> regix__snapshot___merge_symbols
+    regix__report__render --> regix__report___render_rich
+    regix__smells__detect_smells --> regix__smells___check_god_function
+    regix__smells__detect_smells --> regix__smells___check_hallucination_proxy
+    regix__smells__detect_smells --> regix__smells___check_stub_regression
+    regix__smells__detect_smells --> regix__smells___check_logic_density_drop
+    regix__smells___check_god_function --> regix__smells___func_length
+    regix__smells___check_stub_regression --> regix__smells___func_length
+    regix__smells___check_no_delegation --> regix__smells___func_length
+    regix__smells___check_hallucination_proxy --> regix__smells___func_length
+    regix__backends__structure_backend__StructureBackend__collect --> regix__backends__structure_backend___analyse_function

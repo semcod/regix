@@ -150,6 +150,26 @@ compare(snap_before, snap_after)
 | `coverage` | higher is better | delta < 0 |
 | `docstring_coverage` | higher is better | delta < 0 |
 | `quality_score` | higher is better | delta < 0 |
+| `fan_out` | higher is better | delta < 0 |
+| `call_count` | higher is better | delta < 0 |
+| `symbol_count` | higher is better | delta < 0 |
+| `param_count` | lower is better | delta > 0 |
+| `node_type_diversity` | higher is better | delta < 0 |
+| `logic_density` | higher is better | delta < 0 |
+
+After per-symbol metric comparison, `compare.py` runs a second pass of **cross-symbol architectural smell detection**. This phase groups symbols by file and looks for patterns that span multiple symbols:
+
+```
+smell detection phase
+    │
+    ├─► god_function      — symbol_count drops AND one symbol's CC grows proportionally
+    ├─► stub_regression   — fan_out ≤ 1 AND call_count ≤ 2 after previously being higher
+    ├─► monolith_collapse — symbol_count drops while file length stays/grows
+    ├─► shell_cluster     — ≥ 3 functions in the same file all lose fan_out simultaneously
+    └─► logic_drain       — logic_density drops across ≥ 3 functions in a file
+```
+
+Smells are emitted as `ArchSmell` objects (separate from `Regression`) and stored in `RegressionReport.smells`. The `passed` property of a report is `False` if either `errors > 0` OR `smell_errors > 0`.
 
 ---
 
@@ -242,6 +262,10 @@ Each backend is a self-contained module. Backends have no dependencies on each o
 **`vallm.py`** — Runs `vallm batch <workdir> --recursive --format json` and parses the JSON output for per-file quality scores. To avoid double-scanning, `vallm.py` only scans files that match the `include` patterns.
 
 **`docstring.py`** — Pure Python, no subprocess. Uses the `ast` module to count functions/classes with and without docstrings. Fast enough to run on every file without caching.
+
+**`structure_backend.py`** — Pure Python AST backend. Always available (no binary dependencies). Measures per function: `fan_out` (unique external call targets, excluding Python builtins), `call_count` (total `ast.Call` nodes). Measures per file: `symbol_count` (total functions and methods defined). Also collects `param_count`, `node_type_diversity` (unique AST statement node types in the body), and `logic_density` (ratio of non-trivial statement nodes to total lines).
+
+**`architecture_backend.py`** — Cross-symbol analysis backend. Runs after all other backends have populated `SymbolMetrics`. Takes the full symbol list for each file and emits `ArchSmell` objects for architectural regression patterns: `god_function`, `stub_regression`, `monolith_collapse`, `shell_cluster`, `logic_drain`. Results are attached to `RegressionReport.smells` by `compare.py`.
 
 ---
 

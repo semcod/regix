@@ -1,14 +1,54 @@
-# code2llm/evolution | 0 func | 1f | 2026-03-31
+# code2llm/evolution | 100 func | 22f | 2026-03-31
 
-NEXT[0]: no refactoring needed
+NEXT[10] (ranked by impact):
+  [1] !  SPLIT-FUNC      compare  CC=24  fan=18
+      WHY: CC=24 exceeds 15
+      EFFORT: ~1h  IMPACT: 432
+
+  [2] !  SPLIT-FUNC      build_history  CC=18  fan=16
+      WHY: CC=18 exceeds 15
+      EFFORT: ~1h  IMPACT: 288
+
+  [3] !  SPLIT-FUNC      detect_smells  CC=23  fan=12
+      WHY: CC=23 exceeds 15
+      EFFORT: ~1h  IMPACT: 276
+
+  [4] !  SPLIT-FUNC      ArchitectureBackend.collect  CC=16  fan=14
+      WHY: CC=16 exceeds 15
+      EFFORT: ~1h  IMPACT: 224
+
+  [5] !! SPLIT-FUNC      RegressionConfig.from_dict  CC=27  fan=7
+      WHY: CC=27 exceeds 15
+      EFFORT: ~1h  IMPACT: 189
+
+  [6] !  SPLIT-FUNC      diff  CC=15  fan=12
+      WHY: CC=15 exceeds 15
+      EFFORT: ~1h  IMPACT: 180
+
+  [7] !  SPLIT-FUNC      _check_god_function  CC=20  fan=9
+      WHY: CC=20 exceeds 15
+      EFFORT: ~1h  IMPACT: 180
+
+  [8] !! SPLIT-FUNC      RegressionReport.to_toon  CC=27  fan=5
+      WHY: CC=27 exceeds 15
+      EFFORT: ~1h  IMPACT: 135
+
+  [9] !  SPLIT-FUNC      _compute_delta  CC=16  fan=5
+      WHY: CC=16 exceeds 15
+      EFFORT: ~1h  IMPACT: 80
+
+  [10] !  SPLIT-FUNC      RegressionReport.filter  CC=15  fan=5
+      WHY: CC=15 exceeds 15
+      EFFORT: ~1h  IMPACT: 75
+
 
 RISKS[0]: none
 
 METRICS-TARGET:
-  CC̄:          0.0 → ≤0.0
-  max-CC:      0 → ≤0
+  CC̄:          5.4 → ≤3.8
+  max-CC:      27 → ≤13
   god-modules: 0 → 0
-  high-CC(≥15): 0 → ≤0
+  high-CC(≥15): 11 → ≤5
   hub-types:   0 → ≤0
 
 PATTERNS (language parser shared logic):
@@ -36,4 +76,4 @@ PATTERNS (language parser shared logic):
     - Standardized FunctionInfo/ClassInfo models
 
 HISTORY:
-  (first run — no previous data)
+  prev CC̄=5.4 → now CC̄=5.4

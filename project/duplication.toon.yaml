@@ -1,9 +1,38 @@
-# redup/duplication | 0 groups | 0f 0L | 2026-03-31
+# redup/duplication | 3 groups | 23f 3296L | 2026-03-31
 
 SUMMARY:
-  files_scanned: 0
-  total_lines:   0
-  dup_groups:    0
-  dup_fragments: 0
-  saved_lines:   0
-  scan_ms:       2933
+  files_scanned: 23
+  total_lines:   3296
+  dup_groups:    3
+  dup_fragments: 9
+  saved_lines:   36
+  scan_ms:       3393
+
+DUPLICATES[3] (ranked by impact):
+  [5f270a34f3e5eeba]   STRU  is_available  L=9 N=3 saved=18 sim=1.00
+      regix/backends/radon_backend.py:0-8  (is_available)
+      regix/backends/coverage_backend.py:0-7  (is_available)
+      regix/backends/lizard_backend.py:0-7  (is_available)
+  [191c780db6ae1f09]   EXAC  version  L=5 N=3 saved=10 sim=1.00
+      regix/backends/structure_backend.py:0-4  (version)
+      regix/backends/architecture_backend.py:0-4  (version)
+      regix/backends/docstring_backend.py:0-4  (version)
+  [95c963d30a5166d0]   EXAC  is_available  L=4 N=3 saved=8 sim=1.00
+      regix/backends/structure_backend.py:0-3  (is_available)
+      regix/backends/architecture_backend.py:0-3  (is_available)
+      regix/backends/docstring_backend.py:0-3  (is_available)
+
+REFACTOR[3] (ranked by priority):
+  [1] ○ extract_function   → regix/backends/utils/is_available.py
+      WHY: 3 occurrences of 9-line block across 3 files — saves 18 lines
+      FILES: regix/backends/coverage_backend.py, regix/backends/lizard_backend.py, regix/backends/radon_backend.py
+  [2] ○ extract_function   → regix/backends/utils/version.py
+      WHY: 3 occurrences of 5-line block across 3 files — saves 10 lines
+      FILES: regix/backends/architecture_backend.py, regix/backends/docstring_backend.py, regix/backends/structure_backend.py
+  [3] ○ extract_function   → regix/backends/utils/is_available.py
+      WHY: 3 occurrences of 4-line block across 3 files — saves 8 lines
+      FILES: regix/backends/architecture_backend.py, regix/backends/docstring_backend.py, regix/backends/structure_backend.py
+
+METRICS-TARGET:
+  dup_groups:  3 → 0
+  saved_lines: 36 lines recoverable

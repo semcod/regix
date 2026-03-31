@@ -29,6 +29,12 @@ class SymbolMetrics:
     docstring_coverage: float | None = None
     quality_score: float | None = None
     imports: int | None = None
+    fan_out: int | None = None        # unique external calls (delegation depth)
+    call_count: int | None = None     # total function calls in body
+    symbol_count: int | None = None   # file-level: number of functions/classes
+    param_count: int | None = None    # number of parameters (excl. self/cls)
+    node_type_diversity: int | None = None  # unique statement types in body
+    logic_density: float | None = None      # statements / total lines
     raw: dict[str, Any] = field(default_factory=dict)
 
 
@@ -47,6 +53,23 @@ class MetricDelta:
     is_improvement: bool
     severity: str  # "error" | "warning" | "info" | "ok"
     threshold: float | None
+
+
+# ─── Architectural smell ─────────────────────────────────────────────────────
+
+
+@dataclass
+class ArchSmell:
+    """An architectural regression smell detected by cross-symbol analysis."""
+
+    smell: str        # e.g. "god_function" | "stub_regression" | ...
+    file: str
+    symbol: str | None
+    line: int | None
+    severity: str     # "error" | "warning"
+    detail: str
+    ref_before: str = ""
+    ref_after: str = ""
 
 
 # ─── Regression / Improvement ────────────────────────────────────────────────
@@ -155,9 +178,12 @@ class RegressionReport:
     snapshot_after: Snapshot
     regressions: list[Regression] = field(default_factory=list)
     improvements: list[Improvement] = field(default_factory=list)
+    smells: list[ArchSmell] = field(default_factory=list)
     unchanged: int = 0
     errors: int = 0
     warnings: int = 0
+    smell_errors: int = 0
+    smell_warnings: int = 0
     stagnated: bool = False
     duration: float = 0.0
 
@@ -171,7 +197,7 @@ class RegressionReport:
 
     @property
     def passed(self) -> bool:
-        return self.errors == 0
+        return self.errors == 0 and self.smell_errors == 0
 
     @property
     def summary(self) -> str:
@@ -180,6 +206,8 @@ class RegressionReport:
             f"{self.warnings} warning(s)",
             f"{len(self.improvements)} improvement(s)",
         ]
+        if self.smells:
+            parts.append(f"{len(self.smells)} smell(s)")
         status = "PASS" if self.passed else "FAIL"
         return (
             f"Regression Report: {self.ref_before} → {self.ref_after}  "
@@ -193,12 +221,15 @@ class RegressionReport:
             "ref_after": self.ref_after,
             "errors": self.errors,
             "warnings": self.warnings,
+            "smell_errors": self.smell_errors,
+            "smell_warnings": self.smell_warnings,
             "improvements": len(self.improvements),
             "unchanged": self.unchanged,
             "stagnated": self.stagnated,
             "duration": round(self.duration, 3),
             "regressions": [asdict(r) for r in self.regressions],
             "improvements_list": [asdict(i) for i in self.improvements],
+            "architectural_smells": [asdict(s) for s in self.smells],
         }
 
     def to_json(self, indent: int = 2) -> str:
@@ -233,6 +264,18 @@ class RegressionReport:
                     f"  {r.file},{r.symbol or '(module)'},{r.metric},"
                     f"{r.before},{r.after},{sign}{r.delta}"
                 )
+            lines.append("")
+        smell_errs = [s for s in self.smells if s.severity == "error"]
+        smell_warns = [s for s in self.smells if s.severity == "warning"]
+        if smell_errs:
+            lines.append(f"SMELL_ERRORS[{len(smell_errs)}]{{file,symbol,smell,detail}}:")
+            for s in smell_errs:
+                lines.append(f"  {s.file},{s.symbol or '(module)'},{s.smell},{s.detail}")
+            lines.append("")
+        if smell_warns:
+            lines.append(f"SMELL_WARNINGS[{len(smell_warns)}]{{file,symbol,smell,detail}}:")
+            for s in smell_warns:
+                lines.append(f"  {s.file},{s.symbol or '(module)'},{s.smell},{s.detail}")
             lines.append("")
         warns = [r for r in self.regressions if r.severity == "warning"]
         if warns:
@@ -287,8 +330,16 @@ class RegressionReport:
                 return False
             return True
 
+        def _match_smell(s: ArchSmell) -> bool:
+            if file and s.file != file:
+                return False
+            if symbol and s.symbol != symbol:
+                return False
+            return True
+
         filtered_reg = [r for r in self.regressions if _match_reg(r)]
         filtered_imp = [i for i in self.improvements if _match_imp(i)]
+        filtered_smells = [s for s in self.smells if _match_smell(s)]
         return RegressionReport(
             ref_before=self.ref_before,
             ref_after=self.ref_after,
@@ -296,9 +347,12 @@ class RegressionReport:
             snapshot_after=self.snapshot_after,
             regressions=filtered_reg,
             improvements=filtered_imp,
+            smells=filtered_smells,
             unchanged=self.unchanged,
             errors=sum(1 for r in filtered_reg if r.severity == "error"),
             warnings=sum(1 for r in filtered_reg if r.severity == "warning"),
+            smell_errors=sum(1 for s in filtered_smells if s.severity == "error"),
+            smell_warnings=sum(1 for s in filtered_smells if s.severity == "warning"),
             stagnated=self.stagnated,
             duration=self.duration,
         )

@@ -3,10 +3,10 @@
 
 ## AI Cost Tracking
 
-![PyPI](https://img.shields.io/badge/pypi-costs-blue) ![Version](https://img.shields.io/badge/version-0.1.3-blue) ![Python](https://img.shields.io/badge/python-3.9+-blue) ![License](https://img.shields.io/badge/license-Apache--2.0-green)
-![AI Cost](https://img.shields.io/badge/AI%20Cost-$0.45-orange) ![Human Time](https://img.shields.io/badge/Human%20Time-2.0h-blue) ![Model](https://img.shields.io/badge/Model-openrouter%2Fqwen%2Fqwen3--coder--next-lightgrey)
+![PyPI](https://img.shields.io/badge/pypi-costs-blue) ![Version](https://img.shields.io/badge/version-0.1.4-blue) ![Python](https://img.shields.io/badge/python-3.9+-blue) ![License](https://img.shields.io/badge/license-Apache--2.0-green)
+![AI Cost](https://img.shields.io/badge/AI%20Cost-$0.60-orange) ![Human Time](https://img.shields.io/badge/Human%20Time-2.0h-blue) ![Model](https://img.shields.io/badge/Model-openrouter%2Fqwen%2Fqwen3--coder--next-lightgrey)
 
-- 🤖 **LLM usage:** $0.4500 (3 commits)
+- 🤖 **LLM usage:** $0.6000 (4 commits)
 - 👤 **Human dev:** ~$200 (2.0h @ $100/h, 30min dedup)
 
 Generated on 2026-03-31 using [openrouter/qwen/qwen3-coder-next](https://openrouter.ai/qwen/qwen3-coder-next)
@@ -53,6 +53,22 @@ For every function, class, and module it tracks:
 | Docstring coverage | % | decreases |
 | LLM validation score | 0–1 | decreases (via vallm) |
 | Import count | integer | increases |
+| Fan-out (delegation depth) | integer | decreases (shell/stub regression) |
+| Call count | integer | decreases (hollowing out) |
+| Symbol count | integer | decreases (monolith collapse) |
+| Parameter count | integer | increases (interface bloat) |
+| Node type diversity | integer | decreases (structural uniformity) |
+| Logic density | ratio | decreases (empty body regression) |
+
+In addition to per-metric regressions, Regix detects **architectural smells** — cross-symbol patterns that indicate structural degradation even when individual metrics look acceptable:
+
+| Smell | Pattern |
+|---|---|
+| `god_function` | One function absorbed CC from several that were deleted |
+| `stub_regression` | `fan_out` and `call_count` drop to near-zero (mock/stub replacing real logic) |
+| `monolith_collapse` | `symbol_count` drops while total file length grows |
+| `shell_cluster` | Multiple functions simultaneously lose delegation depth |
+| `logic_drain` | `logic_density` drops across ≥ 3 functions in a file |
 
 Regressions are reported at **three granularity levels**:
 
@@ -68,7 +84,7 @@ Regressions are reported at **three granularity levels**:
 - **Local-snapshot mode**: compare a dirty working tree against any historical ref without committing.
 - **Multi-version history**: compute a regression timeline across N commits to see trends.
 - **Configurable thresholds**: per-metric, per-file, or per-symbol severity rules.
-- **Multiple backends**: lizard (CC), radon (MI), pytest-cov (coverage), vallm (LLM quality).
+- **Multiple backends**: lizard (CC), radon (MI), pytest-cov (coverage), vallm (LLM quality), structure (AST fan-out/call analysis), architecture (cross-symbol smell detection).
 - **Machine-readable output**: JSON, YAML, or TOON format for CI integration.
 - **Human-readable output**: rich terminal tables and diff-style reports.
 - **Zero false-positives mode**: only report regressions that cross a configured threshold delta.
@@ -398,18 +414,20 @@ regix/
 ├── cli.py               # Typer-based CLI (compare, history, diff, gates, ...)
 ├── config.py            # RegressionConfig dataclass + YAML loader
 ├── snapshot.py          # Snapshot capture, caching, git checkout logic
-├── compare.py           # Core comparison engine: produces RegressionReport
+├── compare.py           # Core comparison engine: metric deltas + ArchSmell detection
 ├── history.py           # Multi-commit timeline builder
 ├── report.py            # Rendering: rich tables, JSON/YAML/TOON serialisation
 ├── gates.py             # Gate evaluation (pass/fail) from RegressionReport
 ├── backends/
 │   ├── __init__.py
-│   ├── lizard.py        # CC + function length via lizard
-│   ├── radon.py         # MI + raw metrics via radon
-│   ├── coverage.py      # Coverage via pytest-cov JSON output
-│   ├── vallm.py         # LLM quality score via vallm batch
-│   └── base.py          # Backend ABC: collect(path) → SymbolMetrics
-├── git.py               # Git helpers: checkout, stash, diff, log
+│   ├── lizard_backend.py        # CC + function length via lizard
+│   ├── radon_backend.py         # MI + raw metrics via radon
+│   ├── coverage_backend.py      # Coverage via pytest-cov / .coverage file
+│   ├── docstring_backend.py     # Docstring coverage (AST, built-in)
+│   ├── structure_backend.py     # fan_out, call_count, symbol_count (AST, built-in)
+│   ├── architecture_backend.py  # Cross-symbol ArchSmell detection
+│   └── vallm_backend.py         # LLM quality score via vallm batch
+├── git.py               # Git helpers: checkout, worktree, diff, log
 ├── cache.py             # Content-addressed snapshot cache (~/.cache/regix/)
 └── integrations/
     ├── pyqual.py        # pyqual preset + gate collector

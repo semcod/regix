@@ -1,0 +1,71 @@
+pipeline:
+  name: regix-regression-loop
+
+  # Quality gates - regression is detected when these fail
+  metrics:
+    cc_max: 10           # cyclomatic complexity per function
+    vallm_pass_min: 95   # vallm validation pass rate (%)
+    coverage_min: 85     # test coverage (%)
+    
+  # Pipeline stages with regression detection and fixing
+  stages:
+    - name: baseline
+      tool: code2llm
+      when: first_iteration
+      timeout: 0  # No timeout for large repos
+      
+    - name: validate
+      run: vallm batch regix tests --recursive --format toon --output .pyqual
+      when: always
+      timeout: 600
+      
+    - name: test
+      tool: pytest
+      optional: true
+      timeout: 300
+      
+    - name: prefact
+      tool: prefact
+      when: metrics_fail
+      timeout: 900
+      
+    - name: fix_regression
+      run: |
+        # Use llx to fix detected issues
+        llx fix . --apply --verbose --model openrouter/qwen/qwen3-coder-next
+      when: metrics_fail
+      timeout: 1800
+      
+    - name: verify_fix
+      run: vallm batch regix tests --recursive --format toon --output .pyqual/after_fix
+      when: after_fix
+      timeout: 600
+      
+    - name: regression_report
+      run: |
+        echo "=== Regression Report ==="
+        if [ -f .pyqual/validation.toon.yaml ]; then
+          echo "Initial validation results:"
+          cat .pyqual/validation.toon.yaml | grep -E "passed:|errors:|warnings:" || echo "Results available in .pyqual/validation.toon.yaml"
+        fi
+        if [ -d .pyqual/after_fix ]; then
+          echo "After fix validation results:"
+          cat .pyqual/after_fix/validation.toon.yaml | grep -E "passed:|errors:|warnings:" || echo "Results available in .pyqual/after_fix/validation.toon.yaml"
+        fi
+        echo "========================"
+      when: after_verify_fix
+      timeout: 60
+
+  # Loop behavior - continue until regression is fixed
+  loop:
+    max_iterations: 5
+    on_fail: create_ticket
+    
+  # Environment
+  env:
+    LLM_MODEL: openrouter/qwen/qwen3-coder-next
+    LLX_DEFAULT_TIER: balanced
+    LLX_VERBOSE: true
+    OPENAI_API_KEY: ${OPENROUTER_API_KEY}
+    OPENAI_BASE_URL: https://openrouter.ai/api/v1
+    OPENROUTER_API_KEY: ${OPENROUTER_API_KEY}

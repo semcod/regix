@@ -1,11 +1,53 @@
-# regix | 0 func | 1f | 36L | shell | 2026-03-31
+# regix | 103 func | 23f | 4275L | python | 2026-03-31
 
 HEALTH:
-  CC̄=0.0  critical=0 (limit:10)  dup=0  cycles=0
+  CC̄=5.4  critical=19 (limit:10)  dup=0  cycles=1
 
-MODULES[1] (top by size):
-  M[project.sh] 25L C:0 F:0 CC↑0 D:0 (shell)
-  LANGS: shell:1
+ALERTS[20]:
+  !!! cc_exceeded      RegressionConfig.from_dict = 27 (limit:15)
+  !!! cc_exceeded      RegressionReport.to_toon = 27 (limit:15)
+  !!  cc_exceeded      compare = 24 (limit:15)
+  !!  cc_exceeded      detect_smells = 23 (limit:15)
+  !!  cc_exceeded      _check_god_function = 20 (limit:15)
+  !!  high_fan_out     compare = 18 (limit:10)
+  !!  high_fan_out     build_history = 16 (limit:10)
+  !!  high_fan_out     capture = 16 (limit:10)
+  !   cc_exceeded      _check_hallucination_proxy = 19 (limit:15)
+  !   cc_exceeded      build_history = 18 (limit:15)
+
+MODULES[24] (top by size):
+  M[regix/models.py] 441L C:13 F:8 CC↑27 D:0 (python)
+  M[regix/smells.py] 415L C:0 F:8 CC↑23 D:1 (python)
+  M[regix/cli.py] 297L C:0 F:8 CC↑15 D:0 (python)
+  M[regix/config.py] 234L C:1 F:8 CC↑27 D:0 (python)
+  M[regix/compare.py] 186L C:0 F:2 CC↑24 D:0 (python)
+  M[regix/snapshot.py] 141L C:0 F:3 CC↑13 D:3 (python)
+  M[regix/backends/structure_backend.py] 139L C:2 F:7 CC↑8 D:0 (python)
+  M[regix/__init__.py] 135L C:1 F:6 CC↑4 D:0 (python)
+  M[regix/report.py] 133L C:0 F:3 CC↑14 D:1 (python)
+  M[regix/backends/architecture_backend.py] 125L C:1 F:3 CC↑16 D:0 (python)
+  M[regix/git.py] 121L C:1 F:7 CC↑4 D:2 (python)
+  M[regix/backends/coverage_backend.py] 110L C:1 F:5 CC↑7 D:0 (python)
+  M[regix/history.py] 100L C:0 F:2 CC↑18 D:2 (python)
+  M[regix/cache.py] 97L C:0 F:5 CC↑3 D:0 (python)
+  M[scripts/check_regression.py] 95L C:0 F:3 CC↑14 D:0 (python)
+  LANGS: python:23/shell:1
+
+HOTSPOTS[10]:
+  ★ compare fan=18  // Compare two snapshots and produce a regression report.
+  ★ build_history fan=16  // Walk ``depth`` commits and return a HistoryReport with metric timeline.
+  ★ capture fan=16  // Capture a snapshot at a git ref or the local working tree.
+
+For non-local refs, 
+  ★ ArchitectureBackend.collect fan=14  // Orchestrates 14 calls
+  ★ snapshot fan=13  // Capture and store a snapshot without comparing.
+
+REFACTOR[15]:
+  [1] H/L Split RegressionConfig.from_dict (CC=27 → target CC<10)
+  [2] H/L Split RegressionReport.to_toon (CC=27 → target CC<10)
+  [3] M/L Split _compute_delta (CC=16 → target CC<10)
+  [4] M/L Split compare (CC=24 → target CC<10)
+  [5] M/L Split diff (CC=15 → target CC<10)
 
 EVOLUTION:
-  2026-03-31 CC̄=0.0 crit=0 36L // Automated analysis
+  2026-03-31 CC̄=5.4 crit=19 4275L // Automated analysis

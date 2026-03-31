@@ -1,10 +1,158 @@
-# regix | 1f 25L | shell:1 | 2026-03-31
-# stats: 0 func | 0 cls | 1 mod | CC̄=0.0 | critical:0 | cycles:0
-# alerts[0]: none
-# hotspots[0]: none
-# evolution: baseline
+# regix | 24f 3321L | shell:1,python:23 | 2026-03-31
+# stats: 103 func | 0 cls | 24 mod | CC̄=5.4 | critical:11 | cycles:0
+# alerts[5]: CC RegressionConfig.from_dict=27; CC RegressionReport.to_toon=27; CC compare=24; CC detect_smells=23; CC _check_god_function=20
+# hotspots[5]: compare fan=18; build_history fan=16; capture fan=16; ArchitectureBackend.collect fan=14; snapshot fan=13
+# evolution: CC̄ 5.4→5.4 (flat 0.0)
 # Keys: M=modules, D=details, i=imports, e=exports, c=classes, f=functions, m=methods
-M[1]:
+M[24]:
   project.sh,25
+  regix/__init__.py,135
+  regix/backends/__init__.py,54
+  regix/backends/architecture_backend.py,125
+  regix/backends/coverage_backend.py,110
+  regix/backends/docstring_backend.py,66
+  regix/backends/lizard_backend.py,71
+  regix/backends/radon_backend.py,92
+  regix/backends/structure_backend.py,139
+  regix/backends/vallm_backend.py,74
+  regix/cache.py,97
+  regix/cli.py,297
+  regix/compare.py,186
+  regix/config.py,234
+  regix/exceptions.py,54
+  regix/gates.py,52
+  regix/git.py,121
+  regix/history.py,100
+  regix/integrations/__init__.py,64
+  regix/models.py,441
+  regix/report.py,133
+  regix/smells.py,415
+  regix/snapshot.py,141
+  scripts/check_regression.py,95
 D:
+  regix/config.py:
+    e: RegressionConfig
+    RegressionConfig: from_file(1),from_dict(1),delta_thresholds(1),is_lower_better(1),_find_config(1),_from_yaml(1),_from_pyproject(1),apply_env_overrides(0)  # All user-configurable values for a Regix run...
+  regix/models.py:
+    e: SymbolMetrics,MetricDelta,ArchSmell,Regression,Improvement,Snapshot,RegressionReport,CommitMetrics,HistoryRegression,TrendLine,HistoryReport,GateCheck,GateResult
+    SymbolMetrics:  # All tracked metrics for a single symbol (function, class, or...
+    MetricDelta:  # Change in a single metric between two snapshots...
+    ArchSmell:  # An architectural regression smell detected by cross-symbol a...
+    Regression:  # A detected worsening of a metric between two snapshots...
+    Improvement:  # A detected improvement of a metric between two snapshots...
+    Snapshot: get(2),save(1),load(1)  # Immutable record of all SymbolMetrics for a codebase at a po...
+    RegressionReport: to_dict(0),to_json(1),to_yaml(0),to_toon(0),filter(4)  # Aggregated result of a comparison between two snapshots...
+    CommitMetrics:  # Aggregated metrics for a single commit...
+    HistoryRegression:  # A regression spanning multiple commits...
+    TrendLine:  # Linear trend across commit history for a single metric...
+    HistoryReport:  # Multi-commit metric timeline...
+    GateCheck:  # Single gate threshold check...
+    GateResult:  # Aggregate gate evaluation result...
+  regix/compare.py:
+    e: _compute_delta,compare
+    _compute_delta(metric;before;after;config)
+    compare(snap_before;snap_after;config)
+  regix/smells.py:
+    e: detect_smells,_func_length,_check_god_function,_check_stub_regression,_check_no_delegation,_check_logic_density_drop,_check_cohesion_loss,_check_hallucination_proxy
+    detect_smells(snap_before;snap_after;config)
+    _func_length(m)
+    _check_god_function(file;funcs_before;funcs_after;mod_before;mod_after;config;ref_b;ref_a)
+    _check_stub_regression(file;sym;m_before;m_after;config;ref_b;ref_a)
+    _check_no_delegation(file;sym;m_before;m_after;config;ref_b;ref_a)
+    _check_logic_density_drop(file;sym;m_before;m_after;config;ref_b;ref_a)
+    _check_cohesion_loss(file;sym;m_before;m_after;config;ref_b;ref_a)
+    _check_hallucination_proxy(file;sym;m_before;m_after;config;ref_b;ref_a)
+  regix/history.py:
+    e: build_history,_linear_slope
+    build_history(depth;ref;workdir;config;metrics_filter)
+    _linear_slope(values)
+  regix/backends/architecture_backend.py:
+    e: ArchitectureBackend
+    ArchitectureBackend(BackendBase): is_available(0),version(0),collect(3)  # Computes per-function structural metrics via AST for smell d...
+  regix/cli.py:
+    e: _load_config,compare,history,snapshot,diff,gates,status,init
+    _load_config(config;workdir)
+    compare(ref_a;ref_b;local;config;fmt;output;metric;errors_only;fail_on;workdir)
+    history(depth;ref;metric;fmt;output;config;workdir)
+    snapshot(ref;fmt;output;config;workdir)
+    diff(ref_a;ref_b;threshold;metric;config;workdir)
+    gates(ref;fail_on;config;workdir)
+    status(config;workdir)
+    init(workdir)
+  scripts/check_regression.py:
+    e: run_command,load_json_file,check_regression
+    run_command(cmd)
+    load_json_file(filepath)
+    check_regression()
+  regix/report.py:
+    e: render,_render_rich,render_history
+    render(report;fmt;output)
+    _render_rich(report)
+    render_history(report;fmt)
+  regix/snapshot.py:
+    e: _collect_files,_merge_symbols,capture
+    _collect_files(workdir;include;exclude)
+    _merge_symbols(all_results)
+    capture(ref;workdir;config;backend_names)
+  regix/backends/docstring_backend.py:
+    e: DocstringBackend
+    DocstringBackend(BackendBase): is_available(0),version(0),collect(3)
+  regix/backends/vallm_backend.py:
+    e: VallmBackend
+    VallmBackend(BackendBase): is_available(0),version(0),collect(3)
+  regix/backends/radon_backend.py:
+    e: RadonBackend
+    RadonBackend(BackendBase): is_available(0),version(0),collect(3)
+  regix/integrations/__init__.py:
+    e: RegixCollector
+    RegixCollector: collect(1),_parse(1)  # GateSet-compatible metric collector for pyqual.
+
+Reads ``.re...
+  regix/backends/structure_backend.py:
+    e: _CallVisitor,StructureBackend,_analyse_function
+    _CallVisitor(ast.NodeVisitor): __init__(0),visit_Call(1)  # Collect call_count and fan_out from a function body...
+    StructureBackend(BackendBase): is_available(0),version(0),collect(3),_collect_functions(3)
+    _analyse_function(node)
+  regix/gates.py:
+    e: check_gates
+    check_gates(snapshot;config)
+  regix/backends/coverage_backend.py:
+    e: CoverageBackend
+    CoverageBackend(BackendBase): is_available(0),version(0),collect(3),_from_json(2),_from_coverage_file(3)
+  regix/backends/lizard_backend.py:
+    e: LizardBackend
+    LizardBackend(BackendBase): is_available(0),version(0),collect(3)
+  regix/__init__.py:
+    e: Regix
+    Regix: __init__(2),snapshot(2),compare(3),compare_local(1),history(3),check_gates(1)  # Main entry point — wraps snapshot, compare, and history...
+  regix/git.py:
+    e: CommitInfo,_run_git,resolve_ref,list_commits,is_clean,get_dirty_files,get_changed_files,checkout_temporary
+    CommitInfo:  # Lightweight commit metadata...
+    _run_git(args;workdir;check)
+    resolve_ref(ref;workdir)
+    list_commits(ref;depth;workdir)
+    is_clean(workdir)
+    get_dirty_files(workdir)
+    get_changed_files(ref_a;ref_b;workdir)
+    checkout_temporary(ref;workdir)
+  regix/cache.py:
+    e: _cache_dir,_cache_key,lookup,store,clear
+    _cache_dir(config_dir)
+    _cache_key(commit_sha;backend_versions)
+    lookup(commit_sha;backend_versions;cache_dir)
+    store(snapshot;cache_dir)
+    clear(cache_dir)
+  regix/exceptions.py:
+    e: RegixError,GitRefError,GitDirtyError,BackendError,ConfigError
+    RegixError(Exception):  # Base exception for all Regix errors...
+    GitRefError(RegixError): __init__(2)  # Raised when a git ref cannot be resolved...
+    GitDirtyError(RegixError): __init__(1)  # Raised when the working tree is dirty and the operation requ...
+    BackendError(RegixError): __init__(2)  # Raised when a backend fails to produce output...
+    ConfigError(RegixError): __init__(2)  # Raised when the configuration file is invalid...
+  regix/backends/__init__.py:
+    e: BackendBase,register_backend,get_backend,available_backends
+    BackendBase(ABC): is_available(0),collect(3),version(0)  # Interface that all analysis backends must implement...
+    register_backend(backend)
+    get_backend(name)
+    available_backends()
   project.sh:

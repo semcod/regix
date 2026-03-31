@@ -19,6 +19,20 @@ METRIC_DIRECTIONS: dict[str, bool] = {
     "coverage": False,
     "docstring_coverage": False,
     "quality_score": False,
+    "fan_out": False,            # more delegation = better → drop = regression
+    "call_count": False,          # more calls = less shell → drop = regression
+    "symbol_count": False,        # more symbols = better structure → drop = regression
+    "logic_density": False,       # higher density is better → drop = regression
+    "node_type_diversity": False, # more diversity is better → drop = regression
+}
+
+# ── Per-metric delta thresholds: (warn, error) ───────────────────────────────
+METRIC_THRESHOLDS: dict[str, tuple[float, float]] = {
+    "symbol_count": (1.0, 3.0),   # losing 1 function = warn, 3 = error
+    "fan_out": (2.0, 5.0),        # losing 2 unique calls = warn, 5 = error
+    "call_count": (3.0, 7.0),          # losing 3 total calls = warn, 7 = error
+    "logic_density": (0.10, 0.20),      # drop of 0.10 = warn, 0.20 = error
+    "node_type_diversity": (1.0, 2.0),  # losing 1 type = warn, 2 = error
 }
 
 
@@ -58,6 +72,13 @@ class RegressionConfig:
     metric_directions: dict[str, bool] = field(
         default_factory=lambda: dict(METRIC_DIRECTIONS)
     )
+    # ── Architectural smell thresholds ───────────────────────────────────────
+    stub_max_lines: int = 5             # max lines to qualify as a stub
+    stub_shrink_ratio: float = 0.50     # function shrank to <50% → stub candidate
+    min_logic_density: float = 0.20     # statements/lines below this = sparse
+    min_node_diversity: int = 2         # unique stmt types below this = homogeneous
+    god_func_length_min: int = 30       # minimum lines to be a god-function candidate
+    hallucination_max_lines: int = 6    # max lines for hallucination proxy signal
 
     # ── Loaders ──────────────────────────────────────────────────────────────
 
@@ -89,6 +110,14 @@ class RegressionConfig:
                 kwargs[key] = float(thresholds[key])
         if "per_metric" in thresholds:
             kwargs["per_metric"] = thresholds["per_metric"]
+        smells_cfg = root.get("smells", {})
+        for key in ("stub_max_lines", "min_node_diversity", "god_func_length_min",
+                    "hallucination_max_lines"):
+            if key in smells_cfg:
+                kwargs[key] = int(smells_cfg[key])
+        for key in ("stub_shrink_ratio", "min_logic_density"):
+            if key in smells_cfg:
+                kwargs[key] = float(smells_cfg[key])
         if "exclude" in root:
             kwargs["exclude"] = root["exclude"]
         if "include" in root:
@@ -130,8 +159,11 @@ class RegressionConfig:
     def delta_thresholds(self, metric: str) -> tuple[float, float]:
         """Return (warn, error) thresholds for a specific metric."""
         pm = self.per_metric.get(metric, {})
-        warn = pm.get("delta_warn", self.delta_warn)
-        error = pm.get("delta_error", self.delta_error)
+        default_warn, default_error = METRIC_THRESHOLDS.get(
+            metric, (self.delta_warn, self.delta_error)
+        )
+        warn = pm.get("delta_warn", default_warn)
+        error = pm.get("delta_error", default_error)
         return warn, error
 
     def is_lower_better(self, metric: str) -> bool:

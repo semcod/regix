@@ -6,6 +6,7 @@ at function, class and line granularity.
 
 from regix.config import RegressionConfig
 from regix.models import (
+    ArchSmell,
     CommitMetrics,
     GateCheck,
     GateResult,
@@ -22,6 +23,7 @@ from regix.models import (
 
 # Ensure backends are registered on import
 from regix.backends import docstring_backend as _docstring  # noqa: F401
+from regix.backends import architecture_backend as _architecture  # noqa: F401
 
 try:
     from regix.backends import lizard_backend as _lizard  # noqa: F401
@@ -127,6 +129,7 @@ __all__ = [
     "TrendLine",
     "GateCheck",
     "GateResult",
+    "ArchSmell",
 ]
 
-__version__ = "0.1.3"
+__version__ = "0.1.4"

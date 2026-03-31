@@ -52,6 +52,16 @@ regix:
       length:
         delta_warn: 10
         delta_error: 25
+      # Structural metrics (built-in defaults shown — override as needed)
+      symbol_count:
+        delta_warn: 1             # losing even 1 function = warning
+        delta_error: 3            # losing 3+ functions = error (collapse)
+      fan_out:
+        delta_warn: 2             # losing 2 unique external calls = warning
+        delta_error: 5            # losing 5+ = shell/stub regression
+      call_count:
+        delta_warn: 3             # losing 3 total calls = warning
+        delta_error: 7            # losing 7+ = hollowed-out function
 
   # ── File filtering ─────────────────────────────────────────────────────────
   #    Glob patterns relative to workdir.
@@ -80,6 +90,7 @@ regix:
     coverage: pytest-cov          # pytest-cov | none
     quality: vallm                # vallm | none
     docstring: builtin            # builtin (ast-based) | none
+    # structure and architecture backends are always enabled (pure AST, no deps)
 
     # Run backends concurrently within a single snapshot capture
     parallel: false
@@ -402,6 +413,66 @@ Percentage of public functions and classes that have a docstring.
 - **Source**: built-in (`ast`)
 - **Direction**: higher is better
 - **Range**: 0–100
+
+### Fan-out (`fan_out`)
+
+Unique external functions or methods called from within a function body, excluding Python builtins (`len`, `print`, `range`, etc.). Near-zero fan-out in a function that previously had significant fan-out is a **stub/shell regression** signal.
+
+- **Source**: built-in (`structure_backend`, AST)
+- **Direction**: higher is better
+- **Default warn delta**: −2  |  **Default error delta**: −5
+
+### Call Count (`call_count`)
+
+Total `ast.Call` nodes in a function body. A simultaneous drop in both `call_count` and `fan_out` is a strong indicator that real logic was replaced by a stub.
+
+- **Source**: built-in (`structure_backend`, AST)
+- **Direction**: higher is better
+- **Default warn delta**: −3  |  **Default error delta**: −7
+
+### Symbol Count (`symbol_count`)
+
+Number of function and method definitions per file (file-level, `symbol=None`). A drop while file length stays the same or grows indicates **monolith collapse**.
+
+- **Source**: built-in (`structure_backend`, AST)
+- **Direction**: higher is better
+- **Default warn delta**: −1  |  **Default error delta**: −3
+
+### Parameter Count (`param_count`)
+
+Number of parameters excluding `self`/`cls`. Growth signals interface bloat.
+
+- **Source**: built-in (`structure_backend`, AST)
+- **Direction**: lower is better
+
+### Node Type Diversity (`node_type_diversity`)
+
+Count of unique AST statement node types in the function body. A drop suggests the body was replaced with a simpler or stub implementation.
+
+- **Source**: built-in (`structure_backend`, AST)
+- **Direction**: higher is better
+
+### Logic Density (`logic_density`)
+
+Ratio of non-trivial AST statement nodes to total lines. Near zero means a sparse/empty body.
+
+- **Source**: built-in (`structure_backend`, AST)
+- **Direction**: higher is better
+- **Range**: 0.0–1.0+
+
+---
+
+## Architectural smell detection
+
+Regix automatically detects **cross-symbol patterns** that cannot be expressed as single-metric thresholds. These are reported as `ArchSmell` objects in `RegressionReport.smells`, separate from `Regression` objects. A report fails (`passed=False`) if either `errors > 0` or `smell_errors > 0`.
+
+| Smell | Detection logic | Default severity |
+|---|---|---|
+| `god_function` | `symbol_count` drops ≥ 2 AND one remaining function's `cc` grew proportionally | error |
+| `stub_regression` | `fan_out` drops to ≤ 1 AND `call_count` drops to ≤ 2 after previously being higher | error |
+| `monolith_collapse` | `symbol_count` drops while total file `length` stays or grows | error |
+| `shell_cluster` | ≥ 3 functions in the same file simultaneously lose `fan_out` | warning |
+| `logic_drain` | `logic_density` drops across ≥ 3 functions in a file | warning |
 
 ---
 
