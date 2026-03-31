@@ -1,12 +1,12 @@
-# redup/duplication | 3 groups | 23f 3296L | 2026-03-31
+# redup/duplication | 3 groups | 24f 4684L | 2026-03-31
 
 SUMMARY:
-  files_scanned: 23
-  total_lines:   3296
+  files_scanned: 24
+  total_lines:   4684
   dup_groups:    3
   dup_fragments: 9
   saved_lines:   36
-  scan_ms:       3393
+  scan_ms:       2887
 
 DUPLICATES[3] (ranked by impact):
   [5f270a34f3e5eeba]   STRU  is_available  L=9 N=3 saved=18 sim=1.00
@@ -14,13 +14,13 @@ DUPLICATES[3] (ranked by impact):
       regix/backends/coverage_backend.py:0-7  (is_available)
       regix/backends/lizard_backend.py:0-7  (is_available)
   [191c780db6ae1f09]   EXAC  version  L=5 N=3 saved=10 sim=1.00
+      regix/backends/docstring_backend.py:0-4  (version)
       regix/backends/structure_backend.py:0-4  (version)
       regix/backends/architecture_backend.py:0-4  (version)
-      regix/backends/docstring_backend.py:0-4  (version)
   [95c963d30a5166d0]   EXAC  is_available  L=4 N=3 saved=8 sim=1.00
+      regix/backends/docstring_backend.py:0-3  (is_available)
       regix/backends/structure_backend.py:0-3  (is_available)
       regix/backends/architecture_backend.py:0-3  (is_available)
-      regix/backends/docstring_backend.py:0-3  (is_available)
 
 REFACTOR[3] (ranked by priority):
   [1] ○ extract_function   → regix/backends/utils/is_available.py

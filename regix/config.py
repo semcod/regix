@@ -268,55 +268,64 @@ class RegressionConfig:
         if "workdir" in root:
             kwargs["workdir"] = root["workdir"]
 
-        # ── Gates (new nested format) ────────────────────────────────────
+        cls._parse_gates(root, kwargs)
+        cls._parse_legacy_metrics(root, kwargs)
+        cls._parse_deltas(root, kwargs)
+        cls._parse_smells(root, kwargs)
+        cls._parse_files(root, kwargs)
+        cls._parse_backends(root, kwargs)
+        cls._parse_output(root, kwargs)
+        cls._parse_cache(root, kwargs)
+        cls._parse_loop(root, kwargs)
+
+        return cls(**kwargs)
+
+    # ── Section parsers (keep from_dict CC low) ───────────────────────────
+
+    @staticmethod
+    def _parse_gates(root: dict, kwargs: dict) -> None:
+        """Parse gates.hard / gates.target (new format)."""
         gates_cfg = root.get("gates", {})
-        if "hard" in gates_cfg and isinstance(gates_cfg["hard"], dict):
-            kwargs["hard"] = GateThresholds(**{
-                k: float(v) for k, v in gates_cfg["hard"].items()
-                if hasattr(GateThresholds, k)
-            })
-        if "target" in gates_cfg and isinstance(gates_cfg["target"], dict):
-            kwargs["target"] = GateThresholds(**{
-                k: float(v) for k, v in gates_cfg["target"].items()
-                if hasattr(GateThresholds, k)
-            })
+        for tier in ("hard", "target"):
+            if tier in gates_cfg and isinstance(gates_cfg[tier], dict):
+                kwargs[tier] = GateThresholds(**{
+                    k: float(v) for k, v in gates_cfg[tier].items()
+                    if hasattr(GateThresholds, k)
+                })
         if "on_regression" in gates_cfg:
             kwargs["on_regression"] = gates_cfg["on_regression"]
         if "fail_exit_code" in gates_cfg:
             kwargs["fail_exit_code"] = int(gates_cfg["fail_exit_code"])
 
-        # ── Legacy flat metrics ──────────────────────────────────────────
+    @staticmethod
+    def _parse_legacy_metrics(root: dict, kwargs: dict) -> None:
+        """Parse legacy flat metrics: cc_max, mi_min, cc_target, …"""
         metrics = root.get("metrics", {})
-        if metrics:
-            _LEGACY_HARD = {"cc_max": "cc", "mi_min": "mi", "coverage_min": "coverage",
-                            "length_max": "length", "docstring_min": "docstring",
-                            "quality_min": "quality"}
-            _LEGACY_TARGET = {"cc_target": "cc", "mi_target": "mi",
-                              "coverage_target": "coverage", "length_target": "length",
-                              "docstring_target": "docstring", "quality_target": "quality"}
-            if "hard" not in kwargs:
-                hard_vals = {}
-                for old_key, new_key in _LEGACY_HARD.items():
-                    if old_key in metrics:
-                        hard_vals[new_key] = float(metrics[old_key])
-                if hard_vals:
-                    kwargs["hard"] = GateThresholds(**hard_vals)
-            if "target" not in kwargs:
-                tgt_vals = {}
-                for old_key, new_key in _LEGACY_TARGET.items():
-                    if old_key in metrics:
-                        tgt_vals[new_key] = float(metrics[old_key])
-                if tgt_vals:
-                    kwargs["target"] = GateThresholds(**tgt_vals)
+        if not metrics:
+            return
+        _MAP = {
+            "hard": {"cc_max": "cc", "mi_min": "mi", "coverage_min": "coverage",
+                     "length_max": "length", "docstring_min": "docstring",
+                     "quality_min": "quality"},
+            "target": {"cc_target": "cc", "mi_target": "mi",
+                       "coverage_target": "coverage", "length_target": "length",
+                       "docstring_target": "docstring", "quality_target": "quality"},
+        }
+        for tier, mapping in _MAP.items():
+            if tier in kwargs:
+                continue
+            vals = {new: float(metrics[old]) for old, new in mapping.items() if old in metrics}
+            if vals:
+                kwargs[tier] = GateThresholds(**vals)
 
-        # ── Deltas (new format) ──────────────────────────────────────────
+    @staticmethod
+    def _parse_deltas(root: dict, kwargs: dict) -> None:
+        """Parse deltas (new) and thresholds (legacy)."""
         deltas = root.get("deltas", {})
         if "warn" in deltas:
             kwargs["delta_warn"] = float(deltas["warn"])
         if "error" in deltas:
             kwargs["delta_error"] = float(deltas["error"])
-
-        # ── Legacy thresholds ────────────────────────────────────────────
         thresholds = root.get("thresholds", {})
         if "delta_warn" in thresholds:
             kwargs.setdefault("delta_warn", float(thresholds["delta_warn"]))
@@ -325,7 +334,9 @@ class RegressionConfig:
         if "per_metric" in thresholds:
             kwargs["per_metric"] = thresholds["per_metric"]
 
-        # ── Smells ───────────────────────────────────────────────────────
+    @staticmethod
+    def _parse_smells(root: dict, kwargs: dict) -> None:
+        """Parse architectural smell thresholds."""
         smells_cfg = root.get("smells", {})
         for key in ("stub_max_lines", "min_node_diversity", "god_func_length_min",
                     "hallucination_max_lines"):
@@ -335,46 +346,50 @@ class RegressionConfig:
             if key in smells_cfg:
                 kwargs[key] = float(smells_cfg[key])
 
-        # ── Files ────────────────────────────────────────────────────────
+    @staticmethod
+    def _parse_files(root: dict, kwargs: dict) -> None:
+        """Parse include/exclude patterns."""
         if "exclude" in root:
             kwargs["exclude"] = root["exclude"]
         if "include" in root:
             kwargs["include"] = root["include"]
 
-        # ── Backends ─────────────────────────────────────────────────────
-        if "backends" in root:
-            bk = root["backends"]
-            if isinstance(bk, dict):
-                kwargs["backends"] = {
-                    k: v for k, v in bk.items() if k != "parallel"
-                }
-                if "parallel" in bk:
-                    kwargs["backends_parallel"] = bk["parallel"]
+    @staticmethod
+    def _parse_backends(root: dict, kwargs: dict) -> None:
+        """Parse backend configuration."""
+        if "backends" not in root:
+            return
+        bk = root["backends"]
+        if isinstance(bk, dict):
+            kwargs["backends"] = {k: v for k, v in bk.items() if k != "parallel"}
+            if "parallel" in bk:
+                kwargs["backends_parallel"] = bk["parallel"]
 
-        # ── Output ───────────────────────────────────────────────────────
+    @staticmethod
+    def _parse_output(root: dict, kwargs: dict) -> None:
+        """Parse output format settings."""
+        _KEYS = {"format": "output_format", "dir": "output_dir",
+                 "show_improvements": "show_improvements", "max_symbols": "max_symbols"}
         output = root.get("output", {})
-        if "format" in output:
-            kwargs["output_format"] = output["format"]
-        if "dir" in output:
-            kwargs["output_dir"] = output["dir"]
-        if "show_improvements" in output:
-            kwargs["show_improvements"] = output["show_improvements"]
-        if "max_symbols" in output:
-            kwargs["max_symbols"] = output["max_symbols"]
+        for src, dst in _KEYS.items():
+            if src in output:
+                kwargs[dst] = output[src]
 
-        # ── Cache ────────────────────────────────────────────────────────
+    @staticmethod
+    def _parse_cache(root: dict, kwargs: dict) -> None:
+        """Parse cache settings."""
         cache = root.get("cache", {})
         if "enabled" in cache:
             kwargs["cache_enabled"] = cache["enabled"]
         if "dir" in cache:
             kwargs["cache_dir"] = cache["dir"]
 
-        # ── Loop ─────────────────────────────────────────────────────────
+    @staticmethod
+    def _parse_loop(root: dict, kwargs: dict) -> None:
+        """Parse loop settings."""
         loop = root.get("loop", {})
         if "stagnation_window" in loop:
             kwargs["stagnation_window"] = int(loop["stagnation_window"])
-
-        return cls(**kwargs)
 
     # ── Helpers ──────────────────────────────────────────────────────────────
 

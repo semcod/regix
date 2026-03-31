@@ -42,11 +42,19 @@ def lookup(
     try:
         raw = gzip.decompress(path.read_bytes()).decode("utf-8")
         data = json.loads(raw)
-        return Snapshot.load.__func__.__code__  # type: ignore[attr-defined]
-        # Simplified: reconstruct from stored JSON
+        from datetime import datetime
+        from regix.models import SymbolMetrics
+        symbols = [SymbolMetrics(**s) for s in data.get("symbols", [])]
+        return Snapshot(
+            ref=data["ref"],
+            commit_sha=data["commit_sha"],
+            timestamp=datetime.fromisoformat(data["timestamp"]),
+            workdir=data.get("workdir", "."),
+            backend_versions=data.get("backend_versions", {}),
+            symbols=symbols,
+        )
     except Exception:
         return None
-    return None
 
 
 def store(

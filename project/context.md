@@ -95,15 +95,15 @@
 - **Classes**: 1
 - **File**: `architecture_backend.py`
 
-### regix.backends.docstring_backend
-- **Functions**: 3
-- **Classes**: 1
-- **File**: `docstring_backend.py`
-
 ### regix.backends.radon_backend
 - **Functions**: 3
 - **Classes**: 1
 - **File**: `radon_backend.py`
+
+### regix.backends.docstring_backend
+- **Functions**: 3
+- **Classes**: 1
+- **File**: `docstring_backend.py`
 
 ## Key Entry Points
 
@@ -178,11 +178,11 @@ Supports two config layouts:
 ### regix.benchmark.BenchmarkReporter.print_plain
 - **Calls**: suites.items, None.append, regix.benchmark.BenchmarkReporter.print, regix.benchmark.BenchmarkReporter.print, regix.benchmark.BenchmarkReporter.print, regix.benchmark.BenchmarkReporter.print, regix.benchmark.BenchmarkReporter.print, regix.benchmark.BenchmarkReporter.print
 
-### regix.backends.docstring_backend.DocstringBackend.collect
-- **Calls**: str, ast.walk, results.append, ast.parse, isinstance, SymbolMetrics, full.read_text, ast.get_docstring
-
 ### regix.backends.radon_backend.RadonBackend.collect
 - **Calls**: str, results.append, mi_visit, cc_visit, SymbolMetrics, results.append, full.read_text, SymbolMetrics
+
+### regix.backends.docstring_backend.DocstringBackend.collect
+- **Calls**: str, ast.walk, results.append, ast.parse, isinstance, SymbolMetrics, full.read_text, ast.get_docstring
 
 ### regix.benchmark.ImportProbe.run
 - **Calls**: range, min, BenchmarkResult, time.perf_counter, BenchmarkResult, subprocess.run, times.append, time.perf_counter
@@ -316,30 +316,20 @@ _parse [regix.integrations.RegixCollector]
 - **Key Methods**: regix.backends.structure_backend.StructureBackend.is_available, regix.backends.structure_backend.StructureBackend.version, regix.backends.structure_backend.StructureBackend.collect, regix.backends.structure_backend.StructureBackend._collect_functions
 - **Inherits**: BackendBase
 
+### regix.models.GateResult
+> Aggregate gate evaluation result.
+- **Methods**: 3
+- **Key Methods**: regix.models.GateResult.all_passed, regix.models.GateResult.errors, regix.models.GateResult.warnings
+
 ### regix.backends.architecture_backend.ArchitectureBackend
 > Computes per-function structural metrics via AST for smell detection.
 - **Methods**: 3
 - **Key Methods**: regix.backends.architecture_backend.ArchitectureBackend.is_available, regix.backends.architecture_backend.ArchitectureBackend.version, regix.backends.architecture_backend.ArchitectureBackend.collect
 - **Inherits**: BackendBase
 
-### regix.backends.docstring_backend.DocstringBackend
-- **Methods**: 3
-- **Key Methods**: regix.backends.docstring_backend.DocstringBackend.is_available, regix.backends.docstring_backend.DocstringBackend.version, regix.backends.docstring_backend.DocstringBackend.collect
-- **Inherits**: BackendBase
-
-### regix.models.GateResult
-> Aggregate gate evaluation result.
-- **Methods**: 3
-- **Key Methods**: regix.models.GateResult.all_passed, regix.models.GateResult.errors, regix.models.GateResult.warnings
-
 ### regix.backends.radon_backend.RadonBackend
 - **Methods**: 3
 - **Key Methods**: regix.backends.radon_backend.RadonBackend.is_available, regix.backends.radon_backend.RadonBackend.version, regix.backends.radon_backend.RadonBackend.collect
-- **Inherits**: BackendBase
-
-### regix.backends.vallm_backend.VallmBackend
-- **Methods**: 3
-- **Key Methods**: regix.backends.vallm_backend.VallmBackend.is_available, regix.backends.vallm_backend.VallmBackend.version, regix.backends.vallm_backend.VallmBackend.collect
 - **Inherits**: BackendBase
 
 ### regix.backends.BackendBase
@@ -347,6 +337,16 @@ _parse [regix.integrations.RegixCollector]
 - **Methods**: 3
 - **Key Methods**: regix.backends.BackendBase.is_available, regix.backends.BackendBase.collect, regix.backends.BackendBase.version
 - **Inherits**: ABC
+
+### regix.backends.docstring_backend.DocstringBackend
+- **Methods**: 3
+- **Key Methods**: regix.backends.docstring_backend.DocstringBackend.is_available, regix.backends.docstring_backend.DocstringBackend.version, regix.backends.docstring_backend.DocstringBackend.collect
+- **Inherits**: BackendBase
+
+### regix.backends.vallm_backend.VallmBackend
+- **Methods**: 3
+- **Key Methods**: regix.backends.vallm_backend.VallmBackend.is_available, regix.backends.vallm_backend.VallmBackend.version, regix.backends.vallm_backend.VallmBackend.collect
+- **Inherits**: BackendBase
 
 ### regix.backends.lizard_backend.LizardBackend
 - **Methods**: 3
@@ -434,8 +434,8 @@ Functions exposed as public API (no underscore prefix):
 - `regix.backends.structure_backend.StructureBackend.collect` - 14 calls
 - `regix.benchmark.BenchmarkReporter.print_plain` - 14 calls
 - `regix.git.read_tree_sources` - 12 calls
-- `regix.backends.docstring_backend.DocstringBackend.collect` - 12 calls
 - `regix.backends.radon_backend.RadonBackend.collect` - 12 calls
+- `regix.backends.docstring_backend.DocstringBackend.collect` - 12 calls
 - `regix.benchmark.ImportProbe.run` - 12 calls
 - `regix.benchmark.CLIProbe.run` - 12 calls
 - `regix.benchmark.ThroughputProbe.run` - 12 calls

@@ -1,4 +1,4 @@
-# regix | 157 func | 24f | 5820L | python | 2026-03-31
+# regix | 157 func | 24f | 7447L | python | 2026-03-31
 
 HEALTH:
   CC̄=4.9  critical=22 (limit:10)  dup=0  cycles=1
@@ -50,4 +50,4 @@ REFACTOR[13]:
   [5] M/L Split diff (CC=15 → target CC<10)
 
 EVOLUTION:
-  2026-03-31 CC̄=4.9 crit=22 5820L // Automated analysis
+  2026-03-31 CC̄=4.9 crit=22 7447L // Automated analysis
