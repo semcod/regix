@@ -30,8 +30,13 @@ class BackendBase(ABC):
         workdir: Path,
         files: list[Path],
         config: RegressionConfig,
+        sources: dict[str, str] | None = None,
     ) -> list[SymbolMetrics]:
-        """Run analysis and return per-symbol metrics."""
+        """Run analysis and return per-symbol metrics.
+
+        When *sources* is provided it maps ``relative_path → source_text``
+        so the backend can work entirely in RAM without touching disk.
+        """
         ...
 
     def version(self) -> str:

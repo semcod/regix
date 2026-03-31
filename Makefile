@@ -18,7 +18,7 @@ FLAKE8 = python3 -m flake8
 COVERAGE = python3 -m coverage
 PART = patch
 
-.PHONY: help install dev test build publish clean push
+.PHONY: help install dev test build publish clean push benchmark benchmark-ci benchmark-json
 
 help:
 	@echo "Targets:"
@@ -29,6 +29,9 @@ help:
 	@echo "  make publish  - build and upload to PyPI"
 	@echo "  make clean    - remove build artifacts"
 	@echo "  make push     - use goal to push changes"
+	@echo "  make benchmark     - run performance benchmark"
+	@echo "  make benchmark-ci  - benchmark for CI (plain, threshold)"
+	@echo "  make benchmark-json - benchmark JSON output"
 
 install:
 	pip install .
@@ -57,6 +60,15 @@ push: bump-version
 		echo "Goal not installed. Run 'make install' first."; \
 	fi
 
+
+benchmark:
+	$(PYTHON) -m regix.benchmark
+
+benchmark-ci:
+	$(PYTHON) -m regix.benchmark --plain --threshold 30.0
+
+benchmark-json:
+	$(PYTHON) -m regix.benchmark --json > .pyqual/benchmark.json
 
 docker-matrix:
 	bash integration/run_docker_matrix.sh

@@ -33,6 +33,7 @@ class CoverageBackend(BackendBase):
         workdir: Path,
         files: list[Path],
         config: RegressionConfig,
+        sources: dict[str, str] | None = None,
     ) -> list[SymbolMetrics]:
         """Read coverage from a JSON report or .coverage file."""
         results: list[SymbolMetrics] = []

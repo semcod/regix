@@ -52,6 +52,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.5] - 2026-03-31
+
+### Docs
+- Update BENCHMARK.md
+- Update README.md
+
+### Other
+- Update Makefile
+- Update project.sh
+- Update pyqual.yaml
+- Update regix/__init__.py
+- Update regix/backends/__init__.py
+- Update regix/backends/architecture_backend.py
+- Update regix/backends/coverage_backend.py
+- Update regix/backends/docstring_backend.py
+- Update regix/backends/lizard_backend.py
+- Update regix/backends/radon_backend.py
+- ... and 5 more files
+
 ## [0.1.4] - 2026-03-31
 
 ### Docs

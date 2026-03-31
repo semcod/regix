@@ -23,6 +23,7 @@ from regix.models import (
 
 # Ensure backends are registered on import
 from regix.backends import docstring_backend as _docstring  # noqa: F401
+from regix.backends import structure_backend as _structure  # noqa: F401
 from regix.backends import architecture_backend as _architecture  # noqa: F401
 
 try:
@@ -132,4 +133,4 @@ __all__ = [
     "ArchSmell",
 ]
 
-__version__ = "0.1.4"
+__version__ = "0.1.5"

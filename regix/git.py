@@ -108,6 +108,7 @@ def checkout_temporary(
     """Context manager: create a git worktree at *ref* in a temp directory.
 
     The original working tree is never modified.
+    Prefer :func:`read_tree_sources` for in-memory analysis.
     """
     sha = resolve_ref(ref, workdir)
     tmp = Path(tempfile.mkdtemp(prefix="regix_"))
@@ -119,3 +120,60 @@ def checkout_temporary(
         if tmp.exists():
             import shutil
             shutil.rmtree(tmp, ignore_errors=True)
+
+
+def read_tree_sources(
+    ref: str,
+    workdir: Path = Path("."),
+    suffix: str = ".py",
+) -> dict[str, str]:
+    """Read all files matching *suffix* from a git ref entirely in RAM.
+
+    Uses ``git archive`` piped through :mod:`tarfile` so that **no temporary
+    files** are created on disk.  Returns ``{relative_path: source_text}``.
+    """
+    import io
+    import tarfile
+
+    sha = resolve_ref(ref, workdir)
+    result = subprocess.run(
+        ["git", "archive", sha],
+        cwd=str(workdir),
+        capture_output=True,
+        check=True,
+    )
+
+    sources: dict[str, str] = {}
+    with tarfile.open(fileobj=io.BytesIO(result.stdout)) as tar:
+        for member in tar.getmembers():
+            if not member.isfile() or not member.name.endswith(suffix):
+                continue
+            fobj = tar.extractfile(member)
+            if fobj is None:
+                continue
+            try:
+                sources[member.name] = fobj.read().decode("utf-8")
+            except UnicodeDecodeError:
+                continue
+    return sources
+
+
+def read_local_sources(
+    workdir: Path,
+    files: list[Path],
+) -> dict[str, str]:
+    """Read source code for *files* from the local working tree into RAM.
+
+    Returns ``{relative_path: source_text}``.  Files that cannot be read
+    are silently skipped.
+    """
+    sources: dict[str, str] = {}
+    for fpath in files:
+        full = workdir / fpath
+        if not full.is_file():
+            continue
+        try:
+            sources[str(fpath)] = full.read_text(encoding="utf-8")
+        except (OSError, UnicodeDecodeError):
+            continue
+    return sources

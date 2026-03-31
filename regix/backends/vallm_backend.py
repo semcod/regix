@@ -34,6 +34,7 @@ class VallmBackend(BackendBase):
         workdir: Path,
         files: list[Path],
         config: RegressionConfig,
+        sources: dict[str, str] | None = None,
     ) -> list[SymbolMetrics]:
         if not self.is_available():
             return []

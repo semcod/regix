@@ -33,6 +33,7 @@ class LizardBackend(BackendBase):
         workdir: Path,
         files: list[Path],
         config: RegressionConfig,
+        sources: dict[str, str] | None = None,
     ) -> list[SymbolMetrics]:
         try:
             import lizard
@@ -41,18 +42,22 @@ class LizardBackend(BackendBase):
 
         results: list[SymbolMetrics] = []
         for fpath in files:
-            full = workdir / fpath
-            if not full.exists() or not full.is_file():
-                continue
+            key = str(fpath)
             try:
-                analysis = lizard.analyze_file(str(full))
+                if sources and key in sources:
+                    analysis = lizard.analyze_source_code(sources[key], key)
+                else:
+                    full = workdir / fpath
+                    if not full.exists() or not full.is_file():
+                        continue
+                    analysis = lizard.analyze_file(str(full))
             except Exception:
                 continue
 
             for func in analysis.function_list:
                 results.append(
                     SymbolMetrics(
-                        file=str(fpath),
+                        file=key,
                         symbol=func.name,
                         line_start=func.start_line,
                         line_end=func.end_line,

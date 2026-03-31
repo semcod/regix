@@ -26,16 +26,24 @@ class DocstringBackend(BackendBase):
         workdir: Path,
         files: list[Path],
         config: RegressionConfig,
+        sources: dict[str, str] | None = None,
     ) -> list[SymbolMetrics]:
         results: list[SymbolMetrics] = []
         for fpath in files:
-            full = workdir / fpath
-            if not full.exists() or full.suffix != ".py":
-                continue
+            key = str(fpath)
+            if sources and key in sources:
+                source = sources[key]
+            else:
+                full = workdir / fpath
+                if not full.exists() or full.suffix != ".py":
+                    continue
+                try:
+                    source = full.read_text(encoding="utf-8")
+                except (OSError, UnicodeDecodeError):
+                    continue
             try:
-                source = full.read_text(encoding="utf-8")
-                tree = ast.parse(source, filename=str(full))
-            except (SyntaxError, UnicodeDecodeError, OSError):
+                tree = ast.parse(source, filename=key)
+            except SyntaxError:
                 continue
 
             total = 0

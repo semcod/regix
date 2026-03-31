@@ -41,6 +41,14 @@ pipeline:
       when: after_fix
       timeout: 600
       
+    - name: benchmark
+      run: |
+        mkdir -p .pyqual
+        python -m regix.benchmark --json > .pyqual/benchmark.json
+      when: always
+      optional: true
+      timeout: 300
+
     - name: regression_report
       run: |
         echo "=== Regression Report ==="
@@ -51,6 +59,10 @@ pipeline:
         if [ -d .pyqual/after_fix ]; then
           echo "After fix validation results:"
           cat .pyqual/after_fix/validation.toon.yaml | grep -E "passed:|errors:|warnings:" || echo "Results available in .pyqual/after_fix/validation.toon.yaml"
+        fi
+        if [ -f .pyqual/benchmark.json ]; then
+          echo "Benchmark:"
+          python -c "import json; d=json.load(open('.pyqual/benchmark.json')); print(f'  probes: {len(d)}, failed: {sum(1 for r in d if r[\"status\"] in (\"FAIL\",\"ERROR\"))}')"
         fi
         echo "========================"
       when: after_verify_fix

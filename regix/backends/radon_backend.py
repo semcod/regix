@@ -33,6 +33,7 @@ class RadonBackend(BackendBase):
         workdir: Path,
         files: list[Path],
         config: RegressionConfig,
+        sources: dict[str, str] | None = None,
     ) -> list[SymbolMetrics]:
         try:
             from radon.complexity import cc_visit
@@ -42,13 +43,17 @@ class RadonBackend(BackendBase):
 
         results: list[SymbolMetrics] = []
         for fpath in files:
-            full = workdir / fpath
-            if not full.exists() or full.suffix != ".py":
-                continue
-            try:
-                source = full.read_text(encoding="utf-8")
-            except (OSError, UnicodeDecodeError):
-                continue
+            key = str(fpath)
+            if sources and key in sources:
+                source = sources[key]
+            else:
+                full = workdir / fpath
+                if not full.exists() or full.suffix != ".py":
+                    continue
+                try:
+                    source = full.read_text(encoding="utf-8")
+                except (OSError, UnicodeDecodeError):
+                    continue
 
             # Maintainability index (module-level)
             try:

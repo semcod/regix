@@ -1,4 +1,11 @@
-"""Snapshot capture — collect metrics at a git ref."""
+"""Snapshot capture — collect metrics at a git ref.
+
+All analysis is performed **in RAM** — file contents are read once
+(via ``git archive`` for committed refs, or a single pass over the
+working tree for ``local``) and passed to backends as a
+``dict[str, str]`` (relative_path → source_text).  No temporary
+worktrees are created on disk.
+"""
 
 from __future__ import annotations
 
@@ -40,6 +47,39 @@ def _collect_files(
     return filtered
 
 
+def _filter_sources(
+    sources: dict[str, str],
+    include: list[str],
+    exclude: list[str],
+) -> tuple[list[Path], dict[str, str]]:
+    """Apply include/exclude patterns to an in-memory sources dict.
+
+    Returns (file_list, filtered_sources) where both contain only the
+    matching paths.
+    """
+    keys = sorted(sources.keys())
+
+    if include:
+        matched: list[str] = []
+        for pattern in include:
+            matched.extend(k for k in keys if fnmatch.fnmatch(k, pattern))
+        keys = list(dict.fromkeys(matched))
+
+    filtered: list[str] = []
+    for k in keys:
+        skip = False
+        for pattern in exclude:
+            if fnmatch.fnmatch(k, pattern):
+                skip = True
+                break
+        if not skip:
+            filtered.append(k)
+
+    files = [Path(k) for k in filtered]
+    src = {k: sources[k] for k in filtered}
+    return files, src
+
+
 def _merge_symbols(
     all_results: list[list[SymbolMetrics]],
 ) -> list[SymbolMetrics]:
@@ -77,18 +117,17 @@ def capture(
 ) -> Snapshot:
     """Capture a snapshot at a git ref or the local working tree.
 
-    For non-local refs, uses ``git worktree add`` to create a temporary
-    checkout without modifying the original working tree.
+    All file contents are loaded into RAM first — no temporary worktrees
+    are created.  For committed refs ``git archive`` streams the tree
+    directly into memory; for ``local`` the working tree is read once.
     """
     from regix.backends import get_backend
-    from regix.git import checkout_temporary, resolve_ref
+    from regix.git import read_local_sources, read_tree_sources, resolve_ref
 
     is_local = ref == "local"
     commit_sha: str | None = None
 
-    if is_local:
-        analysis_dir = workdir
-    else:
+    if not is_local:
         commit_sha = resolve_ref(ref, workdir)
 
     # Determine which backends to run
@@ -97,6 +136,8 @@ def capture(
         # Always include builtin backends
         if "docstring" not in backend_names:
             backend_names.append("docstring")
+        if "structure" not in backend_names:
+            backend_names.append("structure")
         if "architecture" not in backend_names:
             backend_names.append("architecture")
 
@@ -113,23 +154,24 @@ def capture(
 
     backend_versions = {bk.name: bk.version() for bk in backends}
 
-    def _run_collection(target_dir: Path) -> list[SymbolMetrics]:
-        files = _collect_files(target_dir, config.include, config.exclude)
-        all_results: list[list[SymbolMetrics]] = []
-        for bk in backends:
-            try:
-                result = bk.collect(target_dir, files, config)
-                all_results.append(result)
-            except Exception as exc:
-                # Non-fatal: backend produces no output for this run
-                all_results.append([])
-        return _merge_symbols(all_results)
-
+    # ── Load all sources into RAM ──────────────────────────────────────────
     if is_local:
-        symbols = _run_collection(workdir)
+        disk_files = _collect_files(workdir, config.include, config.exclude)
+        sources = read_local_sources(workdir, disk_files)
+        files = [Path(k) for k in sources]
     else:
-        with checkout_temporary(ref, workdir) as tmp:
-            symbols = _run_collection(tmp)
+        raw_sources = read_tree_sources(ref, workdir, suffix=".py")
+        files, sources = _filter_sources(raw_sources, config.include, config.exclude)
+
+    # ── Run backends with in-memory sources ────────────────────────────────
+    all_results: list[list[SymbolMetrics]] = []
+    for bk in backends:
+        try:
+            result = bk.collect(workdir, files, config, sources=sources)
+            all_results.append(result)
+        except Exception:
+            all_results.append([])
+    symbols = _merge_symbols(all_results)
 
     return Snapshot(
         ref=ref,
