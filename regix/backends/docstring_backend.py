@@ -11,13 +11,17 @@ from regix.models import SymbolMetrics
 
 
 class DocstringBackend(BackendBase):
+    """Measure docstring coverage using the ``ast`` module."""
+
     name = "docstring"
     required_binary = None
 
     def is_available(self) -> bool:
-        return True  # Built-in, always available
+        """Always available — pure-Python, no external deps."""
+        return True
 
     def version(self) -> str:
+        """Return Python version used for AST parsing."""
         import sys
         return f"ast (Python {sys.version_info.major}.{sys.version_info.minor})"
 
@@ -28,6 +32,7 @@ class DocstringBackend(BackendBase):
         config: RegressionConfig,
         sources: dict[str, str] | None = None,
     ) -> list[SymbolMetrics]:
+        """Compute docstring coverage per file."""
         results: list[SymbolMetrics] = []
         for fpath in files:
             key = str(fpath)

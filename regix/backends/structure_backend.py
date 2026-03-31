@@ -61,13 +61,17 @@ def _analyse_function(node: ast.FunctionDef | ast.AsyncFunctionDef) -> tuple[int
 
 
 class StructureBackend(BackendBase):
+    """AST-based structural metrics: fan_out, call_count, symbol_count."""
+
     name = "structure"
     required_binary = None
 
     def is_available(self) -> bool:
+        """Always available — pure-Python, no external deps."""
         return True
 
     def version(self) -> str:
+        """Return Python version used for AST parsing."""
         import sys
         return f"ast (Python {sys.version_info.major}.{sys.version_info.minor})"
 
@@ -78,6 +82,7 @@ class StructureBackend(BackendBase):
         config: RegressionConfig,
         sources: dict[str, str] | None = None,
     ) -> list[SymbolMetrics]:
+        """Collect fan_out, call_count per function and symbol_count per file."""
         results: list[SymbolMetrics] = []
 
         for fpath in files:

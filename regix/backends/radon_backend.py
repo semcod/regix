@@ -10,10 +10,13 @@ from regix.models import SymbolMetrics
 
 
 class RadonBackend(BackendBase):
+    """Maintainability index and cyclomatic complexity via ``radon``."""
+
     name = "radon"
     required_binary = None
 
     def is_available(self) -> bool:
+        """True when ``radon`` is importable."""
         try:
             import radon.complexity  # noqa: F401
             import radon.metrics  # noqa: F401
@@ -22,6 +25,7 @@ class RadonBackend(BackendBase):
             return False
 
     def version(self) -> str:
+        """Return installed radon version."""
         try:
             import radon
             return getattr(radon, "__version__", "unknown")
@@ -35,6 +39,7 @@ class RadonBackend(BackendBase):
         config: RegressionConfig,
         sources: dict[str, str] | None = None,
     ) -> list[SymbolMetrics]:
+        """Collect MI (module-level) and CC (per-function) using radon."""
         try:
             from radon.complexity import cc_visit
             from radon.metrics import mi_visit

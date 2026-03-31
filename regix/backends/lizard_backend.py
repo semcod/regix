@@ -10,10 +10,13 @@ from regix.models import SymbolMetrics
 
 
 class LizardBackend(BackendBase):
+    """Cyclomatic complexity and function length via the ``lizard`` library."""
+
     name = "lizard"
     required_binary = "lizard"
 
     def is_available(self) -> bool:
+        """True when the ``lizard`` package is importable."""
         try:
             import lizard  # noqa: F401
             return True
@@ -21,6 +24,7 @@ class LizardBackend(BackendBase):
             return False
 
     def version(self) -> str:
+        """Return installed lizard version."""
         try:
             import lizard
             return getattr(lizard, "__version__", "unknown")
@@ -34,6 +38,7 @@ class LizardBackend(BackendBase):
         config: RegressionConfig,
         sources: dict[str, str] | None = None,
     ) -> list[SymbolMetrics]:
+        """Collect CC and length per function using lizard."""
         try:
             import lizard
         except ImportError:
