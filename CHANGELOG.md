@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.2] - 2026-03-31
+
+### Docs
+- Update README.md
+- Update docs/README.md
+- Update docs/algitex.md
+- Update docs/code2docs.md
+- Update docs/code2llm.md
+- Update docs/costs.md
+- Update docs/devloop.md
+- Update docs/ecosystem.md
+- Update docs/llx.md
+- Update docs/planfile.md
+- ... and 4 more files
+
 ## [0.1.1] - 2026-03-31
 
 ### Docs
