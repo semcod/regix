@@ -406,6 +406,52 @@ These principles were derived from running iterative quality pipelines and obser
 
 ---
 
+## Development
+
+### Running tests with tox
+
+Regix uses `tox` for testing across multiple Python versions:
+
+```bash
+# Install tox
+pip install tox
+
+# Run tests in current Python version
+tox -e py313
+
+# Run tests in all supported versions
+tox
+
+# Run with coverage, linting, and type checking
+tox -e py313-full,lint,type
+```
+
+Supported environments: `py39`, `py310`, `py311`, `py312`, `py313`, `lint` (ruff), `type` (mypy).
+
+### Automated quality pipeline (pyqual)
+
+The project includes a `pyqual` pipeline configured in `pyqual.yaml` that automates:
+
+1. **Baseline analysis** — code2llm extraction
+2. **Validation** — vallm batch validation
+3. **Testing** — pytest with coverage
+4. **Regression fixing** — prefact + llx auto-fix
+5. **Version bump** — automatic patch version increment
+6. **Publishing** — build and upload to PyPI
+
+Run the full pipeline:
+
+```bash
+pyqual run -c pyqual.yaml
+```
+
+The pipeline loops up to 5 iterations, automatically fixing issues until all quality gates pass:
+- CC ≤ 10 per function
+- vallm pass rate ≥ 50%
+- Test coverage ≥ 80%
+
+---
+
 ## Architecture
 
 ```

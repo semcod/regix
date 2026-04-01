@@ -61,6 +61,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Added `tox.ini` for multi-Python testing (py39-py313, lint, type)
+- Added `bump_version` stage to `pyqual.yaml` for automatic version increment before publish
+- Added Development section to README.md documenting tox and pyqual pipeline
+
+### Changed
+- Updated `pyqual.yaml` publish stage to use pre-bumped version from VERSION file
+
 ## [0.1.7] - 2026-03-31
 
 ### Docs
