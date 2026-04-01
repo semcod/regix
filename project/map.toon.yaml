@@ -1,4 +1,4 @@
-# regix | 25f 4768L | shell:1,python:24 | 2026-03-31
+# regix | 25f 4768L | shell:1,python:24 | 2026-04-01
 # stats: 166 func | 0 cls | 25 mod | CC̄=4.6 | critical:7 | cycles:0
 # alerts[5]: CC ArchitectureBackend.collect=19; fan-out capture=18; CC capture=17; CC detect_smells=17; CC _compute_delta=16
 # hotspots[5]: capture fan=18; compare fan=15; BackendProbe.run fan=15; BenchmarkReporter.print_rich fan=15; ArchitectureBackend.collect fan=14
@@ -130,14 +130,14 @@ D:
     _CallVisitor(ast.NodeVisitor): __init__(0),visit_Call(1)  # Collect call_count and fan_out from a function body...
     StructureBackend(BackendBase): is_available(0),version(0),collect(4),_collect_functions(3)  # AST-based structural metrics: fan_out, call_count, symbol_co...
     _analyse_function(node)
-  regix/backends/lizard_backend.py:
-    e: LizardBackend
-    LizardBackend(BackendBase): is_available(0),version(0),collect(4)  # Cyclomatic complexity and function length via the ``lizard``...
   regix/integrations/__init__.py:
     e: RegixCollector
     RegixCollector: collect(1),_parse(1)  # GateSet-compatible metric collector for pyqual.
 
 Reads ``.re...
+  regix/backends/lizard_backend.py:
+    e: LizardBackend
+    LizardBackend(BackendBase): is_available(0),version(0),collect(4)  # Cyclomatic complexity and function length via the ``lizard``...
   regix/history.py:
     e: _aggregate_snapshot_metrics,_compute_trends,build_history,_linear_slope
     _aggregate_snapshot_metrics(symbols)
