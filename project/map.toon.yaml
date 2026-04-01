@@ -130,14 +130,14 @@ D:
     _CallVisitor(ast.NodeVisitor): __init__(0),visit_Call(1)  # Collect call_count and fan_out from a function body...
     StructureBackend(BackendBase): is_available(0),version(0),collect(4),_collect_functions(3)  # AST-based structural metrics: fan_out, call_count, symbol_co...
     _analyse_function(node)
+  regix/backends/lizard_backend.py:
+    e: LizardBackend
+    LizardBackend(BackendBase): is_available(0),version(0),collect(4)  # Cyclomatic complexity and function length via the ``lizard``...
   regix/integrations/__init__.py:
     e: RegixCollector
     RegixCollector: collect(1),_parse(1)  # GateSet-compatible metric collector for pyqual.
 
 Reads ``.re...
-  regix/backends/lizard_backend.py:
-    e: LizardBackend
-    LizardBackend(BackendBase): is_available(0),version(0),collect(4)  # Cyclomatic complexity and function length via the ``lizard``...
   regix/history.py:
     e: _aggregate_snapshot_metrics,_compute_trends,build_history,_linear_slope
     _aggregate_snapshot_metrics(symbols)

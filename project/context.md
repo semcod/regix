@@ -90,15 +90,15 @@
 - **Functions**: 3
 - **File**: `report.py`
 
-### regix.backends.architecture_backend
-- **Functions**: 3
-- **Classes**: 1
-- **File**: `architecture_backend.py`
-
 ### regix.backends.docstring_backend
 - **Functions**: 3
 - **Classes**: 1
 - **File**: `docstring_backend.py`
+
+### regix.backends.architecture_backend
+- **Functions**: 3
+- **Classes**: 1
+- **File**: `architecture_backend.py`
 
 ### regix.backends.radon_backend
 - **Functions**: 3
@@ -322,16 +322,21 @@ snapshot [regix.cli]
 - **Key Methods**: regix.backends.structure_backend.StructureBackend.is_available, regix.backends.structure_backend.StructureBackend.version, regix.backends.structure_backend.StructureBackend.collect, regix.backends.structure_backend.StructureBackend._collect_functions
 - **Inherits**: BackendBase
 
-### regix.backends.architecture_backend.ArchitectureBackend
-> Computes per-function structural metrics via AST for smell detection.
+### regix.models.GateResult
+> Aggregate gate evaluation result.
 - **Methods**: 3
-- **Key Methods**: regix.backends.architecture_backend.ArchitectureBackend.is_available, regix.backends.architecture_backend.ArchitectureBackend.version, regix.backends.architecture_backend.ArchitectureBackend.collect
-- **Inherits**: BackendBase
+- **Key Methods**: regix.models.GateResult.all_passed, regix.models.GateResult.errors, regix.models.GateResult.warnings
 
 ### regix.backends.docstring_backend.DocstringBackend
 > Measure docstring coverage using the ``ast`` module.
 - **Methods**: 3
 - **Key Methods**: regix.backends.docstring_backend.DocstringBackend.is_available, regix.backends.docstring_backend.DocstringBackend.version, regix.backends.docstring_backend.DocstringBackend.collect
+- **Inherits**: BackendBase
+
+### regix.backends.architecture_backend.ArchitectureBackend
+> Computes per-function structural metrics via AST for smell detection.
+- **Methods**: 3
+- **Key Methods**: regix.backends.architecture_backend.ArchitectureBackend.is_available, regix.backends.architecture_backend.ArchitectureBackend.version, regix.backends.architecture_backend.ArchitectureBackend.collect
 - **Inherits**: BackendBase
 
 ### regix.backends.radon_backend.RadonBackend
@@ -351,11 +356,6 @@ snapshot [regix.cli]
 - **Methods**: 3
 - **Key Methods**: regix.backends.vallm_backend.VallmBackend.is_available, regix.backends.vallm_backend.VallmBackend.version, regix.backends.vallm_backend.VallmBackend.collect
 - **Inherits**: BackendBase
-
-### regix.models.GateResult
-> Aggregate gate evaluation result.
-- **Methods**: 3
-- **Key Methods**: regix.models.GateResult.all_passed, regix.models.GateResult.errors, regix.models.GateResult.warnings
 
 ### regix.backends.lizard_backend.LizardBackend
 > Cyclomatic complexity and function length via the ``lizard`` library.
