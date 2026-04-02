@@ -57,6 +57,8 @@ dev = [
     "vallm>=0.1",
     "prefact>=0.1",
     "llx>=0.1",
+    "build>=1.0",
+    "twine>=5.0",
 ]
 
 [project.scripts]

@@ -100,10 +100,10 @@
 - **Classes**: 1
 - **File**: `docstring_backend.py`
 
-### regix.backends.radon_backend
+### regix.backends.vallm_backend
 - **Functions**: 3
 - **Classes**: 1
-- **File**: `radon_backend.py`
+- **File**: `vallm_backend.py`
 
 ## Key Entry Points
 
@@ -328,21 +328,21 @@ snapshot [regix.cli]
 - **Key Methods**: regix.backends.architecture_backend.ArchitectureBackend.is_available, regix.backends.architecture_backend.ArchitectureBackend.version, regix.backends.architecture_backend.ArchitectureBackend.collect
 - **Inherits**: BackendBase
 
+### regix.models.GateResult
+> Aggregate gate evaluation result.
+- **Methods**: 3
+- **Key Methods**: regix.models.GateResult.all_passed, regix.models.GateResult.errors, regix.models.GateResult.warnings
+
 ### regix.backends.docstring_backend.DocstringBackend
 > Measure docstring coverage using the ``ast`` module.
 - **Methods**: 3
 - **Key Methods**: regix.backends.docstring_backend.DocstringBackend.is_available, regix.backends.docstring_backend.DocstringBackend.version, regix.backends.docstring_backend.DocstringBackend.collect
 - **Inherits**: BackendBase
 
-### regix.models.GateResult
-> Aggregate gate evaluation result.
+### regix.backends.vallm_backend.VallmBackend
+> LLM-based code quality scoring via the ``vallm`` CLI tool.
 - **Methods**: 3
-- **Key Methods**: regix.models.GateResult.all_passed, regix.models.GateResult.errors, regix.models.GateResult.warnings
-
-### regix.backends.radon_backend.RadonBackend
-> Maintainability index and cyclomatic complexity via ``radon``.
-- **Methods**: 3
-- **Key Methods**: regix.backends.radon_backend.RadonBackend.is_available, regix.backends.radon_backend.RadonBackend.version, regix.backends.radon_backend.RadonBackend.collect
+- **Key Methods**: regix.backends.vallm_backend.VallmBackend.is_available, regix.backends.vallm_backend.VallmBackend.version, regix.backends.vallm_backend.VallmBackend.collect
 - **Inherits**: BackendBase
 
 ### regix.backends.BackendBase
@@ -351,10 +351,10 @@ snapshot [regix.cli]
 - **Key Methods**: regix.backends.BackendBase.is_available, regix.backends.BackendBase.collect, regix.backends.BackendBase.version
 - **Inherits**: ABC
 
-### regix.backends.vallm_backend.VallmBackend
-> LLM-based code quality scoring via the ``vallm`` CLI tool.
+### regix.backends.radon_backend.RadonBackend
+> Maintainability index and cyclomatic complexity via ``radon``.
 - **Methods**: 3
-- **Key Methods**: regix.backends.vallm_backend.VallmBackend.is_available, regix.backends.vallm_backend.VallmBackend.version, regix.backends.vallm_backend.VallmBackend.collect
+- **Key Methods**: regix.backends.radon_backend.RadonBackend.is_available, regix.backends.radon_backend.RadonBackend.version, regix.backends.radon_backend.RadonBackend.collect
 - **Inherits**: BackendBase
 
 ### regix.backends.lizard_backend.LizardBackend
@@ -467,8 +467,8 @@ Functions exposed as public API (no underscore prefix):
 - `regix.cli.status` - 23 calls
 - `regix.cli.diff` - 22 calls
 - `regix.compare.compare` - 21 calls
-- `regix.cli.gates` - 21 calls
 - `regix.snapshot.capture` - 21 calls
+- `regix.cli.gates` - 21 calls
 - `regix.benchmark.BackendProbe.run` - 21 calls
 - `regix.cli.snapshot` - 17 calls
 - `regix.cli.history` - 16 calls

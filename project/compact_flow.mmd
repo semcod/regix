@@ -26,8 +26,8 @@ flowchart TD
     regix__history -->|1| regix__snapshot
     regix__Regix -->|1| regix__snapshot
     regix__Regix -->|1| regix__history
+    regix__snapshot -->|1| regix__backends
     regix__cli -->|1| regix__history
     regix__cli -->|1| regix__gates
-    regix__snapshot -->|1| regix__backends
     regix__benchmark -->|1| regix__backends
     regix__benchmark -->|1| regix__gates

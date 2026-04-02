@@ -32,7 +32,7 @@ pipeline:
     - name: fix_regression
       run: |
         # Use llx to fix detected issues (scope to regix/ only, protect config files)
-        llx fix regix/ --apply --verbose --model openrouter/qwen/qwen3-coder-next
+        llx fix regix/ --apply --verbose --model ${LLM_MODEL:-openrouter/openai/gpt-5-mini}
       when: metrics_fail
       timeout: 1800
       
@@ -87,8 +87,10 @@ pipeline:
         # Bump patch version in all version files
         CURRENT=$(cat VERSION)
         echo "Current version: $CURRENT"
-        # Parse version: major.minor.patch
-        IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT"
+        # Parse version: major.minor.patch using cut (POSIX compatible)
+        MAJOR=$(echo "$CURRENT" | cut -d. -f1)
+        MINOR=$(echo "$CURRENT" | cut -d. -f2)
+        PATCH=$(echo "$CURRENT" | cut -d. -f3)
         NEW_PATCH=$((PATCH + 1))
         NEW_VERSION="${MAJOR}.${MINOR}.${NEW_PATCH}"
         echo "New version: $NEW_VERSION"
@@ -127,7 +129,6 @@ pipeline:
     
   # Environment
   env:
-    LLM_MODEL: openrouter/qwen/qwen3-coder-next
     LLX_DEFAULT_TIER: balanced
     LLX_VERBOSE: true
     OPENAI_API_KEY: ${OPENROUTER_API_KEY}
