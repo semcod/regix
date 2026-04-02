@@ -95,10 +95,10 @@
 - **Classes**: 1
 - **File**: `architecture_backend.py`
 
-### regix.backends.docstring_backend
+### regix.backends.radon_backend
 - **Functions**: 3
 - **Classes**: 1
-- **File**: `docstring_backend.py`
+- **File**: `radon_backend.py`
 
 ### regix.backends.vallm_backend
 - **Functions**: 3
@@ -172,13 +172,13 @@ Main execution flows into the system:
 > Return cached snapshot or None.
 - **Calls**: regix.cache._cache_dir, regix.cache._cache_key, path.exists, None.decode, json.loads, Snapshot, SymbolMetrics, gzip.decompress
 
-### regix.backends.docstring_backend.DocstringBackend.collect
-> Compute docstring coverage per file.
-- **Calls**: str, ast.walk, results.append, ast.parse, isinstance, SymbolMetrics, full.read_text, ast.get_docstring
-
 ### regix.backends.radon_backend.RadonBackend.collect
 > Collect MI (module-level) and CC (per-function) using radon.
 - **Calls**: str, results.append, mi_visit, cc_visit, SymbolMetrics, results.append, full.read_text, SymbolMetrics
+
+### regix.backends.docstring_backend.DocstringBackend.collect
+> Compute docstring coverage per file.
+- **Calls**: str, ast.walk, results.append, ast.parse, isinstance, SymbolMetrics, full.read_text, ast.get_docstring
 
 ### regix.benchmark.ImportProbe.run
 - **Calls**: range, min, BenchmarkResult, time.perf_counter, BenchmarkResult, subprocess.run, times.append, time.perf_counter
@@ -322,21 +322,21 @@ snapshot [regix.cli]
 - **Key Methods**: regix.backends.structure_backend.StructureBackend.is_available, regix.backends.structure_backend.StructureBackend.version, regix.backends.structure_backend.StructureBackend.collect, regix.backends.structure_backend.StructureBackend._collect_functions
 - **Inherits**: BackendBase
 
+### regix.models.GateResult
+> Aggregate gate evaluation result.
+- **Methods**: 3
+- **Key Methods**: regix.models.GateResult.all_passed, regix.models.GateResult.errors, regix.models.GateResult.warnings
+
 ### regix.backends.architecture_backend.ArchitectureBackend
 > Computes per-function structural metrics via AST for smell detection.
 - **Methods**: 3
 - **Key Methods**: regix.backends.architecture_backend.ArchitectureBackend.is_available, regix.backends.architecture_backend.ArchitectureBackend.version, regix.backends.architecture_backend.ArchitectureBackend.collect
 - **Inherits**: BackendBase
 
-### regix.models.GateResult
-> Aggregate gate evaluation result.
+### regix.backends.radon_backend.RadonBackend
+> Maintainability index and cyclomatic complexity via ``radon``.
 - **Methods**: 3
-- **Key Methods**: regix.models.GateResult.all_passed, regix.models.GateResult.errors, regix.models.GateResult.warnings
-
-### regix.backends.docstring_backend.DocstringBackend
-> Measure docstring coverage using the ``ast`` module.
-- **Methods**: 3
-- **Key Methods**: regix.backends.docstring_backend.DocstringBackend.is_available, regix.backends.docstring_backend.DocstringBackend.version, regix.backends.docstring_backend.DocstringBackend.collect
+- **Key Methods**: regix.backends.radon_backend.RadonBackend.is_available, regix.backends.radon_backend.RadonBackend.version, regix.backends.radon_backend.RadonBackend.collect
 - **Inherits**: BackendBase
 
 ### regix.backends.vallm_backend.VallmBackend
@@ -345,17 +345,17 @@ snapshot [regix.cli]
 - **Key Methods**: regix.backends.vallm_backend.VallmBackend.is_available, regix.backends.vallm_backend.VallmBackend.version, regix.backends.vallm_backend.VallmBackend.collect
 - **Inherits**: BackendBase
 
+### regix.backends.docstring_backend.DocstringBackend
+> Measure docstring coverage using the ``ast`` module.
+- **Methods**: 3
+- **Key Methods**: regix.backends.docstring_backend.DocstringBackend.is_available, regix.backends.docstring_backend.DocstringBackend.version, regix.backends.docstring_backend.DocstringBackend.collect
+- **Inherits**: BackendBase
+
 ### regix.backends.BackendBase
 > Interface that all analysis backends must implement.
 - **Methods**: 3
 - **Key Methods**: regix.backends.BackendBase.is_available, regix.backends.BackendBase.collect, regix.backends.BackendBase.version
 - **Inherits**: ABC
-
-### regix.backends.radon_backend.RadonBackend
-> Maintainability index and cyclomatic complexity via ``radon``.
-- **Methods**: 3
-- **Key Methods**: regix.backends.radon_backend.RadonBackend.is_available, regix.backends.radon_backend.RadonBackend.version, regix.backends.radon_backend.RadonBackend.collect
-- **Inherits**: BackendBase
 
 ### regix.backends.lizard_backend.LizardBackend
 > Cyclomatic complexity and function length via the ``lizard`` library.
@@ -467,8 +467,8 @@ Functions exposed as public API (no underscore prefix):
 - `regix.cli.status` - 23 calls
 - `regix.cli.diff` - 22 calls
 - `regix.compare.compare` - 21 calls
-- `regix.snapshot.capture` - 21 calls
 - `regix.cli.gates` - 21 calls
+- `regix.snapshot.capture` - 21 calls
 - `regix.benchmark.BackendProbe.run` - 21 calls
 - `regix.cli.snapshot` - 17 calls
 - `regix.cli.history` - 16 calls
@@ -479,8 +479,8 @@ Functions exposed as public API (no underscore prefix):
 - `regix.benchmark.BenchmarkReporter.print_plain` - 14 calls
 - `regix.cache.lookup` - 13 calls
 - `regix.git.read_tree_sources` - 12 calls
-- `regix.backends.docstring_backend.DocstringBackend.collect` - 12 calls
 - `regix.backends.radon_backend.RadonBackend.collect` - 12 calls
+- `regix.backends.docstring_backend.DocstringBackend.collect` - 12 calls
 - `regix.benchmark.ImportProbe.run` - 12 calls
 - `regix.benchmark.CLIProbe.run` - 12 calls
 - `regix.benchmark.ThroughputProbe.run` - 12 calls

@@ -110,11 +110,11 @@ pipeline:
 
     - name: publish
       run: |
-        # Build and publish to PyPI (version already bumped)
+        # Publish to PyPI (packages built in previous steps)
         VERSION=$(cat VERSION)
         echo "Publishing version: $VERSION"
         if command -v twine &>/dev/null; then
-          python3 -m build && twine upload dist/*
+          twine upload dist/regix-${VERSION}*
         else
           echo "twine not installed — skipping publish"
         fi
@@ -134,3 +134,5 @@ pipeline:
     OPENAI_API_KEY: ${OPENROUTER_API_KEY}
     OPENAI_BASE_URL: https://openrouter.ai/api/v1
     OPENROUTER_API_KEY: ${OPENROUTER_API_KEY}
+    TWINE_USERNAME: __token__
+    TWINE_PASSWORD: ${PYPI_API_TOKEN}

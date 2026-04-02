@@ -5,10 +5,10 @@ HEALTH[8]:
   🔴 GOD   regix/benchmark.py = 936L, 9 classes, 31m, max CC=12
   🟡 CC    _compute_delta CC=16 (limit:15)
   🟡 CC    compare CC=16 (limit:15)
-  🟡 CC    capture CC=17 (limit:15)
   🟡 CC    diff CC=15 (limit:15)
-  🟡 CC    collect CC=19 (limit:15)
+  🟡 CC    capture CC=17 (limit:15)
   🟡 CC    filter CC=15 (limit:15)
+  🟡 CC    collect CC=19 (limit:15)
   🟡 CC    detect_smells CC=17 (limit:15)
 
 REFACTOR[3]:

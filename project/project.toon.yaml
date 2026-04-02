@@ -46,8 +46,8 @@ REFACTOR[12]:
   [1] H/H Split god module regix/benchmark.py (936L, 9 classes)
   [2] M/L Split _compute_delta (CC=16 → target CC<10)
   [3] M/L Split compare (CC=16 → target CC<10)
-  [4] M/L Split capture (CC=17 → target CC<10)
-  [5] M/L Split diff (CC=15 → target CC<10)
+  [4] M/L Split diff (CC=15 → target CC<10)
+  [5] M/L Split capture (CC=17 → target CC<10)
 
 EVOLUTION:
   2026-04-02 CC̄=4.6 crit=21 7910L // Automated analysis
