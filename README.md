@@ -17,6 +17,8 @@ Generated on 2026-03-31 using [openrouter/qwen/qwen3-coder-next](https://openrou
 
 > Inspired by operational experience with [pyqual](https://github.com/semcod/pyqual): iterative quality-gate pipelines revealed that without structured regression tracking, metric changes across refactoring cycles are invisible until a gate breaks.
 
+> **Why "Regix"?** From **reg**ression + **ix** (like fix/matrix vibe). Short, technical, memorable.
+
 ---
 
 ## Problem statement

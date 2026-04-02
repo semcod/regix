@@ -1,7 +1,7 @@
-# vallm batch | 45f | 44✓ 7⚠ 1✗ | 2026-04-01
+# vallm batch | 45f | 45✓ 7⚠ 0✗ | 2026-04-02
 
 SUMMARY:
-  scanned: 45  passed: 44 (97.8%)  warnings: 7  errors: 1  unsupported: 0
+  scanned: 45  passed: 45 (100.0%)  warnings: 7  errors: 0  unsupported: 0
 
 WARNINGS[7]{path,score}:
   regix/compare.py,0.93
@@ -31,9 +31,4 @@ WARNINGS[7]{path,score}:
   tests/test_config_full.py,0.98
     issues[1]{rule,severity,message,line}:
       complexity.maintainability,warning,Low maintainability index: 19.1 (threshold: 20),
-
-ERRORS[1]{path,score}:
-  regix/config.py,0.95
-    issues[1]{rule,severity,message,line}:
-      python.import.resolvable,error,Module 'tomli' not found,438
 

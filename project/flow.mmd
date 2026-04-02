@@ -24,13 +24,13 @@ flowchart TD
         regix__git__get_changed_files["get_changed_files"]
         regix__git__checkout_temporary["checkout_temporary"]
         regix__git__read_tree_sources["read_tree_sources"]
-        regix__Regix__snapshot["snapshot"]
-        regix__Regix__compare["compare"]
-        regix__Regix__compare_local["compare_local"]
-        regix__Regix__history["history"]
-        regix__snapshot__capture{{capture CC=17}}
-        regix__cache__lookup["lookup"]
+        regix__config__GateThresholds__get["get"]
+        regix__config__RegressionConfig__cc_max["cc_max"]
+        regix__config__RegressionConfig__mi_min["mi_min"]
+        regix__config__RegressionConfig__coverage_min["coverage_min"]
+        regix__config__RegressionConfig__length_max["length_max"]
+        regix__config__RegressionConfig__docstring_min["docstring_min"]
         ...["+91 more"]
     end
 
-    class regix__compare__compare,regix__git__is_clean,regix__git__get_dirty_files,regix__git__get_changed_files,regix__git__checkout_temporary,regix__cli___load_config,regix__cli__compare,regix__cli__history,regix__cli__snapshot,regix__cli__diff entry
+    class regix__compare__compare,regix__git__is_clean,regix__git__get_dirty_files,regix__git__get_changed_files,regix__git__checkout_temporary,regix__config__GateThresholds__get,regix__config__RegressionConfig__cc_max,regix__config__RegressionConfig__mi_min,regix__config__RegressionConfig__coverage_min,regix__config__RegressionConfig__length_max entry

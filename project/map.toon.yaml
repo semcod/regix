@@ -1,4 +1,4 @@
-# regix | 25f 4768L | shell:1,python:24 | 2026-04-01
+# regix | 25f 4783L | shell:1,python:24 | 2026-04-02
 # stats: 166 func | 0 cls | 25 mod | CC̄=4.6 | critical:7 | cycles:0
 # alerts[5]: CC ArchitectureBackend.collect=19; fan-out capture=18; CC capture=17; CC detect_smells=17; CC _compute_delta=16
 # hotspots[5]: capture fan=18; compare fan=15; BackendProbe.run fan=15; BenchmarkReporter.print_rich fan=15; ArchitectureBackend.collect fan=14
@@ -24,7 +24,7 @@ M[25]:
   regix/gates.py,60
   regix/git.py,179
   regix/history.py,103
-  regix/integrations/__init__.py,64
+  regix/integrations/__init__.py,79
   regix/models.py,456
   regix/report.py,133
   regix/smells.py,428

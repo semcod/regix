@@ -1,4 +1,4 @@
-# code2llm | 25f 4768L | python:24,shell:1 | 2026-04-01
+# code2llm | 25f 4783L | python:24,shell:1 | 2026-04-02
 # CC̄=4.6 | critical:7/166 | dups:0 | cycles:1
 
 HEALTH[8]:
@@ -7,9 +7,9 @@ HEALTH[8]:
   🟡 CC    compare CC=16 (limit:15)
   🟡 CC    diff CC=15 (limit:15)
   🟡 CC    capture CC=17 (limit:15)
+  🟡 CC    collect CC=19 (limit:15)
   🟡 CC    filter CC=15 (limit:15)
   🟡 CC    detect_smells CC=17 (limit:15)
-  🟡 CC    collect CC=19 (limit:15)
 
 REFACTOR[3]:
   1. split regix/benchmark.py  (god module)
@@ -17,15 +17,15 @@ REFACTOR[3]:
   3. break 1 circular dependencies
 
 PIPELINES[91]:
-  [1] Src [run_command]: run_command
+  [1] Src [__init__]: __init__
       PURITY: 100% pure
-  [2] Src [check_regression]: check_regression → load_json_file
+  [2] Src [__init__]: __init__
       PURITY: 100% pure
   [3] Src [__init__]: __init__
       PURITY: 100% pure
   [4] Src [__init__]: __init__
       PURITY: 100% pure
-  [5] Src [__init__]: __init__
+  [5] Src [run_command]: run_command
       PURITY: 100% pure
 
 LAYERS:
@@ -52,7 +52,7 @@ LAYERS:
   │ vallm_backend               80L  1C    3m  CC=11     ←0
   │ lizard_backend              80L  1C    3m  CC=9      ←0
   │ docstring_backend           79L  1C    3m  CC=14     ←0
-  │ __init__                    64L  1C    2m  CC=9      ←0
+  │ __init__                    79L  1C    2m  CC=9      ←0
   │ gates                       60L  0C    2m  CC=6      ←2
   │ __init__                    59L  1C    6m  CC=1      ←3
   │ exceptions                  54L  5C    4m  CC=2      ←0

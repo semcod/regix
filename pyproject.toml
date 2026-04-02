@@ -52,10 +52,18 @@ dev = [
     "goal>=2.1.0",
     "costs>=0.1.20",
     "pfix>=0.1.60",
+    "pyqual>=0.1.50",
+    "code2llm>=0.1",
+    "vallm>=0.1",
+    "prefact>=0.1",
+    "llx>=0.1",
 ]
 
 [project.scripts]
 regix = "regix.cli:app"
+
+[project.entry-points."pyqual.tools"]
+regix = "regix.integrations:REGIX_PRESET"
 
 [project.urls]
 Homepage = "https://github.com/semcod/regix"

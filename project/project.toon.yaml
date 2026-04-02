@@ -1,4 +1,4 @@
-# regix | 166 func | 24f | 7895L | python | 2026-04-01
+# regix | 166 func | 24f | 7910L | python | 2026-04-02
 
 HEALTH:
   CC̄=4.6  critical=21 (limit:10)  dup=0  cycles=1
@@ -50,4 +50,4 @@ REFACTOR[12]:
   [5] M/L Split capture (CC=17 → target CC<10)
 
 EVOLUTION:
-  2026-04-01 CC̄=4.6 crit=21 7895L // Automated analysis
+  2026-04-02 CC̄=4.6 crit=21 7910L // Automated analysis

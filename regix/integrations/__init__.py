@@ -6,6 +6,11 @@ import json
 from pathlib import Path
 from typing import Any
 
+try:
+    from pyqual.tools import ToolPreset
+except ImportError:
+    ToolPreset = None  # type: ignore
+
 
 class RegixCollector:
     """GateSet-compatible metric collector for pyqual.
@@ -57,8 +62,18 @@ class RegixCollector:
 
 
 # Tool preset for pyqual
-REGIX_PRESET = {
-    "binary": "regix",
-    "command": "regix compare HEAD~1 HEAD --format toon --output .regix/",
-    "allow_failure": False,
-}
+if ToolPreset is not None:
+    REGIX_PRESET = ToolPreset(
+        binary="regix",
+        command="regix compare HEAD~1 HEAD --format toon --output .regix/",
+        output=".regix/report.toon.yaml",
+        allow_failure=False,
+    )
+else:
+    # Fallback dla backward compatibility gdy pyqual nie jest zainstalowany
+    REGIX_PRESET = {
+        "binary": "regix",
+        "command": "regix compare HEAD~1 HEAD --format toon --output .regix/",
+        "output": ".regix/report.toon.yaml",
+        "allow_failure": False,
+    }
