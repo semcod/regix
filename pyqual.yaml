@@ -108,6 +108,12 @@ pipeline:
       optional: true
       timeout: 60
 
+    - name: build
+      run: python3 -m build
+      when: after bump_version
+      optional: true
+      timeout: 120
+
     - name: publish
       run: |
         # Publish to PyPI (packages built in previous steps)

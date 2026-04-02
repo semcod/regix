@@ -7,8 +7,8 @@ HEALTH[8]:
   🟡 CC    compare CC=16 (limit:15)
   🟡 CC    diff CC=15 (limit:15)
   🟡 CC    capture CC=17 (limit:15)
-  🟡 CC    filter CC=15 (limit:15)
   🟡 CC    collect CC=19 (limit:15)
+  🟡 CC    filter CC=15 (limit:15)
   🟡 CC    detect_smells CC=17 (limit:15)
 
 REFACTOR[3]:
@@ -17,15 +17,15 @@ REFACTOR[3]:
   3. break 1 circular dependencies
 
 PIPELINES[91]:
-  [1] Src [run_command]: run_command
+  [1] Src [__init__]: __init__
       PURITY: 100% pure
-  [2] Src [check_regression]: check_regression → load_json_file
+  [2] Src [__init__]: __init__
       PURITY: 100% pure
   [3] Src [__init__]: __init__
       PURITY: 100% pure
   [4] Src [__init__]: __init__
       PURITY: 100% pure
-  [5] Src [__init__]: __init__
+  [5] Src [run_command]: run_command
       PURITY: 100% pure
 
 LAYERS:
