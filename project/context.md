@@ -334,11 +334,6 @@ snapshot [regix.cli]
 - **Key Methods**: regix.backends.docstring_backend.DocstringBackend.is_available, regix.backends.docstring_backend.DocstringBackend.version, regix.backends.docstring_backend.DocstringBackend.collect
 - **Inherits**: BackendBase
 
-### regix.models.GateResult
-> Aggregate gate evaluation result.
-- **Methods**: 3
-- **Key Methods**: regix.models.GateResult.all_passed, regix.models.GateResult.errors, regix.models.GateResult.warnings
-
 ### regix.backends.radon_backend.RadonBackend
 > Maintainability index and cyclomatic complexity via ``radon``.
 - **Methods**: 3
@@ -350,6 +345,11 @@ snapshot [regix.cli]
 - **Methods**: 3
 - **Key Methods**: regix.backends.BackendBase.is_available, regix.backends.BackendBase.collect, regix.backends.BackendBase.version
 - **Inherits**: ABC
+
+### regix.models.GateResult
+> Aggregate gate evaluation result.
+- **Methods**: 3
+- **Key Methods**: regix.models.GateResult.all_passed, regix.models.GateResult.errors, regix.models.GateResult.warnings
 
 ### regix.backends.vallm_backend.VallmBackend
 > LLM-based code quality scoring via the ``vallm`` CLI tool.
