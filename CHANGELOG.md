@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.10] - 2026-04-07
+
+### Fixed
+- Fix string-concat issues (ticket-06d47ed2)
+- Fix unused-imports issues (ticket-4fb302bf)
+- Fix string-concat issues (ticket-fc0ad061)
+- Fix unused-imports issues (ticket-1fee0f0c)
+- Fix wildcard-imports issues (ticket-94255818)
+- Fix ai-boilerplate issues (ticket-b9f41270)
+- Fix ai-boilerplate issues (ticket-16a8fa4b)
+
 ## [0.1.10] - 2026-03-31
 
 ### Fixed
@@ -68,6 +79,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Updated `pyqual.yaml` publish stage to use pre-bumped version from VERSION file
+
+## [0.1.12] - 2026-04-07
+
+### Docs
+- Update CHANGELOG.md
+- Update README.md
+- Update TODO.md
+
+### Test
+- Update tests/conftest.py
+- Update tests/test_backends.py
+- Update tests/test_benchmark.py
+- Update tests/test_code2llm_backend.py
+- Update tests/test_config.py
+- Update tests/test_config_full.py
+- Update tests/test_exceptions.py
+- Update tests/test_gates.py
+- Update tests/test_history.py
+- Update tests/test_integrations.py
+- ... and 2 more files
+
+### Other
+- Update planfile.yaml
+- Update regix/backends/__init__.py
+- Update regix/backends/code2llm_backend.py
+- Update regix/benchmark.py
+- Update regix/cli.py
+- Update regix/config.py
+- Update regix/models.py
+- Update regix/smells.py
 
 ## [0.1.7] - 2026-03-31
 

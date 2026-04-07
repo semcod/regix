@@ -1,8 +1,18 @@
-"""Tests for regix.config."""
-
 from __future__ import annotations
 
-import tempfile
+CONSTANT_3 = 3
+CONSTANT_5 = 5.0
+CONSTANT_8 = 8.0
+MIN_12 = 12.0
+MIN_15 = 15.0
+MIN_20 = 20.0
+CONSTANT_25 = 25.0
+CONSTANT_30 = 30
+CONSTANT_80 = 80.0
+CONSTANT_90 = 90.0
+
+"""Tests for regix.config."""
+
 from pathlib import Path
 
 import pytest

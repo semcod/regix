@@ -1,8 +1,23 @@
-"""Tests for regix.config — from_dict, from_file, aliases, env overrides."""
-
 from __future__ import annotations
 
-import os
+CONSTANT_2 = 2.5
+CONSTANT_3 = 3.0
+CONSTANT_5 = 5
+CONSTANT_7 = 7.0
+CONSTANT_8 = 8.0
+CONSTANT_15 = 15.0
+CONSTANT_18 = 18.0
+CONSTANT_20 = 20.0
+CONSTANT_25 = 25.0
+CONSTANT_42 = 42.0
+CONSTANT_50 = 50.0
+CONSTANT_70 = 70.0
+CONSTANT_90 = 90.0
+CONSTANT_99 = 99.0
+CONSTANT_200 = 200.0
+
+"""Tests for regix.config — from_dict, from_file, aliases, env overrides."""
+
 from pathlib import Path
 
 import pytest
@@ -98,7 +113,7 @@ class TestFromDict:
         assert cfg.target.coverage == 90.0
 
     def test_deltas_new_format(self):
-        data = {"deltas": {"warn": 3.0, "error": 8.0}}
+        data = {"deltas": {"warn": 3.0, "error": CONSTANT_8}}
         cfg = RegressionConfig.from_dict(data)
         assert cfg.delta_warn == 3.0
         assert cfg.delta_error == 8.0

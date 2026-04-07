@@ -57,3 +57,16 @@ def get_backend(name: str) -> BackendBase | None:
 def available_backends() -> list[str]:
     """Return names of all registered backends."""
     return list(_BACKENDS.keys())
+
+
+# ── Auto-import backends to register them ───────────────────────────────────
+# These imports register backends via register_backend() at import time
+# ruff: noqa: F401, E402
+from regix.backends import architecture_backend
+from regix.backends import code2llm_backend
+from regix.backends import coverage_backend
+from regix.backends import docstring_backend
+from regix.backends import lizard_backend
+from regix.backends import radon_backend
+from regix.backends import structure_backend
+from regix.backends import vallm_backend

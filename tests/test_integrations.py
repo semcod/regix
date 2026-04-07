@@ -64,6 +64,7 @@ class TestRegixCollectorToonEdgeCases:
 
 class TestRegixPreset:
     def test_has_required_keys(self):
-        assert "binary" in REGIX_PRESET
-        assert "command" in REGIX_PRESET
-        assert REGIX_PRESET["binary"] == "regix"
+        # ToolPreset is an object with attributes, not a dict
+        assert hasattr(REGIX_PRESET, 'binary')
+        assert hasattr(REGIX_PRESET, 'command')
+        assert REGIX_PRESET.binary == "regix"
