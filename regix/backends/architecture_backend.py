@@ -42,6 +42,7 @@ class ArchitectureBackend(BackendBase):
 
     def version(self) -> str:
         import sys
+
         return f"ast (Python {sys.version_info.major}.{sys.version_info.minor})"
 
     def collect(
@@ -89,9 +90,7 @@ class ArchitectureBackend(BackendBase):
                     param_count = max(0, param_count - 1)
 
                 # call_count — all Call nodes inside this function (incl. nested)
-                call_count = sum(
-                    1 for n in ast.walk(node) if isinstance(n, ast.Call)
-                )
+                call_count = sum(1 for n in ast.walk(node) if isinstance(n, ast.Call))
 
                 # node_type_diversity — unique direct-body statement type names
                 node_type_diversity = len({type(s).__name__ for s in node.body})

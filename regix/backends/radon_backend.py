@@ -20,6 +20,7 @@ class RadonBackend(BackendBase):
         try:
             import radon.complexity  # noqa: F401
             import radon.metrics  # noqa: F401
+
             return True
         except ImportError:
             return False
@@ -28,6 +29,7 @@ class RadonBackend(BackendBase):
         """Return installed radon version."""
         try:
             import radon
+
             return getattr(radon, "__version__", "unknown")
         except ImportError:
             return "not installed"

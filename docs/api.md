@@ -1,5 +1,3 @@
-# Regix — API Reference
-
 ## Top-level imports
 
 ```python
@@ -565,9 +563,6 @@ from regix.git import checkout_temporary
 with checkout_temporary("HEAD~3", workdir=Path(".")) as tmp:
     # tmp is a Path to a clean worktree at HEAD~3
     metrics = collect_metrics(tmp)
-# back to original state
-```
-
 ### `is_clean(workdir)`
 
 ```python

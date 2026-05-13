@@ -98,3 +98,8 @@
 ---
 
 *To execute all tasks, run: `prefact -a --execute-todos`*
+
+## Discovered
+
+- regix/backends/* and many modules flagged with Unused import: 'annotations' (see TODO.md Current Issues)
+- .tox vendored files contain many minor lint issues (string concatenation → f-string, unused imports); consider cleaning or ignoring vendor files

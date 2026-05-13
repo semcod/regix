@@ -4,9 +4,6 @@ Framework benchmarkowy w `regix/benchmark.py` mierzy wydajność regix oraz dowo
 
 ---
 
-## Szybki start
-
-```bash
 # Wszystkie zestawy
 python3 -m regix.benchmark
 
@@ -28,8 +25,6 @@ python3 -m regix.benchmark --threshold 5.0
 ```
 
 ---
-
-## Zestawy (suites)
 
 ### `startup` — czas startu i importu
 
@@ -183,8 +178,6 @@ BenchmarkReporter(results).print()
 
 ---
 
-## Interpretacja wyników
-
 ### Czas startu (`startup`)
 
 ```
@@ -242,9 +235,6 @@ Niska wydajność `compare()` wskazuje na:
 
 ---
 
-## Uruchamianie w CI
-
-```yaml
 # .github/workflows/benchmark.yml
 - name: Performance benchmark
   run: python3 -m regix.benchmark --plain --threshold 30.0

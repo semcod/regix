@@ -9,8 +9,6 @@
 **License:** Apache-2.0[(LICENSE)](./LICENSE)  
 **Repository:** [https://github.com/semcod/regix](https://github.com/semcod/regix)
 
-## Installation
-
 ### From PyPI
 
 ```bash
@@ -37,14 +35,6 @@ pip install regix[full]    # full features
 pip install regix[pyqual]    # pyqual features
 pip install regix[dev]    # development tools
 ```
-
-## Quick Start
-
-### CLI Usage
-
-```bash
-# Generate full documentation for your project
-regix ./my-project
 
 # Only regenerate README
 regix ./my-project --readme-only
@@ -154,8 +144,6 @@ Content outside the markers is preserved when regenerating. Enable this with `sy
 ```
 regix/
 ├── project    ├── check_regression    ├── gates    ├── exceptions    ├── compare├── regix/    ├── history    ├── git    ├── cli    ├── snapshot    ├── config    ├── report    ├── cache    ├── smells        ├── architecture_backend        ├── docstring_backend        ├── radon_backend        ├── vallm_backend    ├── backends/        ├── coverage_backend    ├── models    ├── integrations/        ├── lizard_backend        ├── structure_backend    ├── benchmark```
-
-## API Overview
 
 ### Classes
 
@@ -277,11 +265,8 @@ regix/
 - Tom Softreck <tom@sapletta.com>
 - Tom Sapletta <tom-sapletta-com@users.noreply.github.com>
 
-We welcome contributions! Please see [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines.
+We welcome contributions! Please see [CONTRIBUTING.md](https://github.com/wronai/regix/blob/main/CONTRIBUTING.md) for guidelines.
 
-### Development Setup
-
-```bash
 # Clone the repository
 git clone https://github.com/semcod/regix
 cd regix
@@ -289,17 +274,13 @@ cd regix
 # Install in development mode
 pip install -e ".[dev]"
 
-# Run tests
-pytest
-```
-
 ## Documentation
 
 - 📖 [Full Documentation](https://github.com/semcod/regix/tree/main/docs) — API reference, module docs, architecture
 - 🚀 [Getting Started](https://github.com/semcod/regix/blob/main/docs/getting-started.md) — Quick start guide
 - 📚 [API Reference](https://github.com/semcod/regix/blob/main/docs/api.md) — Complete API documentation
 - 🔧 [Configuration](https://github.com/semcod/regix/blob/main/docs/configuration.md) — Configuration options
-- 💡 [Examples](./examples) — Usage examples and code samples
+- 💡 [Examples](https://github.com/wronai/regix/tree/main/examples) — Usage examples and code samples
 
 ### Generated Files
 
@@ -307,15 +288,15 @@ pytest
 |--------|-------------|------|
 | `README.md` | Project overview (this file) | — |
 | `docs/api.md` | Consolidated API reference | [View](./docs/api.md) |
-| `docs/modules.md` | Module reference with metrics | [View](./docs/modules.md) |
+| `docs/modules.md` | Module reference with metrics | [View](https://github.com/wronai/regix/blob/main/docs/modules.md) |
 | `docs/architecture.md` | Architecture with diagrams | [View](./docs/architecture.md) |
-| `docs/dependency-graph.md` | Dependency graphs | [View](./docs/dependency-graph.md) |
-| `docs/coverage.md` | Docstring coverage report | [View](./docs/coverage.md) |
-| `docs/getting-started.md` | Getting started guide | [View](./docs/getting-started.md) |
+| `docs/dependency-graph.md` | Dependency graphs | [View](https://github.com/wronai/regix/blob/main/docs/dependency-graph.md) |
+| `docs/coverage.md` | Docstring coverage report | [View](https://github.com/wronai/regix/blob/main/docs/coverage.md) |
+| `docs/getting-started.md` | Getting started guide | [View](https://github.com/wronai/regix/blob/main/docs/getting-started.md) |
 | `docs/configuration.md` | Configuration reference | [View](./docs/configuration.md) |
-| `docs/api-changelog.md` | API change tracking | [View](./docs/api-changelog.md) |
-| `CONTRIBUTING.md` | Contribution guidelines | [View](./CONTRIBUTING.md) |
-| `examples/` | Usage examples | [Browse](./examples) |
+| `docs/api-changelog.md` | API change tracking | [View](https://github.com/wronai/regix/blob/main/docs/api-changelog.md) |
+| `CONTRIBUTING.md` | Contribution guidelines | [View](https://github.com/wronai/regix/blob/main/CONTRIBUTING.md) |
+| `examples/` | Usage examples | [Browse](https://github.com/wronai/regix/tree/main/examples) |
 | `mkdocs.yml` | MkDocs configuration | — |
 
 <!-- code2docs:end -->

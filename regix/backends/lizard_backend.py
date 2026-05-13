@@ -19,6 +19,7 @@ class LizardBackend(BackendBase):
         """True when the ``lizard`` package is importable."""
         try:
             import lizard  # noqa: F401
+
             return True
         except ImportError:
             return False
@@ -27,6 +28,7 @@ class LizardBackend(BackendBase):
         """Return installed lizard version."""
         try:
             import lizard
+
             return getattr(lizard, "__version__", "unknown")
         except ImportError:
             return "not installed"

@@ -91,6 +91,7 @@ def render_history(
     """Render a history report."""
     if fmt == "json":
         import json
+
         data = {
             "commits": [
                 {

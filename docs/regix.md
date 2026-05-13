@@ -40,9 +40,6 @@ Cyclomatic complexity (lower is better), maintainability index (higher is better
 
 Each metric has configurable warn and error thresholds. A delta below the warn threshold is silently ignored — small fluctuations are normal and not worth reporting.
 
-## Usage
-
-```bash
 # Compare HEAD against previous commit
 regix compare HEAD~1 HEAD
 

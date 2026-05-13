@@ -37,24 +37,28 @@ def check_gates(snapshot: Snapshot, config: RegressionConfig) -> GateResult:
             target_val = config.target.get(gate_key)
 
             if not _passes(value, hard_val, operator):
-                checks.append(GateCheck(
-                    metric=model_attr,
-                    value=value,
-                    threshold=hard_val,
-                    operator=operator,
-                    passed=False,
-                    source="snapshot",
-                    severity="error",
-                ))
+                checks.append(
+                    GateCheck(
+                        metric=model_attr,
+                        value=value,
+                        threshold=hard_val,
+                        operator=operator,
+                        passed=False,
+                        source="snapshot",
+                        severity="error",
+                    )
+                )
             elif not _passes(value, target_val, operator):
-                checks.append(GateCheck(
-                    metric=model_attr,
-                    value=value,
-                    threshold=target_val,
-                    operator=operator,
-                    passed=False,
-                    source="snapshot",
-                    severity="warning",
-                ))
+                checks.append(
+                    GateCheck(
+                        metric=model_attr,
+                        value=value,
+                        threshold=target_val,
+                        operator=operator,
+                        passed=False,
+                        source="snapshot",
+                        severity="warning",
+                    )
+                )
 
     return GateResult(checks=checks)

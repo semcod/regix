@@ -66,7 +66,9 @@ def list_commits(
         ts = datetime.fromisoformat(lines[i + 1])
         author = lines[i + 2]
         message = lines[i + 3]
-        commits.append(CommitInfo(sha=sha, timestamp=ts, author=author, message=message))
+        commits.append(
+            CommitInfo(sha=sha, timestamp=ts, author=author, message=message)
+        )
         i += 4
     return commits
 
@@ -102,9 +104,7 @@ def get_changed_files(ref_a: str, ref_b: str, workdir: Path = Path(".")) -> list
 
 
 @contextmanager
-def checkout_temporary(
-    ref: str, workdir: Path = Path(".")
-) -> Iterator[Path]:
+def checkout_temporary(ref: str, workdir: Path = Path(".")) -> Iterator[Path]:
     """Context manager: create a git worktree at *ref* in a temp directory.
 
     The original working tree is never modified.
@@ -119,6 +119,7 @@ def checkout_temporary(
         _run_git(["worktree", "remove", "--force", str(tmp)], workdir, check=False)
         if tmp.exists():
             import shutil
+
             shutil.rmtree(tmp, ignore_errors=True)
 
 

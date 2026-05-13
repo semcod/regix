@@ -1,13 +1,12 @@
-# Regix — Regression Index for Python Code Quality
-
-
 ## AI Cost Tracking
 
-![AI Cost](https://img.shields.io/badge/AI%20Cost-$3.15-green) ![AI Model](https://img.shields.io/badge/AI%20Model-openrouter%2Fqwen%2Fqwen3-coder-next-lightgrey)
+![PyPI](https://img.shields.io/badge/pypi-costs-blue) ![Version](https://img.shields.io/badge/version-0.1.31-blue) ![Python](https://img.shields.io/badge/python-3.9+-blue) ![License](https://img.shields.io/badge/license-Apache--2.0-green)
+![AI Cost](https://img.shields.io/badge/AI%20Cost-$1.43-orange) ![Human Time](https://img.shields.io/badge/Human%20Time-9.9h-blue) ![Model](https://img.shields.io/badge/Model-openrouter%2Fqwen%2Fqwen3--coder--next-lightgrey)
 
-This project uses AI-generated code. Total cost: **$3.1500** with **21** AI commits.
+- 🤖 **LLM usage:** $1.4324 (22 commits)
+- 👤 **Human dev:** ~$987 (9.9h @ $100/h, 30min dedup)
 
-Generated on 2026-04-07 using [openrouter/qwen/qwen3-coder-next](https://openrouter.ai/models/openrouter/qwen/qwen3-coder-next)
+Generated on 2026-05-12 using [openrouter/qwen/qwen3-coder-next](https://openrouter.ai/qwen/qwen3-coder-next)
 
 ---
 
@@ -110,8 +109,6 @@ Python requirement: **>= 3.9**
 
 ---
 
-## Quick start
-
 ### Compare HEAD against previous commit
 
 ```bash
@@ -180,8 +177,6 @@ if report.has_errors:
 ```
 
 ---
-
-## Core concepts
 
 ### Snapshot
 
@@ -339,8 +334,6 @@ See [configuration.md](configuration.md) for the full reference.
 
 ---
 
-## Integration with CI
-
 ### GitHub Actions
 
 ```yaml
@@ -352,9 +345,6 @@ See [configuration.md](configuration.md) for the full reference.
     regix gates --fail-on error
 ```
 
-### Pre-commit hook
-
-```yaml
 # .pre-commit-config.yaml
 repos:
   - repo: local
@@ -406,22 +396,11 @@ These principles were derived from running iterative quality pipelines and obser
 
 ---
 
-## Development
-
 ### Running tests with tox
 
 Regix uses `tox` for testing across multiple Python versions:
 
 ```bash
-# Install tox
-pip install tox
-
-# Run tests in current Python version
-tox -e py313
-
-# Run tests in all supported versions
-tox
-
 # Run with coverage, linting, and type checking
 tox -e py313-full,lint,type
 ```
@@ -515,3 +494,20 @@ Regix is designed to sit **above** analysis tools (lizard, radon, vallm) as the 
 ## License
 
 Licensed under Apache-2.0.
+
+<!-- taskill:status:start -->
+
+## Status
+
+_Last updated by [taskill](https://github.com/oqlos/taskill) at 2026-04-25 13:47 UTC_
+
+| Metric | Value |
+|---|---|
+| HEAD | `d469837` |
+| Coverage | — |
+| Failing tests | — |
+| Commits in last cycle | 30 |
+
+> Refactors and docs updates across the project: CLI/test refactoring and configuration handling were improved, a configuration-management feature was added, and documentation/TODOs were refreshed. CI/test infra was updated (tox, pyqual) and multiple version bumps and lint auto-fix iterations were applied.
+
+<!-- taskill:status:end -->

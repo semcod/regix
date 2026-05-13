@@ -17,6 +17,7 @@ class CoverageBackend(BackendBase):
     def is_available(self) -> bool:
         try:
             import coverage as cov  # noqa: F401
+
             return True
         except ImportError:
             return False
@@ -24,6 +25,7 @@ class CoverageBackend(BackendBase):
     def version(self) -> str:
         try:
             import coverage
+
             return coverage.__version__
         except (ImportError, AttributeError):
             return "not installed"
@@ -55,9 +57,7 @@ class CoverageBackend(BackendBase):
 
         return results
 
-    def _from_json(
-        self, path: Path, files: list[Path]
-    ) -> list[SymbolMetrics]:
+    def _from_json(self, path: Path, files: list[Path]) -> list[SymbolMetrics]:
         results: list[SymbolMetrics] = []
         try:
             data = json.loads(path.read_text(encoding="utf-8"))
@@ -100,9 +100,7 @@ class CoverageBackend(BackendBase):
                     pct = (len(lines) / total) * 100
                 else:
                     pct = 0.0
-                results.append(
-                    SymbolMetrics(file=fname, symbol=None, coverage=pct)
-                )
+                results.append(SymbolMetrics(file=fname, symbol=None, coverage=pct))
         except Exception:
             pass
         return results

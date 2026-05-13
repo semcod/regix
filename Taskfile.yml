@@ -1,0 +1,286 @@
+version: '1'
+name: regix
+description: Minimal Taskfile
+variables:
+  APP_NAME: regix
+environments:
+  local:
+    container_runtime: docker
+    compose_command: docker compose
+pipeline:
+  python_version: "3.12"
+  runner_image: ubuntu-latest
+  branches: [main]
+  cache: [~/.cache/pip]
+  artifacts: [dist/]
+
+  stages:
+    - name: lint
+      tasks: [lint]
+
+    - name: test
+      tasks: [test]
+
+    - name: build
+      tasks: [build]
+      when: "branch:main"
+
+tasks:
+  install:
+    desc: Install Python dependencies (editable)
+    cmds:
+    - pip install -e .[dev]
+  test:
+    desc: Run pytest suite
+    cmds:
+    - pytest -q
+  build:
+    desc: Build wheel + sdist
+    cmds:
+    - python -m build
+  clean:
+    desc: Remove build artefacts
+    cmds:
+    - rm -rf build/ dist/ *.egg-info
+  help:
+    desc: '[imported from Makefile] help'
+    cmds:
+    - echo "Targets:"
+    - echo "  make install  - install goal locally"
+    - echo "  make dev      - install in development mode"
+    - echo "  make test     - run tests"
+    - echo "  make build    - build package for PyPI"
+    - echo "  make publish  - build and upload to PyPI"
+    - echo "  make clean    - remove build artifacts"
+    - echo "  make push     - use goal to push changes"
+    - echo "  make benchmark      - run performance benchmark"
+    - echo "  make benchmark-ci   - benchmark for CI (plain, threshold)"
+    - echo "  make benchmark-json - benchmark JSON output"
+    - echo "  make deps-cache     - download all deps to local wheel cache"
+    - echo "  make deps-lock      - freeze current versions to requirements-lock.txt"
+    - echo "  make test-offline   - run tests without network (uses cached deps)"
+  dev:
+    desc: '[imported from Makefile] dev'
+    cmds:
+    - pip install -e ".[dev]"
+  publish:
+    desc: '[imported from Makefile] publish'
+    cmds:
+    - python -m twine upload dist/*
+    deps:
+    - bump-version
+    - build
+  push:
+    desc: '[imported from Makefile] push'
+    cmds:
+    - if command -v goal &> /dev/null; then \
+    - goal push; \
+    - else \
+    - echo "Goal not installed. Run 'make install' first."; \
+    - fi
+    deps:
+    - bump-version
+  benchmark:
+    desc: '[imported from Makefile] benchmark'
+    cmds:
+    - $(PYTHON) -m regix.benchmark
+  benchmark-ci:
+    desc: '[imported from Makefile] benchmark-ci'
+    cmds:
+    - $(PYTHON) -m regix.benchmark --plain --threshold 30.0
+  benchmark-json:
+    desc: '[imported from Makefile] benchmark-json'
+    cmds:
+    - $(PYTHON) -m regix.benchmark --json > .pyqual/benchmark.json
+  docker-matrix:
+    desc: '[imported from Makefile] docker-matrix'
+    cmds:
+    - bash integration/run_docker_matrix.sh
+  deps-cache:
+    desc: '[imported from Makefile] deps-cache'
+    cmds:
+    - echo "${YELLOW}Downloading all deps to local wheel cache...${RESET}"
+    - mkdir -p $(WHEEL_CACHE)
+    - $(PIP) download -d $(WHEEL_CACHE) -e ".[dev]"
+    - echo "${GREEN}Cached $$(ls $(WHEEL_CACHE) | wc -l) wheels in $(WHEEL_CACHE)/${RESET}"
+  deps-lock:
+    desc: '[imported from Makefile] deps-lock'
+    cmds:
+    - echo "${YELLOW}Freezing current versions...${RESET}"
+    - $(PIP) freeze --exclude-editable > requirements-lock.txt
+    - echo "${GREEN}Wrote requirements-lock.txt${RESET}"
+  test-offline:
+    desc: '[imported from Makefile] test-offline'
+    cmds:
+    - echo "${YELLOW}Running tests offline (no network)...${RESET}"
+    - $(PYTHON) -m pytest tests/ -q --tb=short -p no:cacheprovider
+    - echo "${GREEN}Offline tests complete${RESET}"
+  install-offline:
+    desc: '[imported from Makefile] install-offline'
+    cmds:
+    - if [ ! -d "$(WHEEL_CACHE)" ]; then \
+    - echo "${YELLOW}No wheel cache found. Run 'make deps-cache' first.${RESET}";
+      \
+    - exit 1; \
+    - fi
+    - $(PIP) install --no-index --find-links=$(WHEEL_CACHE) -e ".[dev]"
+  bump-version:
+    desc: '[imported from Makefile] bump-version'
+    cmds:
+    - if [ -z "$(PART)" ]; then \
+    - 'echo "${YELLOW}Error: PART variable not set. Usage: make bump-version PART=<major|minor|patch>${RESET}";
+      \'
+    - exit 1; \
+    - fi
+    - echo "${YELLOW}Bumping $(PART) version...${RESET}"
+    - current_version=$$(grep '^version = ' pyproject.toml | head -1 | sed 's/version
+      = "\(.*\)"/\1/'); \
+    - 'echo "Current version: $$current_version"; \'
+    - IFS='.' read -r major minor patch <<< "$$current_version"; \
+    - case "$(PART)" in \
+    - major) major=$$((major + 1)); minor=0; patch=0 ;; \
+    - minor) minor=$$((minor + 1)); patch=0 ;; \
+    - patch) patch=$$((patch + 1)) ;; \
+    - '*) echo "${YELLOW}Error: PART must be major, minor, or patch${RESET}"; exit
+      1 ;; \'
+    - esac; \
+    - new_version="$${major}.$${minor}.$${patch}"; \
+    - sed -i "s/^version = \"$$current_version\"/version = \"$$new_version\"/" pyproject.toml;
+      \
+    - echo "${GREEN}Version bumped to $$new_version${RESET}"; \
+    - git add pyproject.toml; \
+    - git commit -m "Bump version to $$new_version"; \
+    - if git rev-parse "v$$new_version" >/dev/null 2>&1; then \
+    - 'echo "${YELLOW}Error: tag ''v$$new_version'' already exists${RESET}"; \'
+    - exit 1; \
+    - fi; \
+    - git tag -a "v$$new_version" -m "Version $$new_version"; \
+    - echo "${GREEN}Created tag v$$new_version${RESET}"
+  health:
+    desc: '[from doql] workflow: health'
+    cmds:
+    - docker compose ps
+    - docker compose exec app echo "Health check passed"
+  import-makefile-hint:
+    desc: '[from doql] workflow: import-makefile-hint'
+    cmds:
+    - 'echo ''Run: taskfile import Makefile to import existing targets.'''
+  all:
+    desc: Run install, lint, test
+    cmds:
+    - taskfile run install
+    - taskfile run lint
+    - taskfile run test
+  sumd:
+    desc: Generate SUMD (Structured Unified Markdown Descriptor) for AI-aware project description
+    cmds:
+    - |
+      echo "# $(basename $(pwd))" > SUMD.md
+      echo "" >> SUMD.md
+      echo "$(python3 -c "import tomllib; f=open('pyproject.toml','rb'); d=tomllib.load(f); print(d.get('project',{}).get('description','Project description'))" 2>/dev/null || echo 'Project description')" >> SUMD.md
+      echo "" >> SUMD.md
+      echo "## Contents" >> SUMD.md
+      echo "" >> SUMD.md
+      echo "- [Metadata](#metadata)" >> SUMD.md
+      echo "- [Architecture](#architecture)" >> SUMD.md
+      echo "- [Dependencies](#dependencies)" >> SUMD.md
+      echo "- [Source Map](#source-map)" >> SUMD.md
+      echo "- [Intent](#intent)" >> SUMD.md
+      echo "" >> SUMD.md
+      echo "## Metadata" >> SUMD.md
+      echo "" >> SUMD.md
+      echo "- **name**: \`$(basename $(pwd))\`" >> SUMD.md
+      echo "- **version**: \`$(python3 -c "import tomllib; f=open('pyproject.toml','rb'); d=tomllib.load(f); print(d.get('project',{}).get('version','unknown'))" 2>/dev/null || echo 'unknown')\`" >> SUMD.md
+      echo "- **python_requires**: \`>=$(python3 --version 2>/dev/null | cut -d' ' -f2 | cut -d. -f1,2)\`" >> SUMD.md
+      echo "- **license**: $(python3 -c "import tomllib; f=open('pyproject.toml','rb'); d=tomllib.load(f); print(d.get('project',{}).get('license',{}).get('text','MIT'))" 2>/dev/null || echo 'MIT')" >> SUMD.md
+      echo "- **ecosystem**: SUMD + DOQL + testql + taskfile" >> SUMD.md
+      echo "- **generated_from**: pyproject.toml, Taskfile.yml, Makefile, src/" >> SUMD.md
+      echo "" >> SUMD.md
+      echo "## Architecture" >> SUMD.md
+      echo "" >> SUMD.md
+      echo '```' >> SUMD.md
+      echo "SUMD (description) → DOQL/source (code) → taskfile (automation) → testql (verification)" >> SUMD.md
+      echo '```' >> SUMD.md
+      echo "" >> SUMD.md
+      echo "## Source Map" >> SUMD.md
+      echo "" >> SUMD.md
+      find . -name '*.py' -not -path './.venv/*' -not -path './venv/*' -not -path './__pycache__/*' -not -path './.git/*' | head -50 | sed 's|^./||' | sed 's|^|- |' >> SUMD.md
+      echo "Generated SUMD.md"
+    - |
+      python3 -c "
+      import json, os, subprocess
+      from pathlib import Path
+      project_name = Path.cwd().name
+      py_files = list(Path('.').rglob('*.py'))
+      py_files = [f for f in py_files if not any(x in str(f) for x in ['.venv', 'venv', '__pycache__', '.git'])]
+      data = {
+          'project_name': project_name,
+          'description': 'SUMD - Structured Unified Markdown Descriptor for AI-aware project refactorization',
+          'files': [{'path': str(f), 'type': 'python'} for f in py_files[:100]]
+      }
+      with open('sumd.json', 'w') as f:
+          json.dump(data, f, indent=2)
+      print('Generated sumd.json')
+      " 2>/dev/null || echo 'Python generation failed, using fallback'
+  sumr:
+    desc: Generate SUMR (Summary Report) with project metrics and health status
+    cmds:
+    - |
+      echo "# $(basename $(pwd)) - Summary Report" > SUMR.md
+      echo "" >> SUMR.md
+      echo "SUMR - Summary Report for project analysis" >> SUMR.md
+      echo "" >> SUMR.md
+      echo "## Contents" >> SUMR.md
+      echo "" >> SUMR.md
+      echo "- [Metadata](#metadata)" >> SUMR.md
+      echo "- [Quality Status](#quality-status)" >> SUMR.md
+      echo "- [Metrics](#metrics)" >> SUMR.md
+      echo "- [Refactoring Analysis](#refactoring-analysis)" >> SUMR.md
+      echo "- [Intent](#intent)" >> SUMR.md
+      echo "" >> SUMR.md
+      echo "## Metadata" >> SUMR.md
+      echo "" >> SUMR.md
+      echo "- **name**: \`$(basename $(pwd))\`" >> SUMR.md
+      echo "- **version**: \`$(python3 -c "import tomllib; f=open('pyproject.toml','rb'); d=tomllib.load(f); print(d.get('project',{}).get('version','unknown'))" 2>/dev/null || echo 'unknown')\`" >> SUMR.md
+      echo "- **generated_at**: \`$(date -Iseconds)\`" >> SUMR.md
+      echo "" >> SUMR.md
+      echo "## Quality Status" >> SUMR.md
+      echo "" >> SUMR.md
+      if [ -f pyqual.yaml ]; then
+        echo "- **pyqual_config**: ✅ Present" >> SUMR.md
+        echo "- **last_run**: $(stat -c %y .pyqual/pipeline.db 2>/dev/null | cut -d' ' -f1 || echo 'N/A')" >> SUMR.md
+      else
+        echo "- **pyqual_config**: ❌ Missing" >> SUMR.md
+      fi
+      echo "" >> SUMR.md
+      echo "## Metrics" >> SUMR.md
+      echo "" >> SUMR.md
+      py_files=$(find . -name '*.py' -not -path './.venv/*' -not -path './venv/*' | wc -l)
+      echo "- **python_files**: $py_files" >> SUMR.md
+      lines=$(find . -name '*.py' -not -path './.venv/*' -not -path './venv/*' -exec cat {} \; 2>/dev/null | wc -l)
+      echo "- **total_lines**: $lines" >> SUMR.md
+      echo "" >> SUMR.md
+      echo "## Refactoring Analysis" >> SUMR.md
+      echo "" >> SUMR.md
+      echo "Run \`code2llm ./ -f evolution\` for detailed refactoring queue." >> SUMR.md
+      echo "Generated SUMR.md"
+    - |
+      python3 -c "
+      import json, os, subprocess
+      from pathlib import Path
+      from datetime import datetime
+      project_name = Path.cwd().name
+      py_files = len([f for f in Path('.').rglob('*.py') if not any(x in str(f) for x in ['.venv', 'venv', '__pycache__', '.git'])])
+      data = {
+          'project_name': project_name,
+          'report_type': 'SUMR',
+          'generated_at': datetime.now().isoformat(),
+          'metrics': {
+              'python_files': py_files,
+              'has_pyqual_config': Path('pyqual.yaml').exists()
+          }
+      }
+      with open('SUMR.json', 'w') as f:
+          json.dump(data, f, indent=2)
+      print('Generated SUMR.json')
+      " 2>/dev/null || echo 'Python generation failed, using fallback'

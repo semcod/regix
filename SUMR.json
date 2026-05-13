@@ -1,0 +1,9 @@
+{
+  "project_name": "regix",
+  "report_type": "SUMR",
+  "generated_at": "2026-04-19T12:31:08.651220",
+  "metrics": {
+    "python_files": 1951,
+    "has_pyqual_config": true
+  }
+}

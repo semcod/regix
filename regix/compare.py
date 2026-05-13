@@ -16,10 +16,20 @@ from regix.models import (
 from regix.smells import detect_smells
 
 # Metrics to compare, in order
-_TRACKED_METRICS = ("cc", "mi", "coverage", "length", "docstring_coverage",
-                    "quality_score", "imports",
-                    "fan_out", "call_count", "symbol_count",
-                    "logic_density", "node_type_diversity")
+_TRACKED_METRICS = (
+    "cc",
+    "mi",
+    "coverage",
+    "length",
+    "docstring_coverage",
+    "quality_score",
+    "imports",
+    "fan_out",
+    "call_count",
+    "symbol_count",
+    "logic_density",
+    "node_type_diversity",
+)
 
 
 def _compute_delta(
@@ -83,17 +93,19 @@ def _collect_deleted_symbol(
     for metric in _TRACKED_METRICS:
         val = getattr(m_before, metric)
         if val is not None:
-            result.append(Improvement(
-                file=file_path,
-                symbol=symbol_name,
-                line=m_before.line_start,
-                metric=metric,
-                before=val,
-                after=0.0,
-                delta=-val if config.is_lower_better(metric) else val,
-                ref_before=ref_before,
-                ref_after=ref_after,
-            ))
+            result.append(
+                Improvement(
+                    file=file_path,
+                    symbol=symbol_name,
+                    line=m_before.line_start,
+                    metric=metric,
+                    before=val,
+                    after=0.0,
+                    delta=-val if config.is_lower_better(metric) else val,
+                    ref_before=ref_before,
+                    ref_after=ref_after,
+                )
+            )
     return result
 
 
@@ -111,25 +123,42 @@ def _compare_symbol_metrics(
     imps: list[Improvement] = []
     changed = False
     for metric in _TRACKED_METRICS:
-        md = _compute_delta(metric, getattr(m_before, metric), getattr(m_after, metric), config)
+        md = _compute_delta(
+            metric, getattr(m_before, metric), getattr(m_after, metric), config
+        )
         if md is None:
             continue
         if md.is_regression and md.severity in ("error", "warning"):
-            regs.append(Regression(
-                file=file_path, symbol=symbol_name, line=m_after.line_start,
-                metric=metric, before=md.before, after=md.after,  # type: ignore[arg-type]
-                delta=md.delta, severity=md.severity,  # type: ignore[arg-type]
-                threshold=md.threshold,  # type: ignore[arg-type]
-                ref_before=ref_before, ref_after=ref_after,
-            ))
+            regs.append(
+                Regression(
+                    file=file_path,
+                    symbol=symbol_name,
+                    line=m_after.line_start,
+                    metric=metric,
+                    before=md.before,
+                    after=md.after,  # type: ignore[arg-type]
+                    delta=md.delta,
+                    severity=md.severity,  # type: ignore[arg-type]
+                    threshold=md.threshold,  # type: ignore[arg-type]
+                    ref_before=ref_before,
+                    ref_after=ref_after,
+                )
+            )
             changed = True
         elif md.is_improvement:
-            imps.append(Improvement(
-                file=file_path, symbol=symbol_name, line=m_after.line_start,
-                metric=metric, before=md.before, after=md.after,  # type: ignore[arg-type]
-                delta=md.delta,  # type: ignore[arg-type]
-                ref_before=ref_before, ref_after=ref_after,
-            ))
+            imps.append(
+                Improvement(
+                    file=file_path,
+                    symbol=symbol_name,
+                    line=m_after.line_start,
+                    metric=metric,
+                    before=md.before,
+                    after=md.after,  # type: ignore[arg-type]
+                    delta=md.delta,  # type: ignore[arg-type]
+                    ref_before=ref_before,
+                    ref_after=ref_after,
+                )
+            )
             changed = True
     return regs, imps, changed
 
@@ -162,15 +191,26 @@ def compare(
         if m_before is None:
             continue
         if m_after is None:
-            improvements.extend(_collect_deleted_symbol(
-                m_before, file_path, symbol_name, config,
-                snap_before.ref, snap_after.ref,
-            ))
+            improvements.extend(
+                _collect_deleted_symbol(
+                    m_before,
+                    file_path,
+                    symbol_name,
+                    config,
+                    snap_before.ref,
+                    snap_after.ref,
+                )
+            )
             continue
 
         regs, imps, changed = _compare_symbol_metrics(
-            m_before, m_after, file_path, symbol_name, config,
-            snap_before.ref, snap_after.ref,
+            m_before,
+            m_after,
+            file_path,
+            symbol_name,
+            config,
+            snap_before.ref,
+            snap_after.ref,
         )
         regressions.extend(regs)
         improvements.extend(imps)

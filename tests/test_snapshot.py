@@ -5,7 +5,6 @@ from __future__ import annotations
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-import pytest
 
 from regix.config import RegressionConfig
 from regix.models import SymbolMetrics

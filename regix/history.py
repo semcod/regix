@@ -49,7 +49,10 @@ def _compute_trends(
         lower_better = mk.startswith("cc") or mk.startswith("length")
         is_degrading = (slope > 0 and lower_better) or (slope < 0 and not lower_better)
         trends[mk] = TrendLine(
-            metric=mk, values=values, slope=round(slope, 4), is_degrading=is_degrading,
+            metric=mk,
+            values=values,
+            slope=round(slope, 4),
+            is_degrading=is_degrading,
         )
     return trends
 
@@ -74,8 +77,11 @@ def build_history(
             continue
 
         cm = CommitMetrics(
-            sha=ci.sha, ref=None, timestamp=ci.timestamp,
-            author=ci.author, message=ci.message,
+            sha=ci.sha,
+            ref=None,
+            timestamp=ci.timestamp,
+            author=ci.author,
+            message=ci.message,
             metrics=_aggregate_snapshot_metrics(snap.symbols),
         )
         commit_metrics_list.append(cm)

@@ -6,6 +6,14 @@ CONSTANT_5 = 5.0
 CONSTANT_30 = 30.0
 PORT_50 = 50
 
+
+CONSTANT_1 = CONSTANT_1
+CONSTANT_1 = CONSTANT_1
+CONSTANT_3 = CONSTANT_3
+CONSTANT_5 = CONSTANT_5
+CONSTANT_30 = CONSTANT_30
+PORT_50 = PORT_50
+
 """Tests for regix.benchmark — data model, probes, reporter, suite."""
 import json
 from pathlib import Path
@@ -25,7 +33,7 @@ class TestBenchmarkResult:
         assert r.passed is True
 
     def test_fail_over_threshold(self):
-        r = BenchmarkResult(name='test', suite='s', elapsed=3.0, threshold=2.0)
+        r = BenchmarkResult(name='test', suite='s', elapsed=CONSTANT_3, threshold=2.0)
         assert r.status == 'FAIL'
         assert r.passed is False
 
@@ -35,11 +43,11 @@ class TestBenchmarkResult:
         assert r.passed is False
 
     def test_to_dict(self):
-        r = BenchmarkResult(name='test', suite='s', elapsed=1.234, threshold=2.0)
+        r = BenchmarkResult(name='test', suite='s', elapsed=CONSTANT_1, threshold=2.0)
         d = r.to_dict()
         assert d['name'] == 'test'
         assert d['status'] == 'PASS'
-        assert d['elapsed'] == 1.234
+        assert d['elapsed'] == CONSTANT_1
         assert d['threshold'] == 2.0
 
     def test_to_dict_with_extra(self):
@@ -53,7 +61,7 @@ class TestFmtTime:
         assert 'ms' in _fmt_time(0.005)
 
     def test_seconds(self):
-        assert 's' in _fmt_time(1.5)
+        assert 's' in _fmt_time(CONSTANT_1)
 
     def test_zero(self):
         result = _fmt_time(0.0)
@@ -94,7 +102,7 @@ class TestBenchmarkSuite:
 class TestBenchmarkReporter:
 
     def _results(self) -> list[BenchmarkResult]:
-        return [BenchmarkResult(name='fast', suite='startup', elapsed=0.1, threshold=1.0), BenchmarkResult(name='slow', suite='startup', elapsed=5.0, threshold=2.0), BenchmarkResult(name='err', suite='cli', elapsed=0.0, error='failed')]
+        return [BenchmarkResult(name='fast', suite='startup', elapsed=0.1, threshold=1.0), BenchmarkResult(name='slow', suite='startup', elapsed=CONSTANT_5, threshold=2.0), BenchmarkResult(name='err', suite='cli', elapsed=0.0, error='failed')]
 
     def test_format_result_details_no_extra(self):
         r = BenchmarkResult(name='t', suite='s', elapsed=1.0)
@@ -107,7 +115,7 @@ class TestBenchmarkReporter:
         assert 'boom' in details
 
     def test_format_result_details_with_extra(self):
-        r = BenchmarkResult(name='t', suite='s', elapsed=1.0, extra={'ops_per_sec': 100, 'symbols_found': 50, 'summary': 'done'})
+        r = BenchmarkResult(name='t', suite='s', elapsed=1.0, extra={'ops_per_sec': 100, 'symbols_found': PORT_50, 'summary': 'done'})
         details = BenchmarkReporter._format_result_details(r)
         assert '100 ops/s' in details
         assert '50 symbols' in details
@@ -130,7 +138,7 @@ class TestBenchmarkReporter:
         reporter.print_json()
         out = capsys.readouterr().out
         data = json.loads(out)
-        assert len(data) == 3
+        assert len(data) == CONSTANT_3
 
     def test_print_auto_json(self, capsys):
         reporter = BenchmarkReporter(self._results())
@@ -167,7 +175,7 @@ class TestThroughputProbe:
         assert 'ops_per_sec' in result.extra
 
     def test_with_threshold_pass(self):
-        probe = ThroughputProbe(label='fast', fn=lambda: None, n=5, threshold_s=10.0)
+        probe = ThroughputProbe(label='fast', fn=lambda: None, n=CONSTANT_5, threshold_s=10.0)
         result = probe.run()
         assert result.status == 'PASS'
 
@@ -194,7 +202,7 @@ class TestThroughputProbe:
 class TestImportProbe:
 
     def test_import_os(self):
-        probe = ImportProbe('os', threshold=5.0, repeat=1)
+        probe = ImportProbe('os', threshold=CONSTANT_5, repeat=1)
         result = probe.run()
         assert result.status in ('PASS', 'OK')
         assert result.elapsed > 0
@@ -223,7 +231,7 @@ class TestUnitTestProbe:
     def test_run_conftest(self, tmp_path: Path):
         test_file = tmp_path / 'test_trivial.py'
         test_file.write_text('def test_one(): assert True\n')
-        probe = UnitTestProbe(test_file, threshold=30.0, cwd=tmp_path)
+        probe = UnitTestProbe(test_file, threshold=CONSTANT_30, cwd=tmp_path)
         result = probe.run()
         assert result.elapsed > 0
         assert result.status in ('PASS', 'OK')
@@ -231,7 +239,7 @@ class TestUnitTestProbe:
 class TestBackendProbe:
 
     def test_structure_backend(self):
-        probe = BackendProbe('structure', file_count=3, threshold=10.0)
+        probe = BackendProbe('structure', file_count=CONSTANT_3, threshold=10.0)
         result = probe.run()
         assert result.status in ('PASS', 'OK', 'FAIL')
         assert result.error is None

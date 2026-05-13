@@ -1,5 +1,3 @@
-# Regix — Configuration Reference
-
 ## Configuration file locations
 
 Regix searches for configuration in the following order (first match wins):
@@ -185,8 +183,6 @@ All configuration values can be overridden by environment variables. The naming 
 
 ---
 
-## Common configurations
-
 ### Minimal — CC only, no coverage
 
 ```yaml
@@ -274,9 +270,6 @@ for pkg in packages/*/; do
 done
 ```
 
-### pyqual integration
-
-```yaml
 # pyqual.yaml
 pipeline:
   metrics:
@@ -308,8 +301,6 @@ pipeline:
 ```
 
 ---
-
-## Threshold tuning guide
 
 ### Starting values
 
@@ -356,8 +347,6 @@ exclude:
 ```
 
 ---
-
-## Metric definitions
 
 ### Cyclomatic Complexity (`cc`)
 
@@ -476,8 +465,6 @@ Regix automatically detects **cross-symbol patterns** that cannot be expressed a
 
 ---
 
-## Important lessons (from pyqual operational experience)
-
 ### Scan only the files you own
 
 Running `vallm batch . --recursive` (or any analysis tool) on the entire project root will include:
@@ -500,9 +487,6 @@ Regix separates these two concerns:
 
 Use both: `regix gates` in CI to prevent new absolute violations, and `regix compare` to catch regressions introduced by specific PRs.
 
-### Use `--local` before committing
-
-```bash
 # Before committing: check if your changes caused any regressions
 regix compare HEAD --local
 ```

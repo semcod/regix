@@ -45,9 +45,6 @@ The **exporters** transform parsed data into output formats. Each exporter is a 
 
 The **CLI** orchestrates the pipeline: parse → analyse → export, with flags for output format selection, file filtering, and integration options.
 
-## Usage
-
-```bash
 # Full analysis with all outputs
 code2llm ./my-project -f toon
 

@@ -1,5 +1,3 @@
-# Regix — Architecture
-
 ## Overview
 
 Regix is structured as a thin orchestration layer over existing static analysis tools. It does not reimplement code analysis — instead it coordinates snapshot capture, metric comparison, and report generation.
@@ -43,8 +41,6 @@ Regix is structured as a thin orchestration layer over existing static analysis 
 ```
 
 ---
-
-## Module descriptions
 
 ### `regix/__init__.py`
 

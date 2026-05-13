@@ -95,10 +95,23 @@ def _merge_symbols(
                 index[key] = SymbolMetrics(file=sm.file, symbol=sm.symbol, raw={})
             existing = index[key]
             # Merge fields: keep first non-None value
-            for attr in ("line_start", "line_end", "cc", "mi", "length",
-                         "coverage", "docstring_coverage", "quality_score", "imports",
-                         "fan_out", "call_count", "symbol_count",
-                         "param_count", "node_type_diversity", "logic_density"):
+            for attr in (
+                "line_start",
+                "line_end",
+                "cc",
+                "mi",
+                "length",
+                "coverage",
+                "docstring_coverage",
+                "quality_score",
+                "imports",
+                "fan_out",
+                "call_count",
+                "symbol_count",
+                "param_count",
+                "node_type_diversity",
+                "logic_density",
+            ):
                 new_val = getattr(sm, attr)
                 if new_val is not None and getattr(existing, attr) is None:
                     setattr(existing, attr, new_val)
@@ -131,7 +144,9 @@ def capture(
 
     # Determine which backends to run
     if backend_names is None:
-        backend_names = [v for v in config.backends.values() if v not in ("none", "builtin")]
+        backend_names = [
+            v for v in config.backends.values() if v not in ("none", "builtin")
+        ]
         # Always include builtin backends
         if "docstring" not in backend_names:
             backend_names.append("docstring")

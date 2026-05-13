@@ -1,5 +1,3 @@
-# System Architecture Analysis
-
 ## Overview
 
 - **Project**: /home/tom/github/semcod/regix
@@ -10,8 +8,6 @@
 - **Total Classes**: 41
 - **Modules**: 25
 - **Entry Points**: 120
-
-## Architecture by Module
 
 ### regix.benchmark
 - **Functions**: 31
@@ -284,8 +280,6 @@ _parse [regix.integrations.RegixCollector]
 snapshot [regix.cli]
 ```
 
-## Key Classes
-
 ### regix.config.RegressionConfig
 > All user-configurable values for a Regix run.
 - **Methods**: 35
@@ -447,8 +441,6 @@ Key functions that process and transform data:
 ### regix.benchmark._make_config_parse_probe
 > Benchmark config parsing throughput.
 - **Output to**: ThroughputProbe, tempfile.mkdtemp, cfg_path.write_text, str, RegressionConfig.from_file
-
-## Behavioral Patterns
 
 ### recursion_check_gates
 - **Type**: recursion

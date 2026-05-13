@@ -92,5 +92,5 @@ def check_regression() -> None:
         print("✅ No regression detected")
         sys.exit(0)
 
-if __name__ == "__main__":
-    check_regression()
+check_regression()
+

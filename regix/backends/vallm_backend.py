@@ -27,7 +27,9 @@ class VallmBackend(BackendBase):
         try:
             result = subprocess.run(
                 ["vallm", "--version"],
-                capture_output=True, text=True, check=False,
+                capture_output=True,
+                text=True,
+                check=False,
             )
             return result.stdout.strip() or "unknown"
         except FileNotFoundError:
@@ -48,7 +50,9 @@ class VallmBackend(BackendBase):
         try:
             proc = subprocess.run(
                 ["vallm", "batch", str(workdir), "--recursive", "--format", "json"],
-                capture_output=True, text=True, check=False,
+                capture_output=True,
+                text=True,
+                check=False,
                 cwd=str(workdir),
             )
             if proc.returncode != 0:

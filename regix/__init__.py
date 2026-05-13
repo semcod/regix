@@ -24,9 +24,6 @@ from regix.models import (
 )
 
 # Ensure backends are registered on import
-from regix.backends import docstring_backend as _docstring  # noqa: F401
-from regix.backends import structure_backend as _structure  # noqa: F401
-from regix.backends import architecture_backend as _architecture  # noqa: F401
 
 try:
     from regix.backends import lizard_backend as _lizard  # noqa: F401
@@ -99,7 +96,8 @@ class Regix:
         from regix.history import build_history
 
         return build_history(
-            depth=depth, ref=ref,
+            depth=depth,
+            ref=ref,
             workdir=Path(self.config.workdir),
             config=self.config,
             metrics_filter=metrics,

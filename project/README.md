@@ -28,22 +28,10 @@ When you run `code2llm ./ -f all`, the following files are created:
 | `calls.mmd` | **Mermaid** | **📞 Call graph** | Function dependencies (edges only) |
 | `compact_flow.mmd` | **Mermaid** | **📦 Module overview** | Aggregated module-level view |
 
-## 🚀 Quick Start Commands
-
-### Basic Analysis
-```bash
-# Quick health check (TOON format only)
-code2llm ./ -f toon
-
-# Generate all formats (what created these files)
-code2llm ./ -f all
-
 # LLM-ready context only
 code2llm ./ -f context
 ```
 
-### Performance Options
-```bash
 # Fast analysis for large projects
 code2llm ./ -f toon --strategy quick
 
@@ -54,8 +42,6 @@ code2llm ./ -f all --max-memory 500
 code2llm ./ -f all --no-png
 ```
 
-### Refactoring Focus
-```bash
 # Get refactoring recommendations
 code2llm ./ -f evolution
 
@@ -65,8 +51,6 @@ code2llm ./ -f toon --refactor --smell god_function
 # Data flow analysis
 code2llm ./ -f flow --data-flow
 ```
-
-## 📖 Understanding Each File
 
 ### `analysis.toon` - Health Diagnostics
 **Purpose**: Quick overview of code health issues
@@ -162,9 +146,6 @@ grep -E "^  .*[0-9]{3,}$" project.toon.yaml | sort -t',' -k2 -n -r | head -10
 
 **Example usage**:
 ```bash
-# View the prompt
-cat prompt.txt
-
 # Copy to clipboard and paste into ChatGPT/Claude
 cat prompt.txt | pbcopy  # macOS
 cat prompt.txt | xclip -sel clip  # Linux
@@ -184,9 +165,6 @@ cat prompt.txt | xclip -sel clip  # Linux
 cat context.md | pbcopy  # macOS
 cat context.md | xclip -sel clip  # Linux
 
-# Use with Claude/ChatGPT for code analysis
-```
-
 ### Visualization Files (`*.mmd`, `*.png`)
 **Purpose**: Visual understanding of code structure
 **Files**:
@@ -201,21 +179,11 @@ cat context.md | xclip -sel clip  # Linux
 open flow.png  # macOS
 xdg-open flow.png  # Linux
 
-# Edit in Mermaid Live Editor
-# Copy content of .mmd files to https://mermaid.live
-```
-
-## 🔍 Common Analysis Patterns
-
-### 1. Code Health Assessment
-```bash
 # Quick health check
 code2llm ./ -f toon
 cat analysis.toon | grep -E "(HEALTH|REFACTOR)"
 ```
 
-### 2. Refactoring Planning
-```bash
 # Get refactoring queue
 code2llm ./ -f evolution
 cat evolution.toon.yaml
@@ -224,25 +192,16 @@ cat evolution.toon.yaml
 code2llm ./ -f toon --refactor --smell god_function
 ```
 
-### 3. LLM Assistance
-```bash
 # Generate context for AI
 code2llm ./ -f context
 cat context.md
 
-# Use with Claude: "Based on this context, help me refactor the god modules"
-```
-
-### 4. Team Documentation
-```bash
 # Generate all docs for team
 code2llm ./ -f all -o ./docs/
 
 # Create visual diagrams
 open docs/flow.png
 ```
-
-## 📊 Interpreting Metrics
 
 ### Complexity Metrics (CC)
 - **🔴 Critical (≥5.0)**: Immediate refactoring needed
@@ -262,11 +221,6 @@ open docs/flow.png
 - **CONTRACT**: Clear input/output specification
 - **SIDE_EFFECT**: External state modification
 
-## 🛠️ Integration Examples
-
-### CI/CD Pipeline
-```bash
-#!/bin/bash
 # Analyze code quality in CI
 code2llm ./ -f toon -o ./analysis
 if grep -q "🔴 GOD" ./analysis/analysis.toon; then
@@ -275,9 +229,6 @@ if grep -q "🔴 GOD" ./analysis/analysis.toon; then
 fi
 ```
 
-### Pre-commit Hook
-```bash
-#!/bin/sh
 # .git/hooks/pre-commit
 code2llm ./ -f toon -o ./temp_analysis
 if grep -q "🔴" ./temp_analysis/analysis.toon; then
@@ -286,8 +237,6 @@ fi
 rm -rf ./temp_analysis
 ```
 
-### Documentation Generation
-```bash
 # Generate docs for README
 code2llm ./ -f context -o ./docs/
 echo "## Architecture" >> README.md
@@ -302,10 +251,6 @@ cat docs/context.md >> README.md
 4. **Reference visualizations** - Understand system architecture
 5. **Track progress** - Re-run analysis after changes
 
-## 🔧 Advanced Usage
-
-### Custom Analysis
-```bash
 # Deep analysis with all insights
 code2llm ./ -m hybrid -f all --max-depth 15 -v
 
@@ -316,8 +261,6 @@ code2llm ./ -m static -f toon --strategy quick
 code2llm ./ -f toon,evolution --refactor
 ```
 
-### Output Customization
-```bash
 # Separate output directories
 code2llm ./ -f all -o ./analysis-$(date +%Y%m%d)
 

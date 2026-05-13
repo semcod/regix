@@ -1,0 +1,406 @@
+{
+  "project_name": "regix",
+  "description": "SUMD - Structured Unified Markdown Descriptor for AI-aware project refactorization",
+  "files": [
+    {
+      "path": "tests/test_gates.py",
+      "type": "python"
+    },
+    {
+      "path": "tests/test_backends.py",
+      "type": "python"
+    },
+    {
+      "path": "tests/test_history.py",
+      "type": "python"
+    },
+    {
+      "path": "tests/test_exceptions.py",
+      "type": "python"
+    },
+    {
+      "path": "tests/conftest.py",
+      "type": "python"
+    },
+    {
+      "path": "tests/test_report.py",
+      "type": "python"
+    },
+    {
+      "path": "tests/test_config_full.py",
+      "type": "python"
+    },
+    {
+      "path": "tests/test_smells.py",
+      "type": "python"
+    },
+    {
+      "path": "tests/test_git.py",
+      "type": "python"
+    },
+    {
+      "path": "tests/__init__.py",
+      "type": "python"
+    },
+    {
+      "path": "tests/test_config.py",
+      "type": "python"
+    },
+    {
+      "path": "tests/test_code2llm_backend.py",
+      "type": "python"
+    },
+    {
+      "path": "tests/test_benchmark.py",
+      "type": "python"
+    },
+    {
+      "path": "tests/test_regix_class.py",
+      "type": "python"
+    },
+    {
+      "path": "tests/test_models.py",
+      "type": "python"
+    },
+    {
+      "path": "tests/test_cache.py",
+      "type": "python"
+    },
+    {
+      "path": "tests/test_report_full.py",
+      "type": "python"
+    },
+    {
+      "path": "tests/test_compare.py",
+      "type": "python"
+    },
+    {
+      "path": "tests/test_compare_full.py",
+      "type": "python"
+    },
+    {
+      "path": "tests/test_snapshot.py",
+      "type": "python"
+    },
+    {
+      "path": "tests/test_cli.py",
+      "type": "python"
+    },
+    {
+      "path": "tests/test_integrations.py",
+      "type": "python"
+    },
+    {
+      "path": "tests/test_regix.py",
+      "type": "python"
+    },
+    {
+      "path": "scripts/check_regression.py",
+      "type": "python"
+    },
+    {
+      "path": "regix/config.py",
+      "type": "python"
+    },
+    {
+      "path": "regix/exceptions.py",
+      "type": "python"
+    },
+    {
+      "path": "regix/cli.py",
+      "type": "python"
+    },
+    {
+      "path": "regix/gates.py",
+      "type": "python"
+    },
+    {
+      "path": "regix/__init__.py",
+      "type": "python"
+    },
+    {
+      "path": "regix/compare.py",
+      "type": "python"
+    },
+    {
+      "path": "regix/git.py",
+      "type": "python"
+    },
+    {
+      "path": "regix/history.py",
+      "type": "python"
+    },
+    {
+      "path": "regix/models.py",
+      "type": "python"
+    },
+    {
+      "path": "regix/benchmark.py",
+      "type": "python"
+    },
+    {
+      "path": "regix/snapshot.py",
+      "type": "python"
+    },
+    {
+      "path": "regix/report.py",
+      "type": "python"
+    },
+    {
+      "path": "regix/cache.py",
+      "type": "python"
+    },
+    {
+      "path": "regix/smells.py",
+      "type": "python"
+    },
+    {
+      "path": "regix/backends/architecture_backend.py",
+      "type": "python"
+    },
+    {
+      "path": "regix/backends/docstring_backend.py",
+      "type": "python"
+    },
+    {
+      "path": "regix/backends/radon_backend.py",
+      "type": "python"
+    },
+    {
+      "path": "regix/backends/vallm_backend.py",
+      "type": "python"
+    },
+    {
+      "path": "regix/backends/__init__.py",
+      "type": "python"
+    },
+    {
+      "path": "regix/backends/structure_backend.py",
+      "type": "python"
+    },
+    {
+      "path": "regix/backends/code2llm_backend.py",
+      "type": "python"
+    },
+    {
+      "path": "regix/backends/coverage_backend.py",
+      "type": "python"
+    },
+    {
+      "path": "regix/backends/lizard_backend.py",
+      "type": "python"
+    },
+    {
+      "path": "regix/benchmark/__init__.py",
+      "type": "python"
+    },
+    {
+      "path": "regix/benchmark/models.py",
+      "type": "python"
+    },
+    {
+      "path": "regix/benchmark/probes.py",
+      "type": "python"
+    },
+    {
+      "path": "regix/integrations/__init__.py",
+      "type": "python"
+    },
+    {
+      "path": ".tox/.pkg/bin/activate_this.py",
+      "type": "python"
+    },
+    {
+      "path": ".tox/.pkg/lib/python3.13/site-packages/_virtualenv.py",
+      "type": "python"
+    },
+    {
+      "path": ".tox/.pkg/lib/python3.13/site-packages/setuptools/modified.py",
+      "type": "python"
+    },
+    {
+      "path": ".tox/.pkg/lib/python3.13/site-packages/setuptools/version.py",
+      "type": "python"
+    },
+    {
+      "path": ".tox/.pkg/lib/python3.13/site-packages/setuptools/_scripts.py",
+      "type": "python"
+    },
+    {
+      "path": ".tox/.pkg/lib/python3.13/site-packages/setuptools/errors.py",
+      "type": "python"
+    },
+    {
+      "path": ".tox/.pkg/lib/python3.13/site-packages/setuptools/_core_metadata.py",
+      "type": "python"
+    },
+    {
+      "path": ".tox/.pkg/lib/python3.13/site-packages/setuptools/archive_util.py",
+      "type": "python"
+    },
+    {
+      "path": ".tox/.pkg/lib/python3.13/site-packages/setuptools/_discovery.py",
+      "type": "python"
+    },
+    {
+      "path": ".tox/.pkg/lib/python3.13/site-packages/setuptools/build_meta.py",
+      "type": "python"
+    },
+    {
+      "path": ".tox/.pkg/lib/python3.13/site-packages/setuptools/launch.py",
+      "type": "python"
+    },
+    {
+      "path": ".tox/.pkg/lib/python3.13/site-packages/setuptools/extension.py",
+      "type": "python"
+    },
+    {
+      "path": ".tox/.pkg/lib/python3.13/site-packages/setuptools/namespaces.py",
+      "type": "python"
+    },
+    {
+      "path": ".tox/.pkg/lib/python3.13/site-packages/setuptools/_shutil.py",
+      "type": "python"
+    },
+    {
+      "path": ".tox/.pkg/lib/python3.13/site-packages/setuptools/_itertools.py",
+      "type": "python"
+    },
+    {
+      "path": ".tox/.pkg/lib/python3.13/site-packages/setuptools/msvc.py",
+      "type": "python"
+    },
+    {
+      "path": ".tox/.pkg/lib/python3.13/site-packages/setuptools/_importlib.py",
+      "type": "python"
+    },
+    {
+      "path": ".tox/.pkg/lib/python3.13/site-packages/setuptools/depends.py",
+      "type": "python"
+    },
+    {
+      "path": ".tox/.pkg/lib/python3.13/site-packages/setuptools/_entry_points.py",
+      "type": "python"
+    },
+    {
+      "path": ".tox/.pkg/lib/python3.13/site-packages/setuptools/__init__.py",
+      "type": "python"
+    },
+    {
+      "path": ".tox/.pkg/lib/python3.13/site-packages/setuptools/_reqs.py",
+      "type": "python"
+    },
+    {
+      "path": ".tox/.pkg/lib/python3.13/site-packages/setuptools/windows_support.py",
+      "type": "python"
+    },
+    {
+      "path": ".tox/.pkg/lib/python3.13/site-packages/setuptools/_static.py",
+      "type": "python"
+    },
+    {
+      "path": ".tox/.pkg/lib/python3.13/site-packages/setuptools/monkey.py",
+      "type": "python"
+    },
+    {
+      "path": ".tox/.pkg/lib/python3.13/site-packages/setuptools/dist.py",
+      "type": "python"
+    },
+    {
+      "path": ".tox/.pkg/lib/python3.13/site-packages/setuptools/logging.py",
+      "type": "python"
+    },
+    {
+      "path": ".tox/.pkg/lib/python3.13/site-packages/setuptools/warnings.py",
+      "type": "python"
+    },
+    {
+      "path": ".tox/.pkg/lib/python3.13/site-packages/setuptools/glob.py",
+      "type": "python"
+    },
+    {
+      "path": ".tox/.pkg/lib/python3.13/site-packages/setuptools/unicode_utils.py",
+      "type": "python"
+    },
+    {
+      "path": ".tox/.pkg/lib/python3.13/site-packages/setuptools/_imp.py",
+      "type": "python"
+    },
+    {
+      "path": ".tox/.pkg/lib/python3.13/site-packages/setuptools/_path.py",
+      "type": "python"
+    },
+    {
+      "path": ".tox/.pkg/lib/python3.13/site-packages/setuptools/discovery.py",
+      "type": "python"
+    },
+    {
+      "path": ".tox/.pkg/lib/python3.13/site-packages/setuptools/_normalization.py",
+      "type": "python"
+    },
+    {
+      "path": ".tox/.pkg/lib/python3.13/site-packages/setuptools/installer.py",
+      "type": "python"
+    },
+    {
+      "path": ".tox/.pkg/lib/python3.13/site-packages/setuptools/wheel.py",
+      "type": "python"
+    },
+    {
+      "path": ".tox/.pkg/lib/python3.13/site-packages/packaging/_manylinux.py",
+      "type": "python"
+    },
+    {
+      "path": ".tox/.pkg/lib/python3.13/site-packages/packaging/version.py",
+      "type": "python"
+    },
+    {
+      "path": ".tox/.pkg/lib/python3.13/site-packages/packaging/_parser.py",
+      "type": "python"
+    },
+    {
+      "path": ".tox/.pkg/lib/python3.13/site-packages/packaging/requirements.py",
+      "type": "python"
+    },
+    {
+      "path": ".tox/.pkg/lib/python3.13/site-packages/packaging/_elffile.py",
+      "type": "python"
+    },
+    {
+      "path": ".tox/.pkg/lib/python3.13/site-packages/packaging/_structures.py",
+      "type": "python"
+    },
+    {
+      "path": ".tox/.pkg/lib/python3.13/site-packages/packaging/pylock.py",
+      "type": "python"
+    },
+    {
+      "path": ".tox/.pkg/lib/python3.13/site-packages/packaging/metadata.py",
+      "type": "python"
+    },
+    {
+      "path": ".tox/.pkg/lib/python3.13/site-packages/packaging/specifiers.py",
+      "type": "python"
+    },
+    {
+      "path": ".tox/.pkg/lib/python3.13/site-packages/packaging/__init__.py",
+      "type": "python"
+    },
+    {
+      "path": ".tox/.pkg/lib/python3.13/site-packages/packaging/utils.py",
+      "type": "python"
+    },
+    {
+      "path": ".tox/.pkg/lib/python3.13/site-packages/packaging/_tokenizer.py",
+      "type": "python"
+    },
+    {
+      "path": ".tox/.pkg/lib/python3.13/site-packages/packaging/tags.py",
+      "type": "python"
+    },
+    {
+      "path": ".tox/.pkg/lib/python3.13/site-packages/packaging/markers.py",
+      "type": "python"
+    }
+  ]
+}

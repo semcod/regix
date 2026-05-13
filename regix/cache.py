@@ -13,6 +13,7 @@ from regix.models import Snapshot
 def _cache_dir(config_dir: str = "~/.cache/regix") -> Path:
     """Resolve cache directory (XDG-compliant)."""
     import os
+
     xdg = os.environ.get("XDG_CACHE_HOME")
     if xdg:
         d = Path(xdg) / "regix"
@@ -44,6 +45,7 @@ def lookup(
         data = json.loads(raw)
         from datetime import datetime
         from regix.models import SymbolMetrics
+
         symbols = [SymbolMetrics(**s) for s in data.get("symbols", [])]
         return Snapshot(
             ref=data["ref"],
@@ -67,30 +69,33 @@ def store(
         raise ValueError("Cannot cache a snapshot without a commit SHA (local ref)")
     key = _cache_key(snapshot.commit_sha, snapshot.backend_versions)
     path = d / f"{key}.json.gz"
-    data = json.dumps({
-        "ref": snapshot.ref,
-        "commit_sha": snapshot.commit_sha,
-        "timestamp": snapshot.timestamp.isoformat(),
-        "workdir": str(snapshot.workdir),
-        "backend_versions": snapshot.backend_versions,
-        "symbols": [
-            {
-                "file": s.file,
-                "symbol": s.symbol,
-                "line_start": s.line_start,
-                "line_end": s.line_end,
-                "cc": s.cc,
-                "mi": s.mi,
-                "length": s.length,
-                "coverage": s.coverage,
-                "docstring_coverage": s.docstring_coverage,
-                "quality_score": s.quality_score,
-                "imports": s.imports,
-                "raw": s.raw,
-            }
-            for s in snapshot.symbols
-        ],
-    }, default=str)
+    data = json.dumps(
+        {
+            "ref": snapshot.ref,
+            "commit_sha": snapshot.commit_sha,
+            "timestamp": snapshot.timestamp.isoformat(),
+            "workdir": str(snapshot.workdir),
+            "backend_versions": snapshot.backend_versions,
+            "symbols": [
+                {
+                    "file": s.file,
+                    "symbol": s.symbol,
+                    "line_start": s.line_start,
+                    "line_end": s.line_end,
+                    "cc": s.cc,
+                    "mi": s.mi,
+                    "length": s.length,
+                    "coverage": s.coverage,
+                    "docstring_coverage": s.docstring_coverage,
+                    "quality_score": s.quality_score,
+                    "imports": s.imports,
+                    "raw": s.raw,
+                }
+                for s in snapshot.symbols
+            ],
+        },
+        default=str,
+    )
     path.write_bytes(gzip.compress(data.encode("utf-8")))
     return path
 

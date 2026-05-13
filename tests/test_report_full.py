@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 
-import pytest
 
 from regix.models import (
     CommitMetrics,
@@ -13,7 +12,6 @@ from regix.models import (
     Regression,
     RegressionReport,
     Snapshot,
-    SymbolMetrics,
     TrendLine,
 )
 from regix.report import render, render_history

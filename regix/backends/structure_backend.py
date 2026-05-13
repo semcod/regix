@@ -17,15 +17,63 @@ from regix.backends import BackendBase, register_backend
 from regix.config import RegressionConfig
 from regix.models import SymbolMetrics
 
-_PYTHON_BUILTINS = frozenset({
-    "print", "len", "range", "type", "isinstance", "issubclass", "hasattr",
-    "getattr", "setattr", "delattr", "callable", "iter", "next", "enumerate",
-    "zip", "map", "filter", "sorted", "reversed", "list", "dict", "set",
-    "tuple", "str", "int", "float", "bool", "bytes", "repr", "abs", "round",
-    "min", "max", "sum", "any", "all", "open", "super", "vars", "dir",
-    "id", "hash", "hex", "oct", "bin", "chr", "ord", "format", "input",
-    "staticmethod", "classmethod", "property", "object",
-})
+_PYTHON_BUILTINS = frozenset(
+    {
+        "print",
+        "len",
+        "range",
+        "type",
+        "isinstance",
+        "issubclass",
+        "hasattr",
+        "getattr",
+        "setattr",
+        "delattr",
+        "callable",
+        "iter",
+        "next",
+        "enumerate",
+        "zip",
+        "map",
+        "filter",
+        "sorted",
+        "reversed",
+        "list",
+        "dict",
+        "set",
+        "tuple",
+        "str",
+        "int",
+        "float",
+        "bool",
+        "bytes",
+        "repr",
+        "abs",
+        "round",
+        "min",
+        "max",
+        "sum",
+        "any",
+        "all",
+        "open",
+        "super",
+        "vars",
+        "dir",
+        "id",
+        "hash",
+        "hex",
+        "oct",
+        "bin",
+        "chr",
+        "ord",
+        "format",
+        "input",
+        "staticmethod",
+        "classmethod",
+        "property",
+        "object",
+    }
+)
 
 
 class _CallVisitor(ast.NodeVisitor):
@@ -73,6 +121,7 @@ class StructureBackend(BackendBase):
     def version(self) -> str:
         """Return Python version used for AST parsing."""
         import sys
+
         return f"ast (Python {sys.version_info.major}.{sys.version_info.minor})"
 
     def collect(
@@ -106,29 +155,33 @@ class StructureBackend(BackendBase):
             self._collect_functions(tree, func_nodes)
 
             # File-level: symbol_count
-            results.append(SymbolMetrics(
-                file=str(fpath),
-                symbol=None,
-                symbol_count=len(func_nodes),
-                raw={"structure_symbol_count": len(func_nodes)},
-            ))
+            results.append(
+                SymbolMetrics(
+                    file=str(fpath),
+                    symbol=None,
+                    symbol_count=len(func_nodes),
+                    raw={"structure_symbol_count": len(func_nodes)},
+                )
+            )
 
             # Per-function: fan_out, call_count
             for node, qualified_name in func_nodes:
                 call_count, fan_out = _analyse_function(node)
                 length = (node.end_lineno or node.lineno) - node.lineno + 1
-                results.append(SymbolMetrics(
-                    file=str(fpath),
-                    symbol=qualified_name,
-                    line_start=node.lineno,
-                    line_end=node.end_lineno or node.lineno,
-                    call_count=call_count,
-                    fan_out=fan_out,
-                    raw={
-                        "structure_call_count": call_count,
-                        "structure_fan_out": fan_out,
-                    },
-                ))
+                results.append(
+                    SymbolMetrics(
+                        file=str(fpath),
+                        symbol=qualified_name,
+                        line_start=node.lineno,
+                        line_end=node.end_lineno or node.lineno,
+                        call_count=call_count,
+                        fan_out=fan_out,
+                        raw={
+                            "structure_call_count": call_count,
+                            "structure_fan_out": fan_out,
+                        },
+                    )
+                )
 
         return results
 

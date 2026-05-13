@@ -23,6 +23,7 @@ class DocstringBackend(BackendBase):
     def version(self) -> str:
         """Return Python version used for AST parsing."""
         import sys
+
         return f"ast (Python {sys.version_info.major}.{sys.version_info.minor})"
 
     def collect(
@@ -54,7 +55,9 @@ class DocstringBackend(BackendBase):
             total = 0
             documented = 0
             for node in ast.walk(tree):
-                if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+                if isinstance(
+                    node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)
+                ):
                     # Skip private/dunder unless it's __init__
                     name = node.name
                     if name.startswith("_") and name != "__init__":
