@@ -160,23 +160,24 @@ def diff(
     snap_a = capture(ref_a, wd, cfg)
     snap_b = capture(ref_b, wd, cfg)
     report = do_compare(snap_a, snap_b, cfg)
-    all_items = []
-    for r in report.regressions:
-        if abs(r.delta) >= threshold:
-            if metric and r.metric not in metric:
-                continue
-            sign = "+" if r.delta > 0 else ""
-            all_items.append(
-                f"  {r.file}::{r.symbol or '(mod)'}  {r.metric}: {r.before} → {r.after} ({sign}{r.delta})"
-            )
-    for i in report.improvements:
-        if abs(i.delta) >= threshold:
-            if metric and i.metric not in metric:
-                continue
-            sign = "+" if i.delta > 0 else ""
-            all_items.append(
-                f"  {i.file}::{i.symbol or '(mod)'}  {i.metric}: {i.before} → {i.after} ({sign}{i.delta})"
-            )
+
+    def _item_line(item) -> str | None:
+        if abs(item.delta) < threshold:
+            return None
+        if metric and item.metric not in metric:
+            return None
+        sign = "+" if item.delta > 0 else ""
+        return (
+            f"  {item.file}::{item.symbol or '(mod)'}  "
+            f"{item.metric}: {item.before} → {item.after} ({sign}{item.delta})"
+        )
+
+    all_items = [
+        line for line in (_item_line(r) for r in report.regressions) if line is not None
+    ] + [
+        line for line in (_item_line(i) for i in report.improvements) if line is not None
+    ]
+
     if all_items:
         typer.echo(f"Metric diff: {ref_a} → {ref_b}")
         typer.echo("─" * 60)

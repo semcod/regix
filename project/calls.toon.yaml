@@ -1,0 +1,175 @@
+# code2llm call graph | /home/tom/github/semcod/regix
+# generated in 0.09s
+# nodes: 63 | edges: 66 | modules: 14
+# CC̄=4.5
+
+HUBS[20]:
+  regix.benchmark.build_regix_suite
+    CC=4  in:1  out:42  total:43
+  regix.snapshot.capture
+    CC=17  in:11  out:21  total:32
+  regix.cli.status
+    CC=4  in:0  out:23  total:23
+  regix.cli.diff
+    CC=15  in:0  out:22  total:22
+  regix.benchmark.BackendProbe.run
+    CC=7  in:0  out:21  total:21
+  regix.compare.compare
+    CC=16  in:0  out:21  total:21
+  regix.cli.gates
+    CC=11  in:0  out:21  total:21
+  regix.report._render_rich
+    CC=14  in:1  out:19  total:20
+  regix.cli.snapshot
+    CC=3  in:0  out:17  total:17
+  regix.cli.history
+    CC=2  in:0  out:16  total:16
+  regix.benchmark.BenchmarkReporter.print
+    CC=4  in:12  out:3  total:15
+  regix.benchmark.BenchmarkReporter.print_plain
+    CC=7  in:0  out:14  total:14
+  scripts.check_regression.check_regression
+    CC=14  in:0  out:14  total:14
+  regix.backends.structure_backend.StructureBackend.collect
+    CC=11  in:0  out:14  total:14
+  regix.history._aggregate_snapshot_metrics
+    CC=7  in:1  out:12  total:13
+  regix.cli._load_config
+    CC=3  in:6  out:7  total:13
+  regix.git.read_tree_sources
+    CC=6  in:1  out:12  total:13
+  regix.cache.lookup
+    CC=4  in:0  out:13  total:13
+  regix.snapshot._collect_files
+    CC=10  in:1  out:11  total:12
+  regix.gates.check_gates
+    CC=6  in:2  out:10  total:12
+
+MODULES:
+  regix  [2 funcs]
+    history  CC=1  out:2
+    snapshot  CC=1  out:2
+  regix.backends  [1 funcs]
+    get_backend  CC=1  out:1
+  regix.backends.structure_backend  [2 funcs]
+    collect  CC=11  out:14
+    _analyse_function  CC=2  out:4
+  regix.benchmark  [9 funcs]
+    run  CC=7  out:21
+    print  CC=4  out:3
+    print_json  CC=2  out:3
+    print_plain  CC=7  out:14
+    _make_compare_probe  CC=1  out:6
+    _make_gates_probe  CC=1  out:6
+    _make_snapshot_probe  CC=1  out:5
+    build_regix_suite  CC=4  out:42
+    main  CC=7  out:12
+  regix.cache  [5 funcs]
+    _cache_dir  CC=2  out:5
+    _cache_key  CC=1  out:6
+    clear  CC=2  out:3
+    lookup  CC=4  out:13
+    store  CC=3  out:9
+  regix.cli  [6 funcs]
+    _load_config  CC=3  out:7
+    diff  CC=15  out:22
+    gates  CC=11  out:21
+    history  CC=2  out:16
+    snapshot  CC=3  out:17
+    status  CC=4  out:23
+  regix.compare  [3 funcs]
+    _compare_symbol_metrics  CC=6  out:7
+    _compute_delta  CC=16  out:5
+    compare  CC=16  out:21
+  regix.gates  [2 funcs]
+    _passes  CC=3  out:0
+    check_gates  CC=6  out:10
+  regix.git  [9 funcs]
+    _run_git  CC=1  out:3
+    checkout_temporary  CC=2  out:10
+    get_changed_files  CC=4  out:4
+    get_dirty_files  CC=3  out:7
+    is_clean  CC=1  out:3
+    list_commits  CC=2  out:8
+    read_local_sources  CC=4  out:3
+    read_tree_sources  CC=6  out:12
+    resolve_ref  CC=2  out:5
+  regix.history  [4 funcs]
+    _aggregate_snapshot_metrics  CC=7  out:12
+    _compute_trends  CC=8  out:7
+    _linear_slope  CC=5  out:8
+    build_history  CC=4  out:7
+  regix.report  [2 funcs]
+    _render_rich  CC=14  out:19
+    render  CC=7  out:10
+  regix.smells  [12 funcs]
+    _avg_func_length  CC=4  out:4
+    _check_god_function  CC=8  out:4
+    _check_hallucination_proxy  CC=9  out:4
+    _check_no_delegation  CC=13  out:5
+    _check_stub_regression  CC=9  out:3
+    _check_symbol_smells  CC=5  out:4
+    _count_hollow_signals  CC=7  out:1
+    _func_length  CC=4  out:0
+    _function_count_drop  CC=8  out:2
+    _largest_function  CC=6  out:5
+  regix.snapshot  [4 funcs]
+    _collect_files  CC=10  out:11
+    _filter_sources  CC=11  out:9
+    _merge_symbols  CC=7  out:7
+    capture  CC=17  out:21
+  scripts.check_regression  [2 funcs]
+    check_regression  CC=14  out:14
+    load_json_file  CC=2  out:4
+
+EDGES:
+  regix.snapshot.capture → regix.snapshot._merge_symbols
+  regix.snapshot.capture → regix.git.resolve_ref
+  regix.snapshot.capture → regix.backends.get_backend
+  regix.snapshot.capture → regix.snapshot._collect_files
+  regix.snapshot.capture → regix.git.read_local_sources
+  regix.snapshot.capture → regix.git.read_tree_sources
+  regix.snapshot.capture → regix.snapshot._filter_sources
+  regix.history._compute_trends → regix.history._linear_slope
+  regix.history.build_history → regix.git.list_commits
+  regix.history.build_history → regix.snapshot.capture
+  regix.history.build_history → regix.history._compute_trends
+  regix.history.build_history → regix.history._aggregate_snapshot_metrics
+  regix.smells.detect_smells → regix.smells._check_god_function
+  regix.smells.detect_smells → regix.smells._check_symbol_smells
+  regix.smells._check_symbol_smells → regix.smells._check_hallucination_proxy
+  regix.smells._avg_func_length → regix.smells._func_length
+  regix.smells._largest_function → regix.smells._func_length
+  regix.smells._check_god_function → regix.smells._function_count_drop
+  regix.smells._check_god_function → regix.smells._avg_func_length
+  regix.smells._check_god_function → regix.smells._largest_function
+  regix.smells._check_stub_regression → regix.smells._func_length
+  regix.smells._check_no_delegation → regix.smells._func_length
+  regix.smells._count_hollow_signals → regix.smells._func_length
+  regix.smells._was_already_hollow → regix.smells._func_length
+  regix.smells._check_hallucination_proxy → regix.smells._func_length
+  regix.smells._check_hallucination_proxy → regix.smells._count_hollow_signals
+  regix.smells._check_hallucination_proxy → regix.smells._was_already_hollow
+  scripts.check_regression.check_regression → scripts.check_regression.load_json_file
+  scripts.check_regression.check_regression → regix.benchmark.BenchmarkReporter.print
+  regix.gates.check_gates → regix.gates._passes
+  regix.report.render → regix.report._render_rich
+  regix.cache.lookup → regix.cache._cache_dir
+  regix.cache.lookup → regix.cache._cache_key
+  regix.cache.store → regix.cache._cache_dir
+  regix.cache.store → regix.cache._cache_key
+  regix.cache.clear → regix.cache._cache_dir
+  regix.git.resolve_ref → regix.git._run_git
+  regix.git.list_commits → regix.git._run_git
+  regix.git.is_clean → regix.git._run_git
+  regix.git.get_dirty_files → regix.git._run_git
+  regix.git.get_changed_files → regix.git._run_git
+  regix.git.checkout_temporary → regix.git.resolve_ref
+  regix.git.checkout_temporary → regix.git._run_git
+  regix.git.read_tree_sources → regix.git.resolve_ref
+  regix.cli.history → regix.cli._load_config
+  regix.cli.snapshot → regix.cli._load_config
+  regix.cli.snapshot → regix.snapshot.capture
+  regix.cli.diff → regix.cli._load_config
+  regix.cli.diff → regix.snapshot.capture
+  regix.cli.gates → regix.cli._load_config

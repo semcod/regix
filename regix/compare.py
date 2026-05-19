@@ -32,6 +32,26 @@ _TRACKED_METRICS = (
 )
 
 
+def _severity_for_delta(
+    delta: float,
+    abs_delta: float,
+    is_regression: bool,
+    is_improvement: bool,
+    warn_thresh: float,
+    error_thresh: float,
+) -> tuple[str, float]:
+    """Return (severity, threshold) for a delta."""
+    if is_regression:
+        if abs_delta >= error_thresh:
+            return "error", error_thresh
+        if abs_delta >= warn_thresh:
+            return "warning", warn_thresh
+        return "info", warn_thresh
+    if is_improvement:
+        return "ok", warn_thresh
+    return "ok", warn_thresh
+
+
 def _compute_delta(
     metric: str,
     before: float | None,
@@ -39,34 +59,18 @@ def _compute_delta(
     config: RegressionConfig,
 ) -> MetricDelta | None:
     """Compute a MetricDelta for a single metric between two values."""
-    if before is None and after is None:
-        return None
     if before is None or after is None:
-        return None  # New or deleted symbol — handled separately
+        return None
 
     delta = after - before
     lower_better = config.is_lower_better(metric)
     warn_thresh, error_thresh = config.delta_thresholds(metric)
 
-    # For "lower is better" metrics: positive delta = regression
-    # For "higher is better" metrics: negative delta = regression
-    abs_delta = abs(delta)
     is_regression = (delta > 0 and lower_better) or (delta < 0 and not lower_better)
     is_improvement = (delta < 0 and lower_better) or (delta > 0 and not lower_better)
-
-    if is_regression:
-        if abs_delta >= error_thresh:
-            severity = "error"
-        elif abs_delta >= warn_thresh:
-            severity = "warning"
-        else:
-            severity = "info"
-    elif is_improvement:
-        severity = "ok"
-    else:
-        severity = "ok"
-
-    threshold = error_thresh if severity == "error" else warn_thresh
+    severity, threshold = _severity_for_delta(
+        delta, abs(delta), is_regression, is_improvement, warn_thresh, error_thresh
+    )
 
     return MetricDelta(
         metric=metric,
@@ -163,6 +167,31 @@ def _compare_symbol_metrics(
     return regs, imps, changed
 
 
+def _process_comparison_key(
+    key: tuple[str, str | None],
+    idx_before: dict[tuple[str, str | None], SymbolMetrics],
+    idx_after: dict[tuple[str, str | None], SymbolMetrics],
+    config: RegressionConfig,
+    ref_before: str,
+    ref_after: str,
+) -> tuple[list[Regression], list[Improvement], bool]:
+    """Process a single (file, symbol) key and return deltas."""
+    m_before = idx_before.get(key)
+    m_after = idx_after.get(key)
+    file_path, symbol_name = key
+
+    if m_before is None:
+        return [], [], False
+    if m_after is None:
+        return [], _collect_deleted_symbol(
+            m_before, file_path, symbol_name, config, ref_before, ref_after
+        ), True
+
+    return _compare_symbol_metrics(
+        m_before, m_after, file_path, symbol_name, config, ref_before, ref_after
+    )
+
+
 def compare(
     snap_before: Snapshot,
     snap_after: Snapshot,
@@ -171,12 +200,8 @@ def compare(
     """Compare two snapshots and produce a regression report."""
     t0 = time.monotonic()
 
-    idx_before: dict[tuple[str, str | None], SymbolMetrics] = {
-        (s.file, s.symbol): s for s in snap_before.symbols
-    }
-    idx_after: dict[tuple[str, str | None], SymbolMetrics] = {
-        (s.file, s.symbol): s for s in snap_after.symbols
-    }
+    idx_before = {(s.file, s.symbol): s for s in snap_before.symbols}
+    idx_after = {(s.file, s.symbol): s for s in snap_after.symbols}
 
     all_keys = set(idx_before.keys()) | set(idx_after.keys())
     regressions: list[Regression] = []
@@ -184,33 +209,8 @@ def compare(
     unchanged = 0
 
     for key in sorted(all_keys, key=lambda k: (k[0], k[1] or "")):
-        m_before = idx_before.get(key)
-        m_after = idx_after.get(key)
-        file_path, symbol_name = key
-
-        if m_before is None:
-            continue
-        if m_after is None:
-            improvements.extend(
-                _collect_deleted_symbol(
-                    m_before,
-                    file_path,
-                    symbol_name,
-                    config,
-                    snap_before.ref,
-                    snap_after.ref,
-                )
-            )
-            continue
-
-        regs, imps, changed = _compare_symbol_metrics(
-            m_before,
-            m_after,
-            file_path,
-            symbol_name,
-            config,
-            snap_before.ref,
-            snap_after.ref,
+        regs, imps, changed = _process_comparison_key(
+            key, idx_before, idx_after, config, snap_before.ref, snap_after.ref
         )
         regressions.extend(regs)
         improvements.extend(imps)

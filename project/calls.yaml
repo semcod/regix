@@ -1,0 +1,861 @@
+project: /home/tom/github/semcod/regix
+generated_from: code2llm call graph analysis
+stats:
+  total_nodes: 63
+  total_edges: 66
+  modules_count: 14
+nodes:
+  regix.snapshot._collect_files:
+    name: _collect_files
+    module: regix.snapshot
+    line: 20
+    cyclomatic_complexity: 10
+    calls_out: 11
+    calls_in: 1
+  regix.benchmark.build_regix_suite:
+    name: build_regix_suite
+    module: regix.benchmark
+    line: 607
+    cyclomatic_complexity: 4
+    calls_out: 42
+    calls_in: 1
+  regix.cache._cache_key:
+    name: _cache_key
+    module: regix.cache
+    line: 26
+    cyclomatic_complexity: 1
+    calls_out: 6
+    calls_in: 2
+  regix.git.get_dirty_files:
+    name: get_dirty_files
+    module: regix.git
+    line: 82
+    cyclomatic_complexity: 3
+    calls_out: 7
+    calls_in: 0
+  regix.backends.structure_backend._analyse_function:
+    name: _analyse_function
+    module: regix.backends.structure_backend
+    line: 103
+    cyclomatic_complexity: 2
+    calls_out: 4
+    calls_in: 1
+  regix.cache.store:
+    name: store
+    module: regix.cache
+    line: 62
+    cyclomatic_complexity: 3
+    calls_out: 9
+    calls_in: 0
+  regix.benchmark.BackendProbe.run:
+    name: run
+    module: regix.benchmark
+    line: 406
+    cyclomatic_complexity: 7
+    calls_out: 21
+    calls_in: 0
+  regix.cli.snapshot:
+    name: snapshot
+    module: regix.cli
+    line: 110
+    cyclomatic_complexity: 3
+    calls_out: 17
+    calls_in: 0
+  regix.history._linear_slope:
+    name: _linear_slope
+    module: regix.history
+    line: 97
+    cyclomatic_complexity: 5
+    calls_out: 8
+    calls_in: 1
+  regix.smells._check_stub_regression:
+    name: _check_stub_regression
+    module: regix.smells
+    line: 185
+    cyclomatic_complexity: 9
+    calls_out: 3
+    calls_in: 0
+  regix.smells._check_no_delegation:
+    name: _check_no_delegation
+    module: regix.smells
+    line: 221
+    cyclomatic_complexity: 13
+    calls_out: 5
+    calls_in: 0
+  regix.benchmark.BenchmarkReporter.print_json:
+    name: print_json
+    module: regix.benchmark
+    line: 592
+    cyclomatic_complexity: 2
+    calls_out: 3
+    calls_in: 0
+  regix.benchmark.BenchmarkReporter.print_plain:
+    name: print_plain
+    module: regix.benchmark
+    line: 574
+    cyclomatic_complexity: 7
+    calls_out: 14
+    calls_in: 0
+  regix.cli.history:
+    name: history
+    module: regix.cli
+    line: 80
+    cyclomatic_complexity: 2
+    calls_out: 16
+    calls_in: 0
+  regix.cli.diff:
+    name: diff
+    module: regix.cli
+    line: 144
+    cyclomatic_complexity: 15
+    calls_out: 22
+    calls_in: 0
+  regix.backends.get_backend:
+    name: get_backend
+    module: regix.backends
+    line: 52
+    cyclomatic_complexity: 1
+    calls_out: 1
+    calls_in: 3
+  regix.smells._check_god_function:
+    name: _check_god_function
+    module: regix.smells
+    line: 143
+    cyclomatic_complexity: 8
+    calls_out: 4
+    calls_in: 1
+  regix.compare._compare_symbol_metrics:
+    name: _compare_symbol_metrics
+    module: regix.compare
+    line: 112
+    cyclomatic_complexity: 6
+    calls_out: 7
+    calls_in: 1
+  regix.smells._avg_func_length:
+    name: _avg_func_length
+    module: regix.smells
+    line: 126
+    cyclomatic_complexity: 4
+    calls_out: 4
+    calls_in: 1
+  regix.smells._func_length:
+    name: _func_length
+    module: regix.smells
+    line: 100
+    cyclomatic_complexity: 4
+    calls_out: 0
+    calls_in: 10
+  regix.Regix.snapshot:
+    name: snapshot
+    module: regix
+    line: 66
+    cyclomatic_complexity: 1
+    calls_out: 2
+    calls_in: 0
+  regix.cache.clear:
+    name: clear
+    module: regix.cache
+    line: 103
+    cyclomatic_complexity: 2
+    calls_out: 3
+    calls_in: 0
+  regix.history._aggregate_snapshot_metrics:
+    name: _aggregate_snapshot_metrics
+    module: regix.history
+    line: 16
+    cyclomatic_complexity: 7
+    calls_out: 12
+    calls_in: 1
+  regix.smells._check_hallucination_proxy:
+    name: _check_hallucination_proxy
+    module: regix.smells
+    line: 350
+    cyclomatic_complexity: 9
+    calls_out: 4
+    calls_in: 1
+  regix.compare._compute_delta:
+    name: _compute_delta
+    module: regix.compare
+    line: 35
+    cyclomatic_complexity: 16
+    calls_out: 5
+    calls_in: 1
+  regix.smells._function_count_drop:
+    name: _function_count_drop
+    module: regix.smells
+    line: 109
+    cyclomatic_complexity: 8
+    calls_out: 2
+    calls_in: 1
+  regix.gates.check_gates:
+    name: check_gates
+    module: regix.gates
+    line: 18
+    cyclomatic_complexity: 6
+    calls_out: 10
+    calls_in: 2
+  regix.cli.status:
+    name: status
+    module: regix.cli
+    line: 229
+    cyclomatic_complexity: 4
+    calls_out: 23
+    calls_in: 0
+  regix.gates._passes:
+    name: _passes
+    module: regix.gates
+    line: 9
+    cyclomatic_complexity: 3
+    calls_out: 0
+    calls_in: 2
+  regix.smells._was_already_hollow:
+    name: _was_already_hollow
+    module: regix.smells
+    line: 338
+    cyclomatic_complexity: 6
+    calls_out: 1
+    calls_in: 1
+  regix.benchmark._make_gates_probe:
+    name: _make_gates_probe
+    module: regix.benchmark
+    line: 776
+    cyclomatic_complexity: 1
+    calls_out: 6
+    calls_in: 1
+  regix.smells._largest_function:
+    name: _largest_function
+    module: regix.smells
+    line: 132
+    cyclomatic_complexity: 6
+    calls_out: 5
+    calls_in: 1
+  regix.compare.compare:
+    name: compare
+    module: regix.compare
+    line: 166
+    cyclomatic_complexity: 16
+    calls_out: 21
+    calls_in: 0
+  regix.git.get_changed_files:
+    name: get_changed_files
+    module: regix.git
+    line: 94
+    cyclomatic_complexity: 4
+    calls_out: 4
+    calls_in: 0
+  regix.report.render:
+    name: render
+    module: regix.report
+    line: 11
+    cyclomatic_complexity: 7
+    calls_out: 10
+    calls_in: 1
+  regix.cli._load_config:
+    name: _load_config
+    module: regix.cli
+    line: 14
+    cyclomatic_complexity: 3
+    calls_out: 7
+    calls_in: 6
+  regix.smells.detect_smells:
+    name: detect_smells
+    module: regix.smells
+    line: 18
+    cyclomatic_complexity: 17
+    calls_out: 9
+    calls_in: 1
+  regix.Regix.history:
+    name: history
+    module: regix
+    line: 89
+    cyclomatic_complexity: 1
+    calls_out: 2
+    calls_in: 0
+  regix.git.list_commits:
+    name: list_commits
+    module: regix.git
+    line: 50
+    cyclomatic_complexity: 2
+    calls_out: 8
+    calls_in: 1
+  regix.git.read_tree_sources:
+    name: read_tree_sources
+    module: regix.git
+    line: 126
+    cyclomatic_complexity: 6
+    calls_out: 12
+    calls_in: 1
+  regix.history.build_history:
+    name: build_history
+    module: regix.history
+    line: 60
+    cyclomatic_complexity: 4
+    calls_out: 7
+    calls_in: 2
+  scripts.check_regression.check_regression:
+    name: check_regression
+    module: scripts.check_regression
+    line: 25
+    cyclomatic_complexity: 14
+    calls_out: 14
+    calls_in: 0
+  scripts.check_regression.load_json_file:
+    name: load_json_file
+    module: scripts.check_regression
+    line: 18
+    cyclomatic_complexity: 2
+    calls_out: 4
+    calls_in: 3
+  regix.git.read_local_sources:
+    name: read_local_sources
+    module: regix.git
+    line: 162
+    cyclomatic_complexity: 4
+    calls_out: 3
+    calls_in: 1
+  regix.git.is_clean:
+    name: is_clean
+    module: regix.git
+    line: 76
+    cyclomatic_complexity: 1
+    calls_out: 3
+    calls_in: 0
+  regix.git._run_git:
+    name: _run_git
+    module: regix.git
+    line: 26
+    cyclomatic_complexity: 1
+    calls_out: 3
+    calls_in: 7
+  regix.benchmark.main:
+    name: main
+    module: regix.benchmark
+    line: 824
+    cyclomatic_complexity: 7
+    calls_out: 12
+    calls_in: 0
+  regix.git.resolve_ref:
+    name: resolve_ref
+    module: regix.git
+    line: 39
+    cyclomatic_complexity: 2
+    calls_out: 5
+    calls_in: 3
+  regix.benchmark.BenchmarkReporter.print:
+    name: print
+    module: regix.benchmark
+    line: 595
+    cyclomatic_complexity: 4
+    calls_out: 3
+    calls_in: 12
+  regix.cache.lookup:
+    name: lookup
+    module: regix.cache
+    line: 32
+    cyclomatic_complexity: 4
+    calls_out: 13
+    calls_in: 0
+  regix.snapshot._merge_symbols:
+    name: _merge_symbols
+    module: regix.snapshot
+    line: 82
+    cyclomatic_complexity: 7
+    calls_out: 7
+    calls_in: 1
+  regix.benchmark._make_snapshot_probe:
+    name: _make_snapshot_probe
+    module: regix.benchmark
+    line: 725
+    cyclomatic_complexity: 1
+    calls_out: 5
+    calls_in: 1
+  regix.cli.gates:
+    name: gates
+    module: regix.cli
+    line: 190
+    cyclomatic_complexity: 11
+    calls_out: 21
+    calls_in: 0
+  regix.cache._cache_dir:
+    name: _cache_dir
+    module: regix.cache
+    line: 13
+    cyclomatic_complexity: 2
+    calls_out: 5
+    calls_in: 3
+  regix.snapshot.capture:
+    name: capture
+    module: regix.snapshot
+    line: 124
+    cyclomatic_complexity: 17
+    calls_out: 21
+    calls_in: 11
+  regix.smells._count_hollow_signals:
+    name: _count_hollow_signals
+    module: regix.smells
+    line: 325
+    cyclomatic_complexity: 7
+    calls_out: 1
+    calls_in: 1
+  regix.git.checkout_temporary:
+    name: checkout_temporary
+    module: regix.git
+    line: 107
+    cyclomatic_complexity: 2
+    calls_out: 10
+    calls_in: 0
+  regix.benchmark._make_compare_probe:
+    name: _make_compare_probe
+    module: regix.benchmark
+    line: 750
+    cyclomatic_complexity: 1
+    calls_out: 6
+    calls_in: 1
+  regix.snapshot._filter_sources:
+    name: _filter_sources
+    module: regix.snapshot
+    line: 49
+    cyclomatic_complexity: 11
+    calls_out: 9
+    calls_in: 1
+  regix.smells._check_symbol_smells:
+    name: _check_symbol_smells
+    module: regix.smells
+    line: 72
+    cyclomatic_complexity: 5
+    calls_out: 4
+    calls_in: 1
+  regix.backends.structure_backend.StructureBackend.collect:
+    name: collect
+    module: regix.backends.structure_backend
+    line: 127
+    cyclomatic_complexity: 11
+    calls_out: 14
+    calls_in: 0
+  regix.report._render_rich:
+    name: _render_rich
+    module: regix.report
+    line: 39
+    cyclomatic_complexity: 14
+    calls_out: 19
+    calls_in: 1
+  regix.history._compute_trends:
+    name: _compute_trends
+    module: regix.history
+    line: 38
+    cyclomatic_complexity: 8
+    calls_out: 7
+    calls_in: 1
+edges:
+- caller: regix.snapshot.capture
+  callee: regix.snapshot._merge_symbols
+  call_type: resolved
+- caller: regix.snapshot.capture
+  callee: regix.git.resolve_ref
+  call_type: resolved
+- caller: regix.snapshot.capture
+  callee: regix.backends.get_backend
+  call_type: resolved
+- caller: regix.snapshot.capture
+  callee: regix.snapshot._collect_files
+  call_type: resolved
+- caller: regix.snapshot.capture
+  callee: regix.git.read_local_sources
+  call_type: resolved
+- caller: regix.snapshot.capture
+  callee: regix.git.read_tree_sources
+  call_type: resolved
+- caller: regix.snapshot.capture
+  callee: regix.snapshot._filter_sources
+  call_type: resolved
+- caller: regix.history._compute_trends
+  callee: regix.history._linear_slope
+  call_type: resolved
+- caller: regix.history.build_history
+  callee: regix.git.list_commits
+  call_type: resolved
+- caller: regix.history.build_history
+  callee: regix.snapshot.capture
+  call_type: resolved
+- caller: regix.history.build_history
+  callee: regix.history._compute_trends
+  call_type: resolved
+- caller: regix.history.build_history
+  callee: regix.history._aggregate_snapshot_metrics
+  call_type: resolved
+- caller: regix.smells.detect_smells
+  callee: regix.smells._check_god_function
+  call_type: resolved
+- caller: regix.smells.detect_smells
+  callee: regix.smells._check_symbol_smells
+  call_type: resolved
+- caller: regix.smells._check_symbol_smells
+  callee: regix.smells._check_hallucination_proxy
+  call_type: resolved
+- caller: regix.smells._avg_func_length
+  callee: regix.smells._func_length
+  call_type: resolved
+- caller: regix.smells._largest_function
+  callee: regix.smells._func_length
+  call_type: resolved
+- caller: regix.smells._check_god_function
+  callee: regix.smells._function_count_drop
+  call_type: resolved
+- caller: regix.smells._check_god_function
+  callee: regix.smells._avg_func_length
+  call_type: resolved
+- caller: regix.smells._check_god_function
+  callee: regix.smells._largest_function
+  call_type: resolved
+- caller: regix.smells._check_stub_regression
+  callee: regix.smells._func_length
+  call_type: resolved
+- caller: regix.smells._check_no_delegation
+  callee: regix.smells._func_length
+  call_type: resolved
+- caller: regix.smells._count_hollow_signals
+  callee: regix.smells._func_length
+  call_type: resolved
+- caller: regix.smells._was_already_hollow
+  callee: regix.smells._func_length
+  call_type: resolved
+- caller: regix.smells._check_hallucination_proxy
+  callee: regix.smells._func_length
+  call_type: resolved
+- caller: regix.smells._check_hallucination_proxy
+  callee: regix.smells._count_hollow_signals
+  call_type: resolved
+- caller: regix.smells._check_hallucination_proxy
+  callee: regix.smells._was_already_hollow
+  call_type: resolved
+- caller: scripts.check_regression.check_regression
+  callee: scripts.check_regression.load_json_file
+  call_type: resolved
+- caller: scripts.check_regression.check_regression
+  callee: regix.benchmark.BenchmarkReporter.print
+  call_type: resolved
+- caller: regix.gates.check_gates
+  callee: regix.gates._passes
+  call_type: resolved
+- caller: regix.report.render
+  callee: regix.report._render_rich
+  call_type: resolved
+- caller: regix.cache.lookup
+  callee: regix.cache._cache_dir
+  call_type: resolved
+- caller: regix.cache.lookup
+  callee: regix.cache._cache_key
+  call_type: resolved
+- caller: regix.cache.store
+  callee: regix.cache._cache_dir
+  call_type: resolved
+- caller: regix.cache.store
+  callee: regix.cache._cache_key
+  call_type: resolved
+- caller: regix.cache.clear
+  callee: regix.cache._cache_dir
+  call_type: resolved
+- caller: regix.git.resolve_ref
+  callee: regix.git._run_git
+  call_type: resolved
+- caller: regix.git.list_commits
+  callee: regix.git._run_git
+  call_type: resolved
+- caller: regix.git.is_clean
+  callee: regix.git._run_git
+  call_type: resolved
+- caller: regix.git.get_dirty_files
+  callee: regix.git._run_git
+  call_type: resolved
+- caller: regix.git.get_changed_files
+  callee: regix.git._run_git
+  call_type: resolved
+- caller: regix.git.checkout_temporary
+  callee: regix.git.resolve_ref
+  call_type: resolved
+- caller: regix.git.checkout_temporary
+  callee: regix.git._run_git
+  call_type: resolved
+- caller: regix.git.read_tree_sources
+  callee: regix.git.resolve_ref
+  call_type: resolved
+- caller: regix.cli.history
+  callee: regix.cli._load_config
+  call_type: resolved
+- caller: regix.cli.snapshot
+  callee: regix.cli._load_config
+  call_type: resolved
+- caller: regix.cli.snapshot
+  callee: regix.snapshot.capture
+  call_type: resolved
+- caller: regix.cli.diff
+  callee: regix.cli._load_config
+  call_type: resolved
+- caller: regix.cli.diff
+  callee: regix.snapshot.capture
+  call_type: resolved
+- caller: regix.cli.gates
+  callee: regix.cli._load_config
+  call_type: resolved
+- caller: regix.cli.gates
+  callee: regix.snapshot.capture
+  call_type: resolved
+- caller: regix.cli.gates
+  callee: regix.gates.check_gates
+  call_type: resolved
+- caller: regix.cli.status
+  callee: regix.cli._load_config
+  call_type: resolved
+- caller: regix.compare._compare_symbol_metrics
+  callee: regix.compare._compute_delta
+  call_type: resolved
+- caller: regix.compare.compare
+  callee: regix.smells.detect_smells
+  call_type: resolved
+- caller: regix.Regix.snapshot
+  callee: regix.snapshot.capture
+  call_type: resolved
+- caller: regix.Regix.history
+  callee: regix.history.build_history
+  call_type: resolved
+- caller: regix.backends.structure_backend.StructureBackend.collect
+  callee: regix.backends.structure_backend._analyse_function
+  call_type: resolved
+- caller: regix.benchmark.BackendProbe.run
+  callee: regix.backends.get_backend
+  call_type: resolved
+- caller: regix.benchmark.BenchmarkReporter.print_plain
+  callee: regix.benchmark.BenchmarkReporter.print
+  call_type: resolved
+- caller: regix.benchmark.BenchmarkReporter.print_json
+  callee: regix.benchmark.BenchmarkReporter.print
+  call_type: resolved
+- caller: regix.benchmark._make_snapshot_probe
+  callee: regix.snapshot.capture
+  call_type: resolved
+- caller: regix.benchmark._make_compare_probe
+  callee: regix.snapshot.capture
+  call_type: resolved
+- caller: regix.benchmark._make_gates_probe
+  callee: regix.snapshot.capture
+  call_type: resolved
+- caller: regix.benchmark._make_gates_probe
+  callee: regix.gates.check_gates
+  call_type: resolved
+- caller: regix.benchmark.main
+  callee: regix.benchmark.build_regix_suite
+  call_type: resolved
+modules:
+  regix:
+  - regix.Regix.history
+  - regix.Regix.snapshot
+  regix.backends:
+  - regix.backends.get_backend
+  regix.backends.structure_backend:
+  - regix.backends.structure_backend.StructureBackend.collect
+  - regix.backends.structure_backend._analyse_function
+  regix.benchmark:
+  - regix.benchmark.BackendProbe.run
+  - regix.benchmark.BenchmarkReporter.print
+  - regix.benchmark.BenchmarkReporter.print_json
+  - regix.benchmark.BenchmarkReporter.print_plain
+  - regix.benchmark._make_compare_probe
+  - regix.benchmark._make_gates_probe
+  - regix.benchmark._make_snapshot_probe
+  - regix.benchmark.build_regix_suite
+  - regix.benchmark.main
+  regix.cache:
+  - regix.cache._cache_dir
+  - regix.cache._cache_key
+  - regix.cache.clear
+  - regix.cache.lookup
+  - regix.cache.store
+  regix.cli:
+  - regix.cli._load_config
+  - regix.cli.diff
+  - regix.cli.gates
+  - regix.cli.history
+  - regix.cli.snapshot
+  - regix.cli.status
+  regix.compare:
+  - regix.compare._compare_symbol_metrics
+  - regix.compare._compute_delta
+  - regix.compare.compare
+  regix.gates:
+  - regix.gates._passes
+  - regix.gates.check_gates
+  regix.git:
+  - regix.git._run_git
+  - regix.git.checkout_temporary
+  - regix.git.get_changed_files
+  - regix.git.get_dirty_files
+  - regix.git.is_clean
+  - regix.git.list_commits
+  - regix.git.read_local_sources
+  - regix.git.read_tree_sources
+  - regix.git.resolve_ref
+  regix.history:
+  - regix.history._aggregate_snapshot_metrics
+  - regix.history._compute_trends
+  - regix.history._linear_slope
+  - regix.history.build_history
+  regix.report:
+  - regix.report._render_rich
+  - regix.report.render
+  regix.smells:
+  - regix.smells._avg_func_length
+  - regix.smells._check_god_function
+  - regix.smells._check_hallucination_proxy
+  - regix.smells._check_no_delegation
+  - regix.smells._check_stub_regression
+  - regix.smells._check_symbol_smells
+  - regix.smells._count_hollow_signals
+  - regix.smells._func_length
+  - regix.smells._function_count_drop
+  - regix.smells._largest_function
+  - regix.smells._was_already_hollow
+  - regix.smells.detect_smells
+  regix.snapshot:
+  - regix.snapshot._collect_files
+  - regix.snapshot._filter_sources
+  - regix.snapshot._merge_symbols
+  - regix.snapshot.capture
+  scripts.check_regression:
+  - scripts.check_regression.check_regression
+  - scripts.check_regression.load_json_file
+entry_points:
+- regix.Regix.__init__
+- regix.Regix.compare
+- regix.Regix.compare_local
+- regix.Regix.history
+- regix.Regix.snapshot
+- regix.backends.BackendBase.collect
+- regix.backends.BackendBase.is_available
+- regix.backends.BackendBase.version
+- regix.backends.architecture_backend.ArchitectureBackend.collect
+- regix.backends.architecture_backend.ArchitectureBackend.is_available
+- regix.backends.architecture_backend.ArchitectureBackend.version
+- regix.backends.code2llm_backend.Code2llmBackend._parse_file_entry
+- regix.backends.code2llm_backend.Code2llmBackend._parse_function_entry
+- regix.backends.code2llm_backend.Code2llmBackend._parse_header_stats
+- regix.backends.code2llm_backend.Code2llmBackend._parse_map_toon
+- regix.backends.code2llm_backend.Code2llmBackend._parse_module_list
+- regix.backends.code2llm_backend.Code2llmBackend.is_available
+- regix.backends.code2llm_backend.Code2llmBackend.version
+- regix.backends.coverage_backend.CoverageBackend._from_coverage_file
+- regix.backends.coverage_backend.CoverageBackend._from_json
+- regix.backends.coverage_backend.CoverageBackend.collect
+- regix.backends.coverage_backend.CoverageBackend.is_available
+- regix.backends.coverage_backend.CoverageBackend.version
+- regix.backends.docstring_backend.DocstringBackend.collect
+- regix.backends.docstring_backend.DocstringBackend.is_available
+- regix.backends.docstring_backend.DocstringBackend.version
+- regix.backends.lizard_backend.LizardBackend.collect
+- regix.backends.lizard_backend.LizardBackend.is_available
+- regix.backends.lizard_backend.LizardBackend.version
+- regix.backends.radon_backend.RadonBackend.collect
+- regix.backends.radon_backend.RadonBackend.is_available
+- regix.backends.radon_backend.RadonBackend.version
+- regix.backends.register_backend
+- regix.backends.structure_backend.StructureBackend._collect_functions
+- regix.backends.structure_backend.StructureBackend.collect
+- regix.backends.structure_backend.StructureBackend.is_available
+- regix.backends.structure_backend.StructureBackend.version
+- regix.backends.structure_backend._CallVisitor.__init__
+- regix.backends.structure_backend._CallVisitor.visit_Call
+- regix.backends.vallm_backend.VallmBackend.collect
+- regix.backends.vallm_backend.VallmBackend.is_available
+- regix.backends.vallm_backend.VallmBackend.version
+- regix.benchmark.BackendProbe.__init__
+- regix.benchmark.BackendProbe._generate_files
+- regix.benchmark.BackendProbe.run
+- regix.benchmark.BenchmarkProbe.run
+- regix.benchmark.BenchmarkReporter.__init__
+- regix.benchmark.BenchmarkReporter._format_result_details
+- regix.benchmark.BenchmarkReporter.any_failed
+- regix.benchmark.BenchmarkReporter.print_json
+- regix.benchmark.BenchmarkReporter.print_plain
+- regix.benchmark.BenchmarkReporter.print_rich
+- regix.benchmark.BenchmarkResult.to_dict
+- regix.benchmark.BenchmarkSuite.__init__
+- regix.benchmark.BenchmarkSuite.add
+- regix.benchmark.BenchmarkSuite.run
+- regix.benchmark.CLIProbe.__init__
+- regix.benchmark.CLIProbe.run
+- regix.benchmark.ImportProbe.__init__
+- regix.benchmark.ImportProbe.run
+- regix.benchmark.ThroughputProbe.__init__
+- regix.benchmark.ThroughputProbe.run
+- regix.benchmark.UnitTestProbe.__init__
+- regix.benchmark.UnitTestProbe.run
+- regix.benchmark.benchmark_library
+- regix.benchmark.main
+- regix.benchmark.models.BenchmarkResult.to_dict
+- regix.benchmark.probes.BenchmarkProbe.run
+- regix.benchmark.probes.CLIProbe.__init__
+- regix.benchmark.probes.CLIProbe.run
+- regix.benchmark.probes.ImportProbe.__init__
+- regix.benchmark.probes.ImportProbe.run
+- regix.benchmark.probes.UnitTestProbe.__init__
+- regix.benchmark.probes.UnitTestProbe.run
+- regix.cache.clear
+- regix.cache.lookup
+- regix.cache.store
+- regix.cli.compare
+- regix.cli.diff
+- regix.cli.gates
+- regix.cli.history
+- regix.cli.init
+- regix.cli.snapshot
+- regix.cli.status
+- regix.compare.compare
+- regix.config.GateThresholds.get
+- regix.config.RegressionConfig._find_config
+- regix.config.RegressionConfig._from_pyproject
+- regix.config.RegressionConfig._from_yaml
+- regix.config.RegressionConfig._parse_backends
+- regix.config.RegressionConfig._parse_cache
+- regix.config.RegressionConfig._parse_deltas
+- regix.config.RegressionConfig._parse_files
+- regix.config.RegressionConfig._parse_gates
+- regix.config.RegressionConfig._parse_legacy_metrics
+- regix.config.RegressionConfig._parse_loop
+- regix.config.RegressionConfig._parse_output
+- regix.config.RegressionConfig._parse_smells
+- regix.config.RegressionConfig.apply_env_overrides
+- regix.config.RegressionConfig.cc_max
+- regix.config.RegressionConfig.coverage_min
+- regix.config.RegressionConfig.delta_thresholds
+- regix.config.RegressionConfig.docstring_min
+- regix.config.RegressionConfig.from_dict
+- regix.config.RegressionConfig.from_file
+- regix.config.RegressionConfig.is_lower_better
+- regix.config.RegressionConfig.length_max
+- regix.config.RegressionConfig.mi_min
+- regix.config.RegressionConfig.quality_min
+- regix.exceptions.BackendError.__init__
+- regix.exceptions.ConfigError.__init__
+- regix.exceptions.GitDirtyError.__init__
+- regix.exceptions.GitRefError.__init__
+- regix.git.checkout_temporary
+- regix.git.get_changed_files
+- regix.git.get_dirty_files
+- regix.git.is_clean
+- regix.integrations.RegixCollector._parse
+- regix.integrations.RegixCollector.collect
+- regix.models.RegressionReport._toon_regression_section
+- regix.models.RegressionReport._toon_smell_section
+- regix.models.RegressionReport.filter
+- regix.models.RegressionReport.to_dict
+- regix.models.RegressionReport.to_json
+- regix.models.RegressionReport.to_toon
+- regix.models.RegressionReport.to_yaml
+- regix.models.Snapshot.get
+- regix.models.Snapshot.load
+- regix.models.Snapshot.save
+- regix.smells._check_cohesion_loss
+- regix.smells._check_logic_density_drop
+- regix.smells._check_no_delegation
+- regix.smells._check_stub_regression
+- scripts.check_regression.check_regression
+- scripts.check_regression.run_command

@@ -121,6 +121,49 @@ def _merge_symbols(
     return list(index.values())
 
 
+def _resolve_backends(
+    backend_names: list[str] | None, config: RegressionConfig
+) -> tuple[list, dict[str, str]]:
+    """Return (backend_instances, versions_dict)."""
+    from regix.backends import get_backend
+
+    if backend_names is None:
+        backend_names = [
+            v for v in config.backends.values() if v not in ("none", "builtin")
+        ]
+        for builtin in ("docstring", "structure", "architecture"):
+            if builtin not in backend_names:
+                backend_names.append(builtin)
+
+    backends = []
+    for name in backend_names:
+        if name in ("none", ""):
+            continue
+        bk = get_backend(name)
+        if bk is None or not bk.is_available():
+            continue
+        backends.append(bk)
+
+    versions = {bk.name: bk.version() for bk in backends}
+    return backends, versions
+
+
+def _load_sources(
+    ref: str, workdir: Path, config: RegressionConfig, is_local: bool
+) -> tuple[list[Path], dict[str, str]]:
+    """Load source files into RAM and return (file_list, sources_dict)."""
+    from regix.git import read_local_sources, read_tree_sources
+
+    if is_local:
+        disk_files = _collect_files(workdir, config.include, config.exclude)
+        sources = read_local_sources(workdir, disk_files)
+        files = [Path(k) for k in sources]
+        return files, sources
+
+    raw_sources = read_tree_sources(ref, workdir, suffix=".py")
+    return _filter_sources(raw_sources, config.include, config.exclude)
+
+
 def capture(
     ref: str,
     workdir: Path,
@@ -133,51 +176,16 @@ def capture(
     are created.  For committed refs ``git archive`` streams the tree
     directly into memory; for ``local`` the working tree is read once.
     """
-    from regix.backends import get_backend
-    from regix.git import read_local_sources, read_tree_sources, resolve_ref
+    from regix.git import resolve_ref
 
     is_local = ref == "local"
     commit_sha: str | None = None
-
     if not is_local:
         commit_sha = resolve_ref(ref, workdir)
 
-    # Determine which backends to run
-    if backend_names is None:
-        backend_names = [
-            v for v in config.backends.values() if v not in ("none", "builtin")
-        ]
-        # Always include builtin backends
-        if "docstring" not in backend_names:
-            backend_names.append("docstring")
-        if "structure" not in backend_names:
-            backend_names.append("structure")
-        if "architecture" not in backend_names:
-            backend_names.append("architecture")
+    backends, backend_versions = _resolve_backends(backend_names, config)
+    files, sources = _load_sources(ref, workdir, config, is_local)
 
-    backends = []
-    for name in backend_names:
-        if name in ("none", ""):
-            continue
-        bk = get_backend(name)
-        if bk is None:
-            continue
-        if not bk.is_available():
-            continue
-        backends.append(bk)
-
-    backend_versions = {bk.name: bk.version() for bk in backends}
-
-    # ── Load all sources into RAM ──────────────────────────────────────────
-    if is_local:
-        disk_files = _collect_files(workdir, config.include, config.exclude)
-        sources = read_local_sources(workdir, disk_files)
-        files = [Path(k) for k in sources]
-    else:
-        raw_sources = read_tree_sources(ref, workdir, suffix=".py")
-        files, sources = _filter_sources(raw_sources, config.include, config.exclude)
-
-    # ── Run backends with in-memory sources ────────────────────────────────
     all_results: list[list[SymbolMetrics]] = []
     for bk in backends:
         try:

@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from regix.backends import BackendBase, register_backend
+from regix.backends.base import BackendBase, register_backend
 from regix.config import RegressionConfig
 from regix.models import SymbolMetrics
 

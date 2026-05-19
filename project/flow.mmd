@@ -1,4 +1,5 @@
 flowchart TD
+%% generated in 0.01s
 
     %% Entry points (blue)
     classDef entry fill:#4dabf7,stroke:#1971c2,color:#fff
@@ -15,22 +16,22 @@ flowchart TD
     end
 
     subgraph Core
-        regix__compare___compute_delta{{_compute_delta CC=16}}
-        regix__compare__compare["compare"]
-        regix__git___run_git["_run_git"]
-        regix__git__resolve_ref["resolve_ref"]
-        regix__git__is_clean["is_clean"]
-        regix__git__get_dirty_files["get_dirty_files"]
-        regix__git__get_changed_files["get_changed_files"]
-        regix__git__checkout_temporary["checkout_temporary"]
-        regix__git__read_tree_sources["read_tree_sources"]
-        regix__config__GateThresholds__get["get"]
-        regix__config__RegressionConfig__cc_max["cc_max"]
-        regix__config__RegressionConfig__mi_min["mi_min"]
-        regix__config__RegressionConfig__coverage_min["coverage_min"]
-        regix__config__RegressionConfig__length_max["length_max"]
-        regix__config__RegressionConfig__docstring_min["docstring_min"]
-        ...["+91 more"]
+        regix__snapshot__capture{{capture CC=17}}
+        regix__backends__docstring_backend__DocstringBackend__is_available["is_available"]
+        regix__backends__docstring_backend__DocstringBackend__version["version"]
+        regix__backends__docstring_backend__DocstringBackend__collect["collect"]
+        regix__backends__vallm_backend__VallmBackend__is_available["is_available"]
+        regix__backends__vallm_backend__VallmBackend__version["version"]
+        regix__backends__vallm_backend__VallmBackend__collect["collect"]
+        regix__backends__radon_backend__RadonBackend__is_available["is_available"]
+        regix__backends__radon_backend__RadonBackend__version["version"]
+        regix__backends__radon_backend__RadonBackend__collect["collect"]
+        regix__backends__BackendBase__is_available["is_available"]
+        regix__backends__BackendBase__collect["collect"]
+        regix__backends__BackendBase__version["version"]
+        regix__backends__register_backend["register_backend"]
+        regix__backends__code2llm_backend__Code2llmBackend__is_available["is_available"]
+        ...["+103 more"]
     end
 
-    class regix__compare__compare,regix__git__is_clean,regix__git__get_dirty_files,regix__git__get_changed_files,regix__git__checkout_temporary,regix__config__GateThresholds__get,regix__config__RegressionConfig__cc_max,regix__config__RegressionConfig__mi_min,regix__config__RegressionConfig__coverage_min,regix__config__RegressionConfig__length_max entry
+    class regix__backends__docstring_backend__DocstringBackend__is_available,regix__backends__docstring_backend__DocstringBackend__version,regix__backends__docstring_backend__DocstringBackend__collect,regix__backends__vallm_backend__VallmBackend__is_available,regix__backends__vallm_backend__VallmBackend__version,regix__backends__vallm_backend__VallmBackend__collect,regix__backends__radon_backend__RadonBackend__is_available,regix__backends__radon_backend__RadonBackend__version,regix__backends__radon_backend__RadonBackend__collect,regix__backends__BackendBase__is_available entry

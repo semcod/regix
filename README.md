@@ -1,12 +1,12 @@
 ## AI Cost Tracking
 
-![PyPI](https://img.shields.io/badge/pypi-costs-blue) ![Version](https://img.shields.io/badge/version-0.1.31-blue) ![Python](https://img.shields.io/badge/python-3.9+-blue) ![License](https://img.shields.io/badge/license-Apache--2.0-green)
-![AI Cost](https://img.shields.io/badge/AI%20Cost-$1.43-orange) ![Human Time](https://img.shields.io/badge/Human%20Time-9.9h-blue) ![Model](https://img.shields.io/badge/Model-openrouter%2Fqwen%2Fqwen3--coder--next-lightgrey)
+![PyPI](https://img.shields.io/badge/pypi-costs-blue) ![Version](https://img.shields.io/badge/version-0.1.13-blue) ![Python](https://img.shields.io/badge/python-3.9+-blue) ![License](https://img.shields.io/badge/license-Apache--2.0-green)
+![AI Cost](https://img.shields.io/badge/AI%20Cost-$1.60-orange) ![Human Time](https://img.shields.io/badge/Human%20Time-10.9h-blue) ![Model](https://img.shields.io/badge/Model-openrouter%2Fqwen%2Fqwen3--coder--next-lightgrey)
 
-- 🤖 **LLM usage:** $1.4324 (22 commits)
-- 👤 **Human dev:** ~$987 (9.9h @ $100/h, 30min dedup)
+- 🤖 **LLM usage:** $1.6047 (23 commits)
+- 👤 **Human dev:** ~$1087 (10.9h @ $100/h, 30min dedup)
 
-Generated on 2026-05-12 using [openrouter/qwen/qwen3-coder-next](https://openrouter.ai/qwen/qwen3-coder-next)
+Generated on 2026-05-19 using [openrouter/qwen/qwen3-coder-next](https://openrouter.ai/qwen/qwen3-coder-next)
 
 ---
 
@@ -494,9 +494,6 @@ Regix is designed to sit **above** analysis tools (lizard, radon, vallm) as the 
 ## License
 
 Licensed under Apache-2.0.
-
-<!-- taskill:status:start -->
-
 ## Status
 
 _Last updated by [taskill](https://github.com/oqlos/taskill) at 2026-04-25 13:47 UTC_

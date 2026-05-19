@@ -1,9 +1,10 @@
-# code2llm/evolution | 163 func | 23f | 2026-04-02
+# code2llm/evolution | 178 func | 26f | 2026-05-19
+# generated in 0.02s
 
-NEXT[6] (ranked by impact):
+NEXT[8] (ranked by impact):
   [1] !! SPLIT           regix/benchmark.py
-      WHY: 936L, 9 classes, max CC=12
-      EFFORT: ~4h  IMPACT: 11232
+      WHY: 861L, 9 classes, max CC=12
+      EFFORT: ~4h  IMPACT: 10332
 
   [2] !  SPLIT-FUNC      capture  CC=17  fan=18
       WHY: CC=17 exceeds 15
@@ -25,14 +26,24 @@ NEXT[6] (ranked by impact):
       WHY: CC=17 exceeds 15
       EFFORT: ~1h  IMPACT: 119
 
+  [7] !! SPLIT           planfile.yaml
+      WHY: 721L, 0 classes, max CC=0
+      EFFORT: ~4h  IMPACT: 0
 
-RISKS[1]:
+  [8] !! SPLIT           goal.yaml
+      WHY: 513L, 0 classes, max CC=0
+      EFFORT: ~4h  IMPACT: 0
+
+
+RISKS[3]:
   ⚠ Splitting regix/benchmark.py may break 31 import paths
+  ⚠ Splitting planfile.yaml may break 0 import paths
+  ⚠ Splitting goal.yaml may break 0 import paths
 
 METRICS-TARGET:
-  CC̄:          4.6 → ≤3.2
+  CC̄:          4.5 → ≤3.1
   max-CC:      19 → ≤9
-  god-modules: 1 → 0
+  god-modules: 3 → 0
   high-CC(≥15): 7 → ≤3
   hub-types:   0 → ≤0
 
@@ -61,4 +72,4 @@ PATTERNS (language parser shared logic):
     - Standardized FunctionInfo/ClassInfo models
 
 HISTORY:
-  prev CC̄=4.6 → now CC̄=4.6
+  prev CC̄=4.6 → now CC̄=4.5

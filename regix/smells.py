@@ -15,57 +15,69 @@ from regix.config import RegressionConfig
 from regix.models import ArchSmell, Snapshot, SymbolMetrics
 
 
-def detect_smells(
-    snap_before: Snapshot, snap_after: Snapshot, config: RegressionConfig
+def _detect_file_smells(
+    file: str,
+    snap_before: Snapshot,
+    snap_after: Snapshot,
+    config: RegressionConfig,
 ) -> list[ArchSmell]:
-    """Compare two snapshots and return all detected architectural smells."""
+    """Detect smells for a single file present in both snapshots."""
     smells: list[ArchSmell] = []
-    files_before = {s.file for s in snap_before.symbols}
-    files_after = {s.file for s in snap_after.symbols}
-    common_files = files_before & files_after
-    for file in sorted(common_files):
-        funcs_before: dict[str, SymbolMetrics] = {
-            s.symbol: s
-            for s in snap_before.symbols
-            if s.file == file and s.symbol is not None
-        }
-        funcs_after: dict[str, SymbolMetrics] = {
-            s.symbol: s
-            for s in snap_after.symbols
-            if s.file == file and s.symbol is not None
-        }
-        mod_before = next(
-            (s for s in snap_before.symbols if s.file == file and s.symbol is None),
-            None,
+    funcs_before = {
+        s.symbol: s
+        for s in snap_before.symbols
+        if s.file == file and s.symbol is not None
+    }
+    funcs_after = {
+        s.symbol: s
+        for s in snap_after.symbols
+        if s.file == file and s.symbol is not None
+    }
+    mod_before = next(
+        (s for s in snap_before.symbols if s.file == file and s.symbol is None),
+        None,
+    )
+    mod_after = next(
+        (s for s in snap_after.symbols if s.file == file and s.symbol is None), None
+    )
+    smells.extend(
+        _check_god_function(
+            file,
+            funcs_before,
+            funcs_after,
+            mod_before,
+            mod_after,
+            config,
+            snap_before.ref,
+            snap_after.ref,
         )
-        mod_after = next(
-            (s for s in snap_after.symbols if s.file == file and s.symbol is None), None
-        )
+    )
+    for sym, m_after in funcs_after.items():
+        m_before = funcs_before.get(sym)
         smells.extend(
-            _check_god_function(
+            _check_symbol_smells(
                 file,
-                funcs_before,
-                funcs_after,
-                mod_before,
-                mod_after,
+                sym,
+                m_before,
+                m_after,
                 config,
                 snap_before.ref,
                 snap_after.ref,
             )
         )
-        for sym, m_after in funcs_after.items():
-            m_before = funcs_before.get(sym)
-            smells.extend(
-                _check_symbol_smells(
-                    file,
-                    sym,
-                    m_before,
-                    m_after,
-                    config,
-                    snap_before.ref,
-                    snap_after.ref,
-                )
-            )
+    return smells
+
+
+def detect_smells(
+    snap_before: Snapshot, snap_after: Snapshot, config: RegressionConfig
+) -> list[ArchSmell]:
+    """Compare two snapshots and return all detected architectural smells."""
+    files_before = {s.file for s in snap_before.symbols}
+    files_after = {s.file for s in snap_after.symbols}
+    common_files = files_before & files_after
+    smells: list[ArchSmell] = []
+    for file in sorted(common_files):
+        smells.extend(_detect_file_smells(file, snap_before, snap_after, config))
     return smells
 
 

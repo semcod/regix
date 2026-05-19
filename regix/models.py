@@ -276,6 +276,18 @@ class RegressionReport:
             lines.append("")
         return "\n".join(lines)
 
+    @staticmethod
+    def _matches(obj, file, symbol, metric, severity) -> bool:
+        if file and getattr(obj, "file", None) != file:
+            return False
+        if symbol and getattr(obj, "symbol", None) != symbol:
+            return False
+        if metric and getattr(obj, "metric", None) != metric:
+            return False
+        if severity and getattr(obj, "severity", None) != severity:
+            return False
+        return True
+
     def filter(
         self,
         file: str | None = None,
@@ -284,37 +296,10 @@ class RegressionReport:
         severity: str | None = None,
     ) -> RegressionReport:
         """Return a filtered copy of this report."""
-
-        def _match_reg(r: Regression) -> bool:
-            if file and r.file != file:
-                return False
-            if symbol and r.symbol != symbol:
-                return False
-            if metric and r.metric != metric:
-                return False
-            if severity and r.severity != severity:
-                return False
-            return True
-
-        def _match_imp(i: Improvement) -> bool:
-            if file and i.file != file:
-                return False
-            if symbol and i.symbol != symbol:
-                return False
-            if metric and i.metric != metric:
-                return False
-            return True
-
-        def _match_smell(s: ArchSmell) -> bool:
-            if file and s.file != file:
-                return False
-            if symbol and s.symbol != symbol:
-                return False
-            return True
-
-        filtered_reg = [r for r in self.regressions if _match_reg(r)]
-        filtered_imp = [i for i in self.improvements if _match_imp(i)]
-        filtered_smells = [s for s in self.smells if _match_smell(s)]
+        kwargs = {"file": file, "symbol": symbol, "metric": metric, "severity": severity}
+        filtered_reg = [r for r in self.regressions if self._matches(r, **kwargs)]
+        filtered_imp = [i for i in self.improvements if self._matches(i, **kwargs)]
+        filtered_smells = [s for s in self.smells if self._matches(s, **kwargs)]
         return RegressionReport(
             ref_before=self.ref_before,
             ref_after=self.ref_after,
@@ -324,10 +309,10 @@ class RegressionReport:
             improvements=filtered_imp,
             smells=filtered_smells,
             unchanged=self.unchanged,
-            errors=sum((1 for r in filtered_reg if r.severity == "error")),
-            warnings=sum((1 for r in filtered_reg if r.severity == "warning")),
-            smell_errors=sum((1 for s in filtered_smells if s.severity == "error")),
-            smell_warnings=sum((1 for s in filtered_smells if s.severity == "warning")),
+            errors=sum(1 for r in filtered_reg if r.severity == "error"),
+            warnings=sum(1 for r in filtered_reg if r.severity == "warning"),
+            smell_errors=sum(1 for s in filtered_smells if s.severity == "error"),
+            smell_warnings=sum(1 for s in filtered_smells if s.severity == "warning"),
             stagnated=self.stagnated,
             duration=self.duration,
         )

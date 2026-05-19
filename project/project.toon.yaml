@@ -1,7 +1,8 @@
-# regix | 166 func | 24f | 7910L | python | 2026-04-02
+# regix | 181 func | 27f | 7475L | python | 2026-05-19
+# generated in 0.00s
 
 HEALTH:
-  CC̄=4.6  critical=21 (limit:10)  dup=0  cycles=1
+  CC̄=4.5  critical=22 (limit:10)  dup=5  cycles=1
 
 ALERTS[20]:
   !!  high_fan_out     capture = 18 (limit:10)
@@ -15,23 +16,23 @@ ALERTS[20]:
   !   cc_exceeded      compare = 16 (limit:15)
   !   cc_exceeded      diff = 15 (limit:15)
 
-MODULES[25] (top by size):
-  M[regix/benchmark.py] 936L C:9 F:31 CC↑12 D:1 (python)
-  M[regix/config.py] 471L C:2 F:24 CC↑8 D:0 (python)
-  M[regix/models.py] 456L C:13 F:10 CC↑15 D:0 (python)
-  M[regix/smells.py] 428L C:0 F:14 CC↑17 D:1 (python)
-  M[regix/cli.py] 334L C:0 F:8 CC↑15 D:0 (python)
-  M[regix/compare.py] 201L C:0 F:4 CC↑16 D:0 (python)
-  M[regix/snapshot.py] 182L C:0 F:4 CC↑17 D:4 (python)
-  M[regix/git.py] 179L C:1 F:9 CC↑6 D:2 (python)
-  M[regix/backends/structure_backend.py] 152L C:2 F:7 CC↑11 D:0 (python)
-  M[regix/__init__.py] 134L C:1 F:6 CC↑4 D:0 (python)
-  M[regix/backends/architecture_backend.py] 133L C:1 F:3 CC↑19 D:0 (python)
-  M[regix/report.py] 133L C:0 F:3 CC↑14 D:1 (python)
-  M[regix/backends/coverage_backend.py] 111L C:1 F:5 CC↑7 D:0 (python)
-  M[regix/cache.py] 105L C:0 F:5 CC↑4 D:0 (python)
-  M[regix/history.py] 103L C:0 F:4 CC↑8 D:2 (python)
-  LANGS: python:24/shell:1
+MODULES[39] (top by size):
+  M[regix/benchmark.py] 861L C:9 F:31 CC↑12 D:1 (python)
+  M[planfile.yaml] 721L C:0 F:0 CC↑0 D:0 (yaml)
+  M[goal.yaml] 513L C:0 F:0 CC↑0 D:0 (yaml)
+  M[regix/config.py] 499L C:2 F:24 CC↑8 D:0 (python)
+  M[regix/models.py] 414L C:13 F:10 CC↑15 D:0 (python)
+  M[sumd.json] 406L C:0 F:0 CC↑0 D:0 (json)
+  M[regix/smells.py] 381L C:0 F:14 CC↑17 D:1 (python)
+  M[Taskfile.yml] 286L C:0 F:0 CC↑0 D:0 (yml)
+  M[regix/cli.py] 274L C:0 F:8 CC↑15 D:0 (python)
+  M[regix/compare.py] 241L C:0 F:4 CC↑16 D:0 (python)
+  M[regix/backends/structure_backend.py] 205L C:2 F:7 CC↑11 D:0 (python)
+  M[regix/snapshot.py] 197L C:0 F:4 CC↑17 D:4 (python)
+  M[regix/git.py] 180L C:1 F:9 CC↑6 D:2 (python)
+  M[pyqual.yaml] 144L C:0 F:0 CC↑0 D:0 (yaml)
+  M[pyproject.toml] 142L C:0 F:0 CC↑0 D:0 (toml)
+  LANGS: python:27/yaml:4/json:2/shell:2/other:1/yml:1/toml:1/ini:1
 
 HOTSPOTS[10]:
   ★ capture fan=18  // Capture a snapshot at a git ref or the local working tree.
@@ -42,12 +43,12 @@ All file contents ar
   ★ BenchmarkReporter.print_rich fan=15  // Orchestrates 15 calls
   ★ ArchitectureBackend.collect fan=14  // Orchestrates 14 calls
 
-REFACTOR[12]:
-  [1] H/H Split god module regix/benchmark.py (936L, 9 classes)
-  [2] M/L Split _compute_delta (CC=16 → target CC<10)
-  [3] M/L Split compare (CC=16 → target CC<10)
-  [4] M/L Split diff (CC=15 → target CC<10)
-  [5] M/L Split capture (CC=17 → target CC<10)
+REFACTOR[14]:
+  [1] H/H Split god module regix/benchmark.py (861L, 9 classes)
+  [2] H/H Split god module goal.yaml (513L, 0 classes)
+  [3] H/H Split god module planfile.yaml (721L, 0 classes)
+  [4] M/L Split capture (CC=17)
+  [5] M/L Split detect_smells (CC=17)
 
 EVOLUTION:
-  2026-04-02 CC̄=4.6 crit=21 7910L // Automated analysis
+  2026-05-19 CC̄=4.5 crit=22 7475L // Automated analysis
