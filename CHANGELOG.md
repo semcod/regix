@@ -2,6 +2,31 @@
 
 ## [Unreleased]
 
+## [0.1.14] - 2026-05-19
+
+### Docs
+- Update README.md
+
+### Test
+- Update tests/test_benchmark.py
+- Update tests/test_cli.py
+- Update tests/test_config.py
+- Update tests/test_config_full.py
+- Update tests/test_snapshot.py
+
+### Other
+- Update regix.yaml
+- Update regix/__main__.py
+- Update regix/backends/architecture_backend.py
+- Update regix/benchmark.py.bak
+- Update regix/benchmark/cli.py
+- Update regix/benchmark/factory.py
+- Update regix/benchmark/models.py
+- Update regix/benchmark/probes.py
+- Update regix/benchmark/reporter.py
+- Update regix/compare.py
+- ... and 4 more files
+
 ## [0.1.13] - 2026-05-19
 
 ### Docs

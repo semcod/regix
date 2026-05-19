@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from types import SimpleNamespace
 from typing import Any
 
 try:
@@ -71,9 +72,9 @@ if ToolPreset is not None:
     )
 else:
     # Fallback dla backward compatibility gdy pyqual nie jest zainstalowany
-    REGIX_PRESET = {
-        "binary": "regix",
-        "command": "regix compare HEAD~1 HEAD --format toon --output .regix/",
-        "output": ".regix/report.toon.yaml",
-        "allow_failure": False,
-    }
+    REGIX_PRESET = SimpleNamespace(
+        binary="regix",
+        command="regix compare HEAD~1 HEAD --format toon --output .regix/",
+        output=".regix/report.toon.yaml",
+        allow_failure=False,
+    )

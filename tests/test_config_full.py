@@ -241,6 +241,11 @@ class TestIsLowerBetter:
         cfg = RegressionConfig()
         assert cfg.is_lower_better("coverage") is False
 
+    def test_structure_counts_lower_are_better(self):
+        cfg = RegressionConfig()
+        assert cfg.is_lower_better("call_count") is True
+        assert cfg.is_lower_better("fan_out") is True
+
 
 class TestEnvOverrides:
     def test_env_override_cc_max(self, monkeypatch):

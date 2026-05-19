@@ -74,8 +74,17 @@ def build_regix_suite() -> BenchmarkSuite:
     )
     tests_dir = _ROOT / "tests"
     if tests_dir.exists():
-        suite.add(UnitTestProbe(tests_dir, label="full test suite", threshold=60.0))
+        suite.add(
+            UnitTestProbe(
+                tests_dir,
+                label="full test suite",
+                pytest_args=["--ignore", str(tests_dir / "test_benchmark.py")],
+                threshold=60.0,
+            )
+        )
         for test_file in sorted(tests_dir.glob("test_*.py")):
+            if test_file.name == "test_benchmark.py":
+                continue
             suite.add(
                 UnitTestProbe(
                     test_file,

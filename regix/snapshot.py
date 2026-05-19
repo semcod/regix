@@ -164,6 +164,23 @@ def _load_sources(
     return _filter_sources(raw_sources, config.include, config.exclude)
 
 
+def _run_backends(
+    backends: list,
+    workdir: Path,
+    files: list[Path],
+    config: RegressionConfig,
+    sources: dict[str, str],
+) -> list[list[SymbolMetrics]]:
+    """Run each backend and collect results, tolerating backend failures."""
+    all_results: list[list[SymbolMetrics]] = []
+    for bk in backends:
+        try:
+            all_results.append(bk.collect(workdir, files, config, sources=sources))
+        except Exception:
+            all_results.append([])
+    return all_results
+
+
 def capture(
     ref: str,
     workdir: Path,
@@ -186,13 +203,7 @@ def capture(
     backends, backend_versions = _resolve_backends(backend_names, config)
     files, sources = _load_sources(ref, workdir, config, is_local)
 
-    all_results: list[list[SymbolMetrics]] = []
-    for bk in backends:
-        try:
-            result = bk.collect(workdir, files, config, sources=sources)
-            all_results.append(result)
-        except Exception:
-            all_results.append([])
+    all_results = _run_backends(backends, workdir, files, config, sources)
     symbols = _merge_symbols(all_results)
 
     return Snapshot(

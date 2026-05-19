@@ -32,6 +32,17 @@ class TestCollectFiles:
         assert any("main.py" in n for n in names)
         assert not any("test_main" in n for n in names)
 
+    def test_default_excludes_tox_environment(self, tmp_path: Path):
+        (tmp_path / "regix").mkdir()
+        (tmp_path / "regix" / "cli.py").write_text("x = 1")
+        (tmp_path / ".tox" / ".pkg" / "lib").mkdir(parents=True)
+        (tmp_path / ".tox" / ".pkg" / "lib" / "site.py").write_text("x = 2")
+
+        cfg = RegressionConfig()
+        result = _collect_files(tmp_path, include=cfg.include, exclude=cfg.exclude)
+
+        assert result == [Path("regix/cli.py")]
+
     def test_include_pattern(self, tmp_path: Path):
         (tmp_path / "a.py").write_text("x = 1")
         (tmp_path / "b.py").write_text("y = 2")

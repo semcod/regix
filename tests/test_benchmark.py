@@ -42,6 +42,11 @@ class TestBenchmarkResult:
         assert r.status == 'ERROR'
         assert r.passed is False
 
+    def test_skip_status(self):
+        r = BenchmarkResult(name='test', suite='s', elapsed=0.0, skipped=True)
+        assert r.status == 'SKIP'
+        assert r.passed is True
+
     def test_to_dict(self):
         r = BenchmarkResult(name='test', suite='s', elapsed=CONSTANT_1, threshold=2.0)
         d = r.to_dict()
@@ -158,6 +163,11 @@ class TestBenchmarkReporter:
 
     def test_none_failed(self):
         results = [BenchmarkResult(name='ok', suite='s', elapsed=0.1)]
+        reporter = BenchmarkReporter(results)
+        assert reporter.any_failed() is False
+
+    def test_skip_not_failed(self):
+        results = [BenchmarkResult(name='optional', suite='s', elapsed=0.0, skipped=True)]
         reporter = BenchmarkReporter(results)
         assert reporter.any_failed() is False
 

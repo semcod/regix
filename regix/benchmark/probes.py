@@ -177,10 +177,6 @@ class UnitTestProbe(BenchmarkProbe):
             "-m",
             "pytest",
             str(self.test_path),
-            "--tb=no",
-            "--no-header",
-            "-q",
-            "--no-cov",
             *self.pytest_args,
         ]
         t0 = time.perf_counter()
@@ -351,11 +347,13 @@ class BackendProbe(BenchmarkProbe):
                 error=f"backend '{self.backend_name}' not registered",
             )
         if not backend.is_available():
-            return _measurement_error(
+            return BenchmarkResult(
                 name=self.label,
                 suite=self.suite,
+                elapsed=0.0,
                 threshold=self.threshold,
-                error=f"backend '{self.backend_name}' not available",
+                skipped=True,
+                extra={"summary": f"backend '{self.backend_name}' not available"},
             )
 
         tmpdir = Path(tempfile.mkdtemp(prefix="regix_bench_"))

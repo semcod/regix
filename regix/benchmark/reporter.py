@@ -61,6 +61,7 @@ class BenchmarkReporter:
         _STATUS_COLORS = {
             "OK": "green",
             "PASS": "green",
+            "SKIP": "yellow",
             "FAIL": "red",
             "ERROR": "bold red",
         }
@@ -88,10 +89,11 @@ class BenchmarkReporter:
             console.print(table)
         total = len(self.results)
         passed = sum((1 for r in self.results if r.status in ("OK", "PASS")))
+        skipped = sum((1 for r in self.results if r.status == "SKIP"))
         failed = sum((1 for r in self.results if r.status == "FAIL"))
         errors = sum((1 for r in self.results if r.status == "ERROR"))
         console.print(
-            f"[bold]Total:[/bold] {total}  [green]OK/PASS: {passed}[/green]  [red]FAIL: {failed}[/red]  [bold red]ERROR: {errors}[/bold red]"
+            f"[bold]Total:[/bold] {total}  [green]OK/PASS: {passed}[/green]  [yellow]SKIP: {skipped}[/yellow]  [red]FAIL: {failed}[/red]  [bold red]ERROR: {errors}[/bold red]"
         )
         console.print()
 

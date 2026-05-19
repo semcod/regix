@@ -44,6 +44,10 @@ regix:
     - "examples/**"
     - ".venv/**"
     - "venv/**"
+    - ".tox/**"
+    - ".nox/**"
+    - ".pytest_cache/**"
+    - "**/__pycache__/**"
 
   # ── Output ─────────────────────────────────────────────────────
   output:

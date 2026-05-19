@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import subprocess
+import sys
 from datetime import datetime, timezone
 from pathlib import Path
 from unittest.mock import patch
@@ -60,6 +62,16 @@ class TestLoadConfig:
 
 
 class TestStatusCommand:
+    def test_python_module_entrypoint_runs(self):
+        result = subprocess.run(
+            [sys.executable, "-m", "regix", "--help"],
+            capture_output=True,
+            text=True,
+            timeout=10,
+        )
+        assert result.returncode == 0
+        assert "Usage:" in result.stdout
+
     def test_status_runs(self, tmp_path: Path):
         result = runner.invoke(app, ["status", "--workdir", str(tmp_path)])
         assert result.exit_code == 0

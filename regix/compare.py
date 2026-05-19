@@ -33,7 +33,6 @@ _TRACKED_METRICS = (
 
 
 def _severity_for_delta(
-    delta: float,
     abs_delta: float,
     is_regression: bool,
     is_improvement: bool,
@@ -60,8 +59,7 @@ def _compute_delta(
 ) -> MetricDelta | None:
     """Compute a MetricDelta for a single metric between two values."""
     if before is None or after is None:
-        return None
-
+        return None  # New or deleted symbol — handled separately
     delta = after - before
     lower_better = config.is_lower_better(metric)
     warn_thresh, error_thresh = config.delta_thresholds(metric)
@@ -69,7 +67,7 @@ def _compute_delta(
     is_regression = (delta > 0 and lower_better) or (delta < 0 and not lower_better)
     is_improvement = (delta < 0 and lower_better) or (delta > 0 and not lower_better)
     severity, threshold = _severity_for_delta(
-        delta, abs(delta), is_regression, is_improvement, warn_thresh, error_thresh
+        abs(delta), is_regression, is_improvement, warn_thresh, error_thresh
     )
 
     return MetricDelta(
@@ -174,22 +172,41 @@ def _process_comparison_key(
     config: RegressionConfig,
     ref_before: str,
     ref_after: str,
-) -> tuple[list[Regression], list[Improvement], bool]:
-    """Process a single (file, symbol) key and return deltas."""
+) -> tuple[list[Regression], list[Improvement], bool, bool]:
+    """Process one (file, symbol) key.
+
+    Returns (regressions, improvements, changed, skip).
+    """
     m_before = idx_before.get(key)
     m_after = idx_after.get(key)
     file_path, symbol_name = key
 
     if m_before is None:
-        return [], [], False
+        return [], [], False, True
     if m_after is None:
-        return [], _collect_deleted_symbol(
-            m_before, file_path, symbol_name, config, ref_before, ref_after
-        ), True
-
-    return _compare_symbol_metrics(
-        m_before, m_after, file_path, symbol_name, config, ref_before, ref_after
+        return (
+            [],
+            _collect_deleted_symbol(
+                m_before,
+                file_path,
+                symbol_name,
+                config,
+                ref_before,
+                ref_after,
+            ),
+            True,
+            False,
+        )
+    regs, imps, changed = _compare_symbol_metrics(
+        m_before,
+        m_after,
+        file_path,
+        symbol_name,
+        config,
+        ref_before,
+        ref_after,
     )
+    return regs, imps, changed, False
 
 
 def compare(
@@ -209,9 +226,11 @@ def compare(
     unchanged = 0
 
     for key in sorted(all_keys, key=lambda k: (k[0], k[1] or "")):
-        regs, imps, changed = _process_comparison_key(
+        regs, imps, changed, skip = _process_comparison_key(
             key, idx_before, idx_after, config, snap_before.ref, snap_after.ref
         )
+        if skip:
+            continue
         regressions.extend(regs)
         improvements.extend(imps)
         if not changed:

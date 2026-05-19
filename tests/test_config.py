@@ -103,6 +103,8 @@ regix:
         assert cfg.is_lower_better("length") is True
         assert cfg.is_lower_better("mi") is False
         assert cfg.is_lower_better("coverage") is False
+        assert cfg.is_lower_better("call_count") is True
+        assert cfg.is_lower_better("fan_out") is True
 
     def test_env_overrides(self, monkeypatch):
         cfg = RegressionConfig()

@@ -11,9 +11,12 @@ class BenchmarkResult:
     extra: Dict[str, Any] = field(default_factory=dict)
     error: Optional[str] = None
     threshold: Optional[float] = None
+    skipped: bool = False
 
     @property
     def passed(self) -> bool:
+        if self.skipped:
+            return True
         if self.error:
             return False
         if self.threshold is not None:
@@ -22,6 +25,8 @@ class BenchmarkResult:
 
     @property
     def status(self) -> str:
+        if self.skipped:
+            return "SKIP"
         if self.error:
             return "ERROR"
         if self.threshold is not None:
@@ -38,4 +43,5 @@ class BenchmarkResult:
             "threshold": self.threshold,
             "extra": self.extra,
             "error": self.error,
+            "skipped": self.skipped,
         }
