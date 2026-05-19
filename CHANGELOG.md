@@ -2,6 +2,17 @@
 
 ## [Unreleased]
 
+## [0.1.15] - 2026-05-19
+
+### Docs
+- Update README.md
+
+### Test
+- Update tests/test_benchmark.py
+
+### Other
+- Update uv.lock
+
 ## [0.1.14] - 2026-05-19
 
 ### Docs

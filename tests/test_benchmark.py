@@ -246,6 +246,28 @@ class TestUnitTestProbe:
         assert result.elapsed > 0
         assert result.status in ('PASS', 'OK')
 
+    @patch('regix.benchmark.probes.subprocess.run')
+    def test_run_does_not_force_no_cov(self, mock_run, tmp_path: Path):
+        test_file = tmp_path / 'test_trivial.py'
+        test_file.write_text('def test_one(): assert True\n')
+
+        captured_cmd = None
+
+        def _fake_run(cmd, **kwargs):
+            nonlocal captured_cmd
+            captured_cmd = cmd
+            return MagicMock(returncode=0, stdout='1 passed\n', stderr='')
+
+        mock_run.side_effect = _fake_run
+
+        probe = UnitTestProbe(test_file, threshold=CONSTANT_30, cwd=tmp_path)
+        result = probe.run()
+
+        assert result.status in ('PASS', 'OK')
+        assert captured_cmd is not None
+        assert '--no-cov' not in captured_cmd
+        assert captured_cmd[-3:] == [str(test_file), '-q', '--tb=no', '--no-header'][-3:]
+
 class TestBackendProbe:
 
     def test_structure_backend(self):
