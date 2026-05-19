@@ -89,8 +89,24 @@ else:
         allow_failure=False,
     )
 
-REGIX_PRESET = (
-    _preset
-    if hasattr(_preset, "binary")
-    else AttributePreset(_preset)
-)
+
+def _as_attribute_preset(value: Any) -> AttributePreset:
+    if isinstance(value, dict):
+        return AttributePreset(value)
+    if hasattr(value, "__dict__"):
+        return AttributePreset(vars(value))
+    return AttributePreset(
+        {
+            "binary": getattr(value, "binary", "regix"),
+            "command": getattr(
+                value,
+                "command",
+                "regix compare HEAD~1 HEAD --format toon --output .regix/",
+            ),
+            "output": getattr(value, "output", ".regix/report.toon.yaml"),
+            "allow_failure": getattr(value, "allow_failure", False),
+        }
+    )
+
+
+REGIX_PRESET = _as_attribute_preset(_preset)

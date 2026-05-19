@@ -216,6 +216,8 @@ class UnitTestProbe(BenchmarkProbe):
             sys.executable,
             "-m",
             "pytest",
+            "-o",
+            "addopts=",
             str(self.test_path),
             *self.pytest_args,
         ]
