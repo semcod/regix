@@ -268,6 +268,27 @@ class TestUnitTestProbe:
         assert '--no-cov' not in captured_cmd
         assert captured_cmd[-3:] == [str(test_file), '-q', '--tb=no', '--no-header'][-3:]
 
+    @patch('regix.benchmark.probes.subprocess.run')
+    def test_run_strips_no_cov_from_pytest_addopts(self, mock_run, monkeypatch, tmp_path: Path):
+        test_file = tmp_path / 'test_trivial.py'
+        test_file.write_text('def test_one(): assert True\n')
+        monkeypatch.setenv('PYTEST_ADDOPTS', '--no-cov --cov=regix --tb=short')
+
+        captured_env = None
+
+        def _fake_run(cmd, **kwargs):
+            nonlocal captured_env
+            captured_env = kwargs.get('env')
+            return MagicMock(returncode=0, stdout='1 passed\n', stderr='')
+
+        mock_run.side_effect = _fake_run
+
+        result = UnitTestProbe(test_file, threshold=CONSTANT_30, cwd=tmp_path).run()
+
+        assert result.status in ('PASS', 'OK')
+        assert captured_env is not None
+        assert captured_env['PYTEST_ADDOPTS'] == '--tb=short'
+
 class TestBackendProbe:
 
     def test_structure_backend(self):

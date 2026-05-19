@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from regix.integrations import REGIX_PRESET, RegixCollector
+from regix.integrations import REGIX_PRESET, AttributePreset, RegixCollector
 
 
 class TestRegixCollector:
@@ -68,3 +68,9 @@ class TestRegixPreset:
         assert hasattr(REGIX_PRESET, 'binary')
         assert hasattr(REGIX_PRESET, 'command')
         assert REGIX_PRESET.binary == "regix"
+
+    def test_attribute_preset_wraps_dict(self):
+        preset = AttributePreset({"binary": "regix", "command": "regix status"})
+
+        assert preset.binary == "regix"
+        assert preset["command"] == "regix status"

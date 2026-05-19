@@ -2,6 +2,20 @@
 
 ## [Unreleased]
 
+## [0.1.16] - 2026-05-19
+
+### Docs
+- Update README.md
+
+### Test
+- Update tests/test_benchmark.py
+- Update tests/test_integrations.py
+
+### Other
+- Update regix/benchmark/probes.py
+- Update regix/integrations/__init__.py
+- Update uv.lock
+
 ## [0.1.15] - 2026-05-19
 
 ### Docs

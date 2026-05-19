@@ -13,6 +13,16 @@ except ImportError:
     ToolPreset = None  # type: ignore
 
 
+class AttributePreset(dict):
+    """Dict-compatible preset with attribute access for pyqual callers."""
+
+    def __getattr__(self, name: str) -> Any:
+        try:
+            return self[name]
+        except KeyError as exc:
+            raise AttributeError(name) from exc
+
+
 class RegixCollector:
     """GateSet-compatible metric collector for pyqual.
 
@@ -64,7 +74,7 @@ class RegixCollector:
 
 # Tool preset for pyqual
 if ToolPreset is not None:
-    REGIX_PRESET = ToolPreset(
+    _preset = ToolPreset(
         binary="regix",
         command="regix compare HEAD~1 HEAD --format toon --output .regix/",
         output=".regix/report.toon.yaml",
@@ -72,9 +82,15 @@ if ToolPreset is not None:
     )
 else:
     # Fallback dla backward compatibility gdy pyqual nie jest zainstalowany
-    REGIX_PRESET = SimpleNamespace(
+    _preset = SimpleNamespace(
         binary="regix",
         command="regix compare HEAD~1 HEAD --format toon --output .regix/",
         output=".regix/report.toon.yaml",
         allow_failure=False,
     )
+
+REGIX_PRESET = (
+    _preset
+    if hasattr(_preset, "binary")
+    else AttributePreset(_preset)
+)

@@ -11,6 +11,16 @@ from typing import Any, Callable
 from .models import BenchmarkResult
 
 _ROOT = Path(__file__).resolve().parent.parent.parent
+_PYTEST_ADDOPTS_DENYLIST = {
+    "--cov",
+    "--no-cov",
+    "--cov-report",
+    "--cov-config",
+    "--cov-append",
+    "--cov-branch",
+    "--cov-context",
+    "--cov-fail-under",
+}
 
 
 def _measurement_error(
@@ -171,6 +181,36 @@ class UnitTestProbe(BenchmarkProbe):
         self.threshold = threshold
         self.cwd = cwd or _ROOT
 
+    @staticmethod
+    def _pytest_env() -> dict[str, str]:
+        env = dict(os.environ)
+        addopts = env.get("PYTEST_ADDOPTS")
+        if not addopts:
+            return env
+
+        cleaned: list[str] = []
+        skip_next = False
+        for opt in addopts.split():
+            if skip_next:
+                skip_next = False
+                continue
+            name = opt.split("=", 1)[0]
+            if name in _PYTEST_ADDOPTS_DENYLIST:
+                skip_next = "=" not in opt and name in {
+                    "--cov",
+                    "--cov-report",
+                    "--cov-config",
+                    "--cov-context",
+                    "--cov-fail-under",
+                }
+                continue
+            cleaned.append(opt)
+        if cleaned:
+            env["PYTEST_ADDOPTS"] = " ".join(cleaned)
+        else:
+            env.pop("PYTEST_ADDOPTS", None)
+        return env
+
     def run(self) -> BenchmarkResult:
         cmd = [
             sys.executable,
@@ -187,6 +227,7 @@ class UnitTestProbe(BenchmarkProbe):
                 text=True,
                 cwd=self.cwd,
                 timeout=300,
+                env=self._pytest_env(),
             )
             elapsed = time.perf_counter() - t0
         except subprocess.TimeoutExpired:
