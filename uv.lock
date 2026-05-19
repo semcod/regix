@@ -3971,7 +3971,7 @@ wheels = [
 
 [[package]]
 name = "regix"
-version = "0.1.15"
+version = "0.1.16"
 source = { editable = "." }
 dependencies = [
     { name = "pyyaml" },
