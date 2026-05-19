@@ -223,7 +223,7 @@ git:
     format: '{prefix}{version}'
 strategies:
   python:
-    test: pytest tests/ -v
+    test: bash -lc 'unset PYTEST_ADDOPTS; pytest tests/ -v'
     build: python -m build
     publish: twine upload dist/regix-{version}*
     publish_enabled: true

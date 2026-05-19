@@ -6,7 +6,9 @@ create temporary files on disk (unless explicitly needed via tmp_path).
 """
 from datetime import datetime, timezone
 from pathlib import Path
+
 import pytest
+
 from regix.config import RegressionConfig
 from regix.models import Snapshot, SymbolMetrics
 

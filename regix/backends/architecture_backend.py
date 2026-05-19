@@ -41,9 +41,7 @@ class ArchitectureBackend(BackendBase):
         return True
 
     def version(self) -> str:
-        import sys
-
-        return f"ast (Python {sys.version_info.major}.{sys.version_info.minor})"
+        return self._python_version()
 
     def _read_source(
         self,

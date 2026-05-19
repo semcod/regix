@@ -17,10 +17,18 @@ class BackendBase(ABC):
     name: str = ""
     required_binary: str | None = None
 
-    @abstractmethod
     def is_available(self) -> bool:
-        """Return True if the backend's dependencies are installed."""
-        ...
+        """Return True if the backend's dependencies are installed.
+
+        When *required_binary* is set, checks that the binary is on PATH.
+        Built-in backends that set *required_binary* to ``None`` are
+        always considered available.
+        """
+        if self.required_binary is None:
+            return True
+        import shutil
+
+        return shutil.which(self.required_binary) is not None
 
     @abstractmethod
     def collect(
@@ -40,6 +48,13 @@ class BackendBase(ABC):
     def version(self) -> str:
         """Return the version string of the backend tool."""
         return "unknown"
+
+    @staticmethod
+    def _python_version() -> str:
+        """Return the current CPython version (used by builtin AST backends)."""
+        import sys
+
+        return f"ast (Python {sys.version_info.major}.{sys.version_info.minor})"
 
 
 def register_backend(backend: BackendBase) -> None:

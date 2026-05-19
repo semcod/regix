@@ -2,6 +2,22 @@
 
 ## [Unreleased]
 
+## [0.1.18] - 2026-05-19
+
+### Docs
+- Update README.md
+
+### Test
+- Update tests/conftest.py
+- Update tests/test_integrations.py
+
+### Other
+- Update regix/backends/architecture_backend.py
+- Update regix/backends/base.py
+- Update regix/backends/docstring_backend.py
+- Update regix/backends/structure_backend.py
+- Update uv.lock
+
 ## [0.1.17] - 2026-05-19
 
 ### Docs

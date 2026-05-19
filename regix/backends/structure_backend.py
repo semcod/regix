@@ -115,14 +115,11 @@ class StructureBackend(BackendBase):
     required_binary = None
 
     def is_available(self) -> bool:
-        """Always available — pure-Python, no external deps."""
         return True
 
     def version(self) -> str:
         """Return Python version used for AST parsing."""
-        import sys
-
-        return f"ast (Python {sys.version_info.major}.{sys.version_info.minor})"
+        return self._python_version()
 
     def collect(
         self,

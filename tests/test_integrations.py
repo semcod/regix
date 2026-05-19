@@ -64,10 +64,9 @@ class TestRegixCollectorToonEdgeCases:
 
 class TestRegixPreset:
     def test_has_required_keys(self):
-        # ToolPreset is an object with attributes, not a dict
-        assert hasattr(REGIX_PRESET, 'binary')
-        assert hasattr(REGIX_PRESET, 'command')
-        assert REGIX_PRESET.binary == "regix"
+        assert getattr(REGIX_PRESET, "binary", None) == "regix"
+        assert getattr(REGIX_PRESET, "command", None)
+        assert REGIX_PRESET["output"] == ".regix/report.toon.yaml"
 
     def test_attribute_preset_wraps_dict(self):
         preset = AttributePreset({"binary": "regix", "command": "regix status"})
