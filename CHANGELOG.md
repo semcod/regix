@@ -2,6 +2,20 @@
 
 ## [Unreleased]
 
+## [0.1.26] - 2026-05-27
+
+### Docs
+- Update README.md
+- Update SUMD.md
+
+### Test
+- Update tests/test_smells.py
+
+### Other
+- Update Taskfile.yml
+- Update regix/smells.py
+- Update sumd.json
+
 ## [0.1.25] - 2026-05-27
 
 ### Docs

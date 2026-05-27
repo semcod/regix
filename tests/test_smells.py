@@ -258,6 +258,12 @@ class TestLlmOrientedSmells:
         smells = detect_smells(_snap('before', [before]), _snap('after', [after]), RegressionConfig())
         assert any((s.smell == 'silent_except' for s in smells))
 
+    def test_signature_break_detected(self) -> None:
+        before = _sm(file='regix/core.py', param_count=1)
+        after = _sm(file='regix/core.py', param_count=3)
+        smells = detect_smells(_snap('before', [before]), _snap('after', [after]), RegressionConfig())
+        assert any((s.smell == 'signature_break' for s in smells))
+
 class TestSmellsInReport:
 
     def test_compare_returns_smells(self) -> None:

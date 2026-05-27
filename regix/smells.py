@@ -97,6 +97,7 @@ def _check_symbol_smells(
         _check_logic_density_drop,
         _check_cohesion_loss,
         _check_no_delegation,
+        _check_signature_break,
         _check_assertion_loss,
         _check_mock_inflation,
         _check_dead_branch,
@@ -421,6 +422,36 @@ def _check_assertion_loss(
         line=m_after.line_start,
         severity=severity,
         detail=f"Assertions dropped {before}→{after} in test symbol '{sym}'",
+        ref_before=ref_b,
+        ref_after=ref_a,
+    )
+
+
+def _check_signature_break(
+    file: str,
+    sym: str,
+    m_before: SymbolMetrics,
+    m_after: SymbolMetrics,
+    config: RegressionConfig,
+    ref_b: str,
+    ref_a: str,
+) -> ArchSmell | None:
+    """Detect parameter-count inflation that may break call sites."""
+    before = m_before.param_count
+    after = m_after.param_count
+    if before is None or after is None:
+        return None
+    if after <= before:
+        return None
+    delta = after - before
+    severity = "error" if delta >= 2 else "warning"
+    return ArchSmell(
+        smell="signature_break",
+        file=file,
+        symbol=sym,
+        line=m_after.line_start,
+        severity=severity,
+        detail=f"Parameter count increased {before}→{after} (+{delta}) in '{sym}'",
         ref_before=ref_b,
         ref_after=ref_a,
     )

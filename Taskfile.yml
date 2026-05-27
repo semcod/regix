@@ -192,9 +192,9 @@ tasks:
       echo "- **name**: \`$(basename $(pwd))\`" >> SUMD.md
       echo "- **version**: \`$(python3 -c "import tomllib; f=open('pyproject.toml','rb'); d=tomllib.load(f); print(d.get('project',{}).get('version','unknown'))" 2>/dev/null || echo 'unknown')\`" >> SUMD.md
       echo "- **python_requires**: \`>=$(python3 -c "import tomllib; f=open('pyproject.toml','rb'); d=tomllib.load(f); print(d.get('project',{}).get('requires-python','3.10').replace('>=','').replace('^',''))" 2>/dev/null || echo '3.10')\`" >> SUMD.md
-      echo "- **license**: $(python3 -c "import tomllib; f=open('pyproject.toml','rb'); d=tomllib.load(f); print(d.get('project',{}).get('license',{}).get('text','MIT'))" 2>/dev/null || echo 'MIT')" >> SUMD.md
+      echo "- **license**: $(python3 -c "import tomllib; f=open('pyproject.toml','rb'); d=tomllib.load(f); lic=d.get('project',{}).get('license','MIT'); print(lic if isinstance(lic,str) else lic.get('text','MIT'))" 2>/dev/null || echo 'MIT')" >> SUMD.md
       echo "- **ecosystem**: SUMD + DOQL + testql + taskfile" >> SUMD.md
-      echo "- **generated_from**: pyproject.toml, Taskfile.yml, Makefile, src/" >> SUMD.md
+      echo "- **generated_from**: pyproject.toml, Taskfile.yml, Makefile, regix/" >> SUMD.md
       echo "" >> SUMD.md
       echo "## Architecture" >> SUMD.md
       echo "" >> SUMD.md
@@ -202,9 +202,22 @@ tasks:
       echo "SUMD (description) → DOQL/source (code) → taskfile (automation) → testql (verification)" >> SUMD.md
       echo '```' >> SUMD.md
       echo "" >> SUMD.md
+      echo "## Dependencies" >> SUMD.md
+      echo "" >> SUMD.md
+      runtime_deps=$(python3 -c 'import tomllib; f=open("pyproject.toml","rb"); d=tomllib.load(f); print(", ".join(d.get("project",{}).get("dependencies",[])) or "none")' 2>/dev/null || echo 'none')
+      echo "- **runtime**: ${runtime_deps}" >> SUMD.md
+      echo "- **analysis (optional)**: lizard, radon, coverage[toml], vallm" >> SUMD.md
+      echo "- **dev/test**: pytest, pytest-cov, tox, ruff, mypy" >> SUMD.md
+      echo "" >> SUMD.md
       echo "## Source Map" >> SUMD.md
       echo "" >> SUMD.md
       find . -name '*.py' -not -path './.venv/*' -not -path './venv/*' -not -path './__pycache__/*' -not -path './.git/*' -not -path './.tox/*' -not -path './dist/*' -not -path './build/*' -not -path './.pytest_cache/*' -not -path './.ruff_cache/*' -not -path './.coverage/*' -not -path './.code2llm_cache/*' -not -path './.taskill/*' | head -50 | sed 's|^./||' | sed 's|^|- |' >> SUMD.md
+      echo "" >> SUMD.md
+      echo "## Intent" >> SUMD.md
+      echo "" >> SUMD.md
+      echo "- Track code-quality regressions between refs." >> SUMD.md
+      echo '- Support LLM patch validation via diff-scoped `regix review`.' >> SUMD.md
+      echo "- Target selective tests using impact + dependency analysis." >> SUMD.md
       echo "Generated SUMD.md"
     - |
       python3 -c "
