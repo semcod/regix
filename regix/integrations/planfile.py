@@ -38,7 +38,7 @@ def sync_regressions_to_planfile(report: RegressionReport, workdir: str = ".") -
             f"Configured threshold: {reg.threshold}."
         )
         priority = "high" if reg.severity == "error" else "normal"
-        labels = ["bug", "regression", "regix", reg.metric]
+        labels = ["bug", "regression", "regix", reg.metric, "llm-ready"]
 
         cmd = [
             planfile_bin, "ticket", "create", title,

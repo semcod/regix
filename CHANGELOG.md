@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+## [0.1.20] - 2026-05-27
+
+### Docs
+- Update README.md
+
+### Other
+- Update regix/integrations/planfile.py
+
 ## [0.1.19] - 2026-05-27
 
 ### Docs
