@@ -1,50 +1,58 @@
-# code2llm/evolution | 178 func | 26f | 2026-05-19
-# generated in 0.02s
+# code2llm/evolution | 193 func | 31f | 2026-05-27
+# generated in 0.00s
 
-NEXT[8] (ranked by impact):
-  [1] !! SPLIT           regix/benchmark.py
-      WHY: 861L, 9 classes, max CC=12
-      EFFORT: ~4h  IMPACT: 10332
+NEXT[10] (ranked by impact):
+  [1] !! SPLIT           regix/config.py
+      WHY: 503L, 2 classes, max CC=8
+      EFFORT: ~4h  IMPACT: 4024
 
-  [2] !  SPLIT-FUNC      capture  CC=17  fan=18
-      WHY: CC=17 exceeds 15
-      EFFORT: ~1h  IMPACT: 306
+  [2] !! SPLIT-FUNC      Code2llmBackend._parse_map_toon  CC=25  fan=19
+      WHY: CC=25 exceeds 15
+      EFFORT: ~1h  IMPACT: 475
 
-  [3] !  SPLIT-FUNC      ArchitectureBackend.collect  CC=19  fan=14
+  [3] !  SPLIT-FUNC      ImpactAnalyzer.analyze_impact  CC=19  fan=18
       WHY: CC=19 exceeds 15
-      EFFORT: ~1h  IMPACT: 266
+      EFFORT: ~1h  IMPACT: 342
 
-  [4] !  SPLIT-FUNC      compare  CC=16  fan=15
+  [4] !  SPLIT-FUNC      Code2llmBackend._parse_evolution_toon  CC=16  fan=16
       WHY: CC=16 exceeds 15
-      EFFORT: ~1h  IMPACT: 240
+      EFFORT: ~1h  IMPACT: 256
 
-  [5] !  SPLIT-FUNC      diff  CC=15  fan=12
+  [5] !  SPLIT-FUNC      _collect_files  CC=17  fan=13
+      WHY: CC=17 exceeds 15
+      EFFORT: ~1h  IMPACT: 221
+
+  [6] !  SPLIT-FUNC      impact  CC=18  fan=11
+      WHY: CC=18 exceeds 15
+      EFFORT: ~1h  IMPACT: 198
+
+  [7] !  SPLIT-FUNC      ImpactAnalyzer._fallback_yaml_parse  CC=18  fan=10
+      WHY: CC=18 exceeds 15
+      EFFORT: ~1h  IMPACT: 180
+
+  [8] !  SPLIT-FUNC      compare  CC=15  fan=12
       WHY: CC=15 exceeds 15
       EFFORT: ~1h  IMPACT: 180
 
-  [6] !  SPLIT-FUNC      detect_smells  CC=17  fan=7
-      WHY: CC=17 exceeds 15
-      EFFORT: ~1h  IMPACT: 119
-
-  [7] !! SPLIT           planfile.yaml
+  [9] !! SPLIT           planfile.yaml
       WHY: 721L, 0 classes, max CC=0
       EFFORT: ~4h  IMPACT: 0
 
-  [8] !! SPLIT           goal.yaml
+  [10] !! SPLIT           goal.yaml
       WHY: 513L, 0 classes, max CC=0
       EFFORT: ~4h  IMPACT: 0
 
 
 RISKS[3]:
-  ⚠ Splitting regix/benchmark.py may break 31 import paths
   ⚠ Splitting planfile.yaml may break 0 import paths
   ⚠ Splitting goal.yaml may break 0 import paths
+  ⚠ Splitting regix/config.py may break 24 import paths
 
 METRICS-TARGET:
-  CC̄:          4.5 → ≤3.1
-  max-CC:      19 → ≤9
+  CC̄:          5.0 → ≤3.5
+  max-CC:      25 → ≤12
   god-modules: 3 → 0
-  high-CC(≥15): 7 → ≤3
+  high-CC(≥15): 8 → ≤4
   hub-types:   0 → ≤0
 
 PATTERNS (language parser shared logic):
@@ -72,4 +80,4 @@ PATTERNS (language parser shared logic):
     - Standardized FunctionInfo/ClassInfo models
 
 HISTORY:
-  prev CC̄=4.6 → now CC̄=4.5
+  prev CC̄=4.5 → now CC̄=5.0

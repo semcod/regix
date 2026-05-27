@@ -88,42 +88,65 @@ class Code2llmBackend(BackendBase):
 
         return output_dir
 
+    def _parse_header_stats(self, content: str) -> dict:
+        """Parse header stats from toon content."""
+        stats = {}
+        for line in content.splitlines()[:10]:
+            match = _HEADER_STATS_RE.match(line)
+            if match:
+                stats["total_functions"] = int(match.group("funcs"))
+                stats["avg_cc"] = float(match.group("avg_cc"))
+        return stats
+
+    def _parse_module_list_entry(self, line: str) -> tuple[str | None, int | None]:
+        """Parse a module list entry line. Returns (file, line_count) or (None, None)."""
+        parts = line.strip().split(",")
+        if len(parts) == 2 and parts[1].strip().isdigit():
+            return parts[0], int(parts[1])
+        return None, None
+
+    def _parse_function_entry(self, line: str, current_file: str) -> SymbolMetrics | None:
+        """Parse a function entry line. Returns SymbolMetrics or None."""
+        stripped = line.strip()
+        match = _FUNCTION_RE.match(stripped)
+        if match:
+            symbol_name = match.group("name")
+            cc_str = match.group("cc")
+            cc = int(cc_str) if cc_str else None
+            return SymbolMetrics(
+                file=current_file,
+                symbol=symbol_name,
+                cc=cc,
+                raw={"code2llm_cc": cc} if cc else {},
+            )
+        return None
+
     def _parse_map_toon(self, map_file: Path) -> tuple[dict, list[SymbolMetrics]]:
         """Parse map.toon.yaml and extract file-level and symbol metrics."""
         results: list[SymbolMetrics] = []
-        global_stats = {}
 
         if not map_file.exists():
-            return global_stats, results
+            return {}, results
 
         try:
             content = map_file.read_text(encoding="utf-8")
         except (OSError, UnicodeDecodeError):
-            return global_stats, results
+            return {}, results
 
-        # Parse header stats
-        for line in content.splitlines()[:10]:
-            match = _HEADER_STATS_RE.match(line)
-            if match:
-                global_stats["total_functions"] = int(match.group("funcs"))
-                global_stats["avg_cc"] = float(match.group("avg_cc"))
+        global_stats = self._parse_header_stats(content)
 
-        # Parse module list and details
         current_file = None
         in_details = False
         lines = content.splitlines()
 
-        for i, line in enumerate(lines):
-            # Module list section starts after "M[n]:"
+        for line in lines:
             if line.startswith("M["):
                 continue
 
-            # Check for file entries in module list (format: "  path/to/file.py,123")
             if not in_details and line.startswith("  ") and "," in line:
-                parts = line.strip().split(",")
-                if len(parts) == 2 and parts[1].strip().isdigit():
-                    current_file = parts[0]
-                    line_count = int(parts[1])
+                file_path, line_count = self._parse_module_list_entry(line)
+                if file_path and line_count is not None:
+                    current_file = file_path
                     results.append(SymbolMetrics(
                         file=current_file,
                         symbol=None,
@@ -131,38 +154,45 @@ class Code2llmBackend(BackendBase):
                         raw={"code2llm_lines": line_count},
                     ))
 
-            # Details section starts with "D:"
             if line == "D:":
                 in_details = True
                 continue
 
-            # Parse detailed entries
             if in_details and line.endswith(":") and not line.startswith(" "):
                 current_file = line.rstrip(":")
                 continue
 
             if in_details and current_file and line.startswith("    "):
-                # Function/method definition line
-                stripped = line.strip()
-                match = _FUNCTION_RE.match(stripped)
-                if match:
-                    symbol_name = match.group("name")
-                    cc_str = match.group("cc")
-                    cc = int(cc_str) if cc_str else None
+                func_metrics = self._parse_function_entry(line, current_file)
+                if func_metrics:
+                    results.append(func_metrics)
 
-                    results.append(SymbolMetrics(
-                        file=current_file,
-                        symbol=symbol_name,
-                        cc=cc,
-                        raw={"code2llm_cc": cc} if cc else {},
-                    ))
-
-            # Parse export lines (e: symbol1, symbol2...)
             if in_details and current_file and "e:" in line:
-                # Extract fan-out from exports section
                 continue
 
         return global_stats, results
+
+    def _parse_next_action_line(self, line: str) -> tuple[str | None, str | None]:
+        """Parse a NEXT action line. Returns (action, target) or (None, None)."""
+        match = re.search(r"\[\d+\]\s+!!?\s+(\w+)\s+(.+)", line)
+        if match:
+            return match.groups()
+        return None, None
+
+    def _parse_cc_from_line(self, line: str) -> int | None:
+        """Extract CC value from a line. Returns CC or None."""
+        cc_match = re.search(r"CC=(\d+)", line)
+        if cc_match:
+            return int(cc_match.group(1))
+        return None
+
+    def _parse_target_to_symbol_file(self, target: str) -> tuple[str | None, str | None]:
+        """Parse target string into (symbol, file_path). Returns (None, None) if invalid."""
+        if " " in target:
+            parts = target.split()
+            if len(parts) >= 2:
+                return parts[0], parts[1]
+        return None, None
 
     def _parse_evolution_toon(self, evo_file: Path) -> list[SymbolMetrics]:
         """Parse evolution.toon.yaml for complexity alerts and hotspots."""
@@ -176,9 +206,8 @@ class Code2llmBackend(BackendBase):
         except (OSError, UnicodeDecodeError):
             return results
 
-        # Parse NEXT section for high-complexity functions
         in_next = False
-        current_item = {}
+        current_item: dict[str, str] = {}
 
         for line in content.splitlines():
             if line.startswith("NEXT["):
@@ -189,34 +218,24 @@ class Code2llmBackend(BackendBase):
                 continue
 
             if in_next and line.strip().startswith("["):
-                # Parse: [N] !! ACTION file/path.py
-                match = re.search(r"\[\d+\]\s+!!?\s+(\w+)\s+(.+)", line)
-                if match:
-                    action, target = match.groups()
+                action, target = self._parse_next_action_line(line)
+                if action and target:
                     current_item = {"action": action, "target": target.strip()}
 
             if in_next and "CC=" in line:
-                # Extract CC value from WHY line
-                cc_match = re.search(r"CC=(\d+)", line)
-                if cc_match and current_item.get("target"):
-                    cc = int(cc_match.group(1))
-                    # Parse file and symbol from target
-                    target = current_item["target"]
-                    if " " in target:
-                        # Format: "symbol file.py" or "SPLIT-FUNC symbol CC=N fan=M"
-                        parts = target.split()
-                        if len(parts) >= 2:
-                            symbol = parts[0]
-                            file_path = parts[1]
-                            results.append(SymbolMetrics(
-                                file=file_path,
-                                symbol=symbol,
-                                cc=cc,
-                                raw={
-                                    "code2llm_recommended_action": current_item.get("action"),
-                                    "code2llm_cc": cc,
-                                },
-                            ))
+                cc = self._parse_cc_from_line(line)
+                if cc and current_item.get("target"):
+                    symbol, file_path = self._parse_target_to_symbol_file(current_item["target"])
+                    if symbol and file_path:
+                        results.append(SymbolMetrics(
+                            file=file_path,
+                            symbol=symbol,
+                            cc=cc,
+                            raw={
+                                "code2llm_recommended_action": current_item.get("action"),
+                                "code2llm_cc": cc,
+                            },
+                        ))
 
         return results
 

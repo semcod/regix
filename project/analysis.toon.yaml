@@ -1,67 +1,163 @@
-# code2llm | 39f 7475L | python:27,yaml:4,json:2,shell:2,ini:1,toml:1,yml:1 | 2026-05-19
-# generated in 0.02s
-# CC̄=4.5 | critical:7/181 | dups:1 | cycles:1
+# code2llm | 48f 8157L | python:36,yaml:4,json:2,shell:2,ini:1,yml:1,toml:1 | 2026-05-27
+# generated in 0.01s
+# CC̅=5.0 | critical:8/196 | dups:0 | cycles:1
 
-HEALTH[9]:
-  🔴 DUP   1 classes duplicated
-  🔴 GOD   regix/benchmark.py = 861L, 9 classes, 31m, max CC=12
-  🟡 CC    capture CC=17 (limit:15)
-  🟡 CC    detect_smells CC=17 (limit:15)
-  🟡 CC    collect CC=19 (limit:15)
-  🟡 CC    diff CC=15 (limit:15)
-  🟡 CC    _compute_delta CC=16 (limit:15)
-  🟡 CC    compare CC=16 (limit:15)
+HEALTH[8]:
+  🟡 CC    _parse_map_toon CC=25 (limit:15)
+  🟡 CC    _parse_evolution_toon CC=16 (limit:15)
+  🟡 CC    _fallback_yaml_parse CC=18 (limit:15)
+  🟡 CC    analyze_impact CC=19 (limit:15)
   🟡 CC    filter CC=15 (limit:15)
+  🟡 CC    _collect_files CC=17 (limit:15)
+  🟡 CC    compare CC=15 (limit:15)
+  🟡 CC    impact CC=18 (limit:15)
 
-REFACTOR[4]:
-  1. rm duplicates  (-1 dup classes)
-  2. split regix/benchmark.py  (god module)
-  3. split 7 high-CC methods  (CC>15)
-  4. break 1 circular dependencies
+REFACTOR[2]:
+  1. split 8 high-CC methods  (CC>15)
+  2. break 1 circular dependencies
 
-PIPELINES[100]:
-  [1] Src [collect]: collect
+PIPELINES[119]:
+  [1] Src [__init__]: __init__
       PURITY: 100% pure
-  [2] Src [is_available]: is_available
+  [2] Src [__init__]: __init__
       PURITY: 100% pure
-  [3] Src [version]: version
+  [3] Src [__init__]: __init__
       PURITY: 100% pure
-  [4] Src [collect]: collect
+  [4] Src [__init__]: __init__
       PURITY: 100% pure
-  [5] Src [version]: version
+  [5] Src [lookup]: lookup → _cache_dir
+      PURITY: 100% pure
+  [6] Src [store]: store → _cache_dir
+      PURITY: 100% pure
+  [7] Src [clear]: clear → _cache_dir
+      PURITY: 100% pure
+  [8] Src [is_available]: is_available
+      PURITY: 100% pure
+  [9] Src [version]: version
+      PURITY: 100% pure
+  [10] Src [_read_source]: _read_source
+      PURITY: 100% pure
+  [11] Src [_iter_functions]: _iter_functions
+      PURITY: 100% pure
+  [12] Src [_param_count]: _param_count
+      PURITY: 100% pure
+  [13] Src [_symbol_metrics]: _symbol_metrics
+      PURITY: 100% pure
+  [14] Src [collect]: collect
+      PURITY: 100% pure
+  [15] Src [version]: version
+      PURITY: 100% pure
+  [16] Src [collect]: collect
+      PURITY: 100% pure
+  [17] Src [is_available]: is_available
+      PURITY: 100% pure
+  [18] Src [version]: version
+      PURITY: 100% pure
+  [19] Src [collect]: collect
+      PURITY: 100% pure
+  [20] Src [version]: version
+      PURITY: 100% pure
+  [21] Src [collect]: collect
+      PURITY: 100% pure
+  [22] Src [is_available]: is_available
+      PURITY: 100% pure
+  [23] Src [version]: version
+      PURITY: 100% pure
+  [24] Src [_run_code2llm]: _run_code2llm
+      PURITY: 100% pure
+  [25] Src [_parse_map_toon]: _parse_map_toon
+      PURITY: 100% pure
+  [26] Src [_parse_evolution_toon]: _parse_evolution_toon
+      PURITY: 100% pure
+  [27] Src [collect]: collect
+      PURITY: 100% pure
+  [28] Src [collect]: collect
+      PURITY: 100% pure
+  [29] Src [_from_json]: _from_json
+      PURITY: 100% pure
+  [30] Src [_from_coverage_file]: _from_coverage_file
+      PURITY: 100% pure
+  [31] Src [version]: version
+      PURITY: 100% pure
+  [32] Src [collect]: collect
+      PURITY: 100% pure
+  [33] Src [_format_result_details]: _format_result_details
+      PURITY: 100% pure
+  [34] Src [print_rich]: print_rich → _fmt_time
+      PURITY: 100% pure
+  [35] Src [print_plain]: print_plain → print
+      PURITY: 100% pure
+  [36] Src [print_json]: print_json → print
+      PURITY: 100% pure
+  [37] Src [any_failed]: any_failed
+      PURITY: 100% pure
+  [38] Src [run_command]: run_command
+      PURITY: 100% pure
+  [39] Src [check_regression]: check_regression → load_json_file
+      PURITY: 100% pure
+  [40] Src [add]: add
+      PURITY: 100% pure
+  [41] Src [run]: run
+      PURITY: 100% pure
+  [42] Src [__init__]: __init__
+      PURITY: 100% pure
+  [43] Src [_load_swop_mappings]: _load_swop_mappings
+      PURITY: 100% pure
+  [44] Src [_fallback_yaml_parse]: _fallback_yaml_parse
+      PURITY: 100% pure
+  [45] Src [get_git_modified_files]: get_git_modified_files
+      PURITY: 100% pure
+  [46] Src [analyze_impact]: analyze_impact
+      PURITY: 100% pure
+  [47] Src [execute_targeted_tests]: execute_targeted_tests
+      PURITY: 100% pure
+  [48] Src [__getattr__]: __getattr__
+      PURITY: 100% pure
+  [49] Src [collect]: collect
+      PURITY: 100% pure
+  [50] Src [_parse]: _parse
       PURITY: 100% pure
 
 LAYERS:
   scripts/                        CC̄=5.7    ←in:0  →out:3
   │ check_regression            96L  0C    3m  CC=14     ←0
   │
-  regix/                          CC̄=4.5    ←in:3  →out:0  ×DUP
-  │ !! benchmark                  861L  9C   31m  CC=12     ←1  ×DUP
-  │ config                     499L  2C   24m  CC=8      ←0
-  │ !! models                     414L  13C   10m  CC=15     ←0
-  │ !! smells                     381L  0C   14m  CC=17     ←1
-  │ !! cli                        274L  0C    8m  CC=15     ←0
-  │ !! compare                    241L  0C    4m  CC=16     ←0
-  │ structure_backend          205L  2C    7m  CC=11     ←0
-  │ !! snapshot                   197L  0C    4m  CC=17     ←4
+  regix/                          CC̄=5.0    ←in:4  →out:4
+  │ !! config                     503L  2C   24m  CC=8      ←0
+  │ probes                     433L  6C   14m  CC=11     ←0
+  │ !! models                     399L  13C   11m  CC=15     ←0
+  │ smells                     393L  0C   15m  CC=14     ←1
+  │ !! cli                        370L  0C    9m  CC=18     ←0
+  │ !! code2llm_backend           267L  1C    6m  CC=25     ←0
+  │ factory                    261L  0C    6m  CC=5      ←0
+  │ !! compare                    260L  0C    6m  CC=15     ←0
+  │ !! snapshot                   243L  0C    7m  CC=17     ←4
+  │ !! impact                     228L  1C    6m  CC=19     ←0
+  │ structure_backend          202L  2C    7m  CC=11     ←0
   │ git                        180L  1C    9m  CC=6      ←2
+  │ architecture_backend       139L  1C    7m  CC=6      ←0
   │ report                     134L  0C    3m  CC=14     ←1
-  │ !! architecture_backend       132L  1C    3m  CC=19     ←0
   │ __init__                   132L  1C    6m  CC=4      ←0
-  │ code2llm_backend           118L  1C    7m  CC=14     ←0
+  │ reporter                   130L  1C    8m  CC=14     ←2
+  │ __init__                   112L  2C    4m  CC=9      ←0
   │ cache                      110L  0C    5m  CC=4      ←0
-  │ history                    109L  0C    4m  CC=8      ←2
   │ coverage_backend           109L  1C    5m  CC=7      ←0
+  │ history                    109L  0C    4m  CC=8      ←2
   │ radon_backend              104L  1C    3m  CC=11     ←0
   │ vallm_backend               84L  1C    3m  CC=11     ←0
-  │ probes                      83L  4C    7m  CC=3      ←0
-  │ docstring_backend           82L  1C    3m  CC=14     ←0
   │ lizard_backend              82L  1C    3m  CC=9      ←0
-  │ __init__                    79L  1C    2m  CC=9      ←0
-  │ __init__                    64L  1C    6m  CC=1      ←3
+  │ docstring_backend           79L  1C    3m  CC=14     ←0
+  │ planfile                    76L  0C    1m  CC=13     ←1
+  │ base                        72L  1C    7m  CC=2      ←3
   │ gates                       64L  0C    2m  CC=6      ←2
   │ exceptions                  54L  5C    4m  CC=2      ←0
-  │ models                      41L  1C    1m  CC=1      ←0  ×DUP
+  │ models                      47L  1C    1m  CC=1      ←0
+  │ cli                         44L  0C    1m  CC=7      ←0
+  │ __init__                    34L  0C    0m  CC=0.0    ←0
+  │ suite                       28L  1C    3m  CC=5      ←0
+  │ __init__                    20L  0C    0m  CC=0.0    ←0
+  │ __main__                     7L  0C    0m  CC=0.0    ←0
+  │ __main__                     6L  0C    0m  CC=0.0    ←0
   │
   ./                              CC̄=0.0    ←in:0  →out:0
   │ !! planfile.yaml              721L  0C    0m  CC=0.0    ←0
@@ -79,10 +175,14 @@ LAYERS:
   │
 
 COUPLING:
-             regix  scripts
-    regix       ──       ←3
-  scripts        3       ──
+                         regix.benchmark               regix  regix.integrations      regix.backends             scripts
+     regix.benchmark                  ──                   4                  ←7                   1                  ←3  hub
+               regix                  ←4                  ──                   1                   3                    
+  regix.integrations                   7                  ←1                  ──                                        
+      regix.backends                  ←1                  ←3                                      ──                    
+             scripts                   3                                                                              ──
   CYCLES: 1
+  HUB: regix.benchmark/ (fan-in=10)
 
 EXTERNAL:
   validation: run `vallm batch .` → validation.toon

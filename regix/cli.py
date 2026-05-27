@@ -1,7 +1,7 @@
 """Regix CLI — Typer-based command-line interface."""
 
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Any
 import typer
 
 app = typer.Typer(
@@ -292,6 +292,56 @@ def init(
     typer.echo(f"Created {target}")
 
 
+def _print_modified_files(files: list[str]) -> None:
+    """Print list of modified files."""
+    typer.echo(f"📁 Detected {len(files)} changed file(s):")
+    for f in files:
+        typer.echo(f"   - {f}")
+
+def _print_impact_summary(analysis: dict[str, Any]) -> None:
+    """Print impact analysis summary."""
+    typer.echo("\n🎯 IMPACT SUMMARY:")
+    typer.echo(f"   - Affected Contexts: {', '.join(analysis['impacted_contexts']) or 'None'}")
+
+def _print_pytest_targets(targets: list[str]) -> None:
+    """Print pytest targets."""
+    typer.echo("\n🧪 TARGETED PYTEST SUITES:")
+    if targets:
+        for target in targets:
+            typer.echo(f"   - [Python] {target}")
+    else:
+        typer.echo("   - None")
+
+def _print_testql_scenarios(scenarios: list[str]) -> None:
+    """Print testql scenarios."""
+    typer.echo("\n🎬 TARGETED TESTQL SCENARIOS:")
+    if scenarios:
+        for scenario in scenarios:
+            typer.echo(f"   - [TestQL] {scenario}")
+    else:
+        typer.echo("   - None")
+
+def _print_visual_routes(routes: list[str]) -> None:
+    """Print visual diff routes."""
+    typer.echo("\n🖼️  AFFECTED VISUAL ROUTES (Playwright):")
+    if routes:
+        for route in sorted(routes):
+            typer.echo(f"   - {route}")
+    else:
+        typer.echo("   - None")
+
+def _print_test_results(results: dict[str, Any], pytest_only: bool) -> None:
+    """Print test execution results."""
+    typer.echo("\n📝 RESULTS SUMMARY:")
+    if "pytest" in results:
+        for r in results["pytest"]:
+            status_icon = "✅" if r["status"] in {"PASS", "DRY_RUN"} else "❌"
+            typer.echo(f"   {status_icon} PyTest command: {r['command']} -> {r['status']}")
+    if "testql" in results and not pytest_only:
+        for r in results["testql"]:
+            status_icon = "✅" if r["status"] in {"PASS", "DRY_RUN"} else "❌"
+            typer.echo(f"   {status_icon} TestQL command: {r['command']} -> {r['status']}")
+
 @app.command()
 def impact(
     run: bool = typer.Option(False, "--run", help="Run the targeted selective tests"),
@@ -314,35 +364,13 @@ def impact(
     typer.echo("=" * 60)
     typer.echo("🔍 TARGETED REGRESSION GUARD: DYNAMIC IMPACT ANALYSIS")
     typer.echo("=" * 60)
-    typer.echo(f"📁 Detected {len(modified_files)} changed file(s):")
-    for f in modified_files:
-        typer.echo(f"   - {f}")
+    _print_modified_files(modified_files)
 
     analysis = analyzer.analyze_impact(modified_files)
-
-    typer.echo("\n🎯 IMPACT SUMMARY:")
-    typer.echo(f"   - Affected Contexts: {', '.join(analysis['impacted_contexts']) or 'None'}")
-
-    typer.echo("\n🧪 TARGETED PYTEST SUITES:")
-    if analysis["pytest_targets"]:
-        for target in analysis["pytest_targets"]:
-            typer.echo(f"   - [Python] {target}")
-    else:
-        typer.echo("   - None")
-
-    typer.echo("\n🎬 TARGETED TESTQL SCENARIOS:")
-    if analysis["testql_scenarios"]:
-        for scenario in analysis["testql_scenarios"]:
-            typer.echo(f"   - [TestQL] {scenario}")
-    else:
-        typer.echo("   - None")
-
-    typer.echo("\n🖼️  AFFECTED VISUAL ROUTES (Playwright):")
-    if analysis["visual_diff_routes"]:
-        for route in sorted(list(analysis["visual_diff_routes"])):
-            typer.echo(f"   - {route}")
-    else:
-        typer.echo("   - None")
+    _print_impact_summary(analysis)
+    _print_pytest_targets(analysis["pytest_targets"])
+    _print_testql_scenarios(analysis["testql_scenarios"])
+    _print_visual_routes(analysis["visual_diff_routes"])
 
     if run:
         typer.echo("\n" + "=" * 60)
@@ -351,17 +379,7 @@ def impact(
         results = analyzer.execute_targeted_tests(
             analysis, dry_run=dry_run, pytest_only=pytest_only
         )
-
-        typer.echo("\n📝 RESULTS SUMMARY:")
-        if "pytest" in results:
-            for r in results["pytest"]:
-                status_icon = "✅" if r["status"] in {"PASS", "DRY_RUN"} else "❌"
-                typer.echo(f"   {status_icon} PyTest command: {r['command']} -> {r['status']}")
-        if "testql" in results and not pytest_only:
-            for r in results["testql"]:
-                status_icon = "✅" if r["status"] in {"PASS", "DRY_RUN"} else "❌"
-                typer.echo(f"   {status_icon} TestQL command: {r['command']} -> {r['status']}")
-
+        _print_test_results(results, pytest_only)
         typer.echo("=" * 60)
 
 

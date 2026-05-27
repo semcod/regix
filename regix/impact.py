@@ -56,6 +56,34 @@ class ImpactAnalyzer:
             except Exception:
                 pass
 
+    def _parse_yaml_section_header(self, line: str) -> str | None:
+        """Parse YAML section header. Returns section name or None."""
+        if line.startswith("commands:"):
+            return "commands"
+        elif line.startswith("queries:"):
+            return "queries"
+        elif line.startswith("events:"):
+            return "events"
+        return None
+
+    def _parse_yaml_item_start(self, line: str) -> dict[str, Any] | None:
+        """Parse start of a YAML item. Returns new item dict or None."""
+        name_match = re.search(r'name:\s*(\w+)', line)
+        if name_match:
+            return {"name": name_match.group(1), "source": {}}
+        return None
+
+    def _parse_yaml_item_field(self, line: str, item: dict[str, Any]) -> None:
+        """Parse a YAML item field and update item dict."""
+        if "file:" in line:
+            file_match = re.search(r'file:\s*([\w/-]+\.\w+)', line)
+            if file_match:
+                item["source"]["file"] = file_match.group(1)
+        elif "class:" in line:
+            class_match = re.search(r'class:\s*(\w+)', line)
+            if class_match:
+                item["source"]["class"] = class_match.group(1)
+
     def _fallback_yaml_parse(self, content: str) -> Dict[str, Any]:
         """Simple fallback YAML parser to avoid external dependencies in regix core."""
         data = {"context": "", "commands": [], "queries": [], "events": []}
@@ -65,29 +93,20 @@ class ImpactAnalyzer:
             data["context"] = context_match.group(1)
 
         current_section = None
-        current_item = {}
+        current_item: Dict[str, Any] = {}
         
         for line in content.splitlines():
-            if line.startswith("commands:"):
-                current_section = "commands"
-            elif line.startswith("queries:"):
-                current_section = "queries"
-            elif line.startswith("events:"):
-                current_section = "events"
+            section = self._parse_yaml_section_header(line)
+            if section:
+                current_section = section
             elif line.strip().startswith("- name:"):
                 if current_item and current_section:
                     data[current_section].append(current_item)
-                name_match = re.search(r'name:\s*(\w+)', line)
-                if name_match:
-                    current_item = {"name": name_match.group(1), "source": {}}
-            elif "file:" in line and current_item:
-                file_match = re.search(r'file:\s*([\w/-]+\.\w+)', line)
-                if file_match:
-                    current_item["source"]["file"] = file_match.group(1)
-            elif "class:" in line and current_item:
-                class_match = re.search(r'class:\s*(\w+)', line)
-                if class_match:
-                    current_item["source"]["class"] = class_match.group(1)
+                new_item = self._parse_yaml_item_start(line)
+                if new_item:
+                    current_item = new_item
+            elif current_item:
+                self._parse_yaml_item_field(line, current_item)
 
         if current_item and current_section:
             data[current_section].append(current_item)
@@ -128,6 +147,61 @@ class ImpactAnalyzer:
         except Exception:
             return []
 
+    def _map_folder_to_context(self, file_path: Path) -> str | None:
+        """Extract context from folder structure. Returns context or None."""
+        for part in file_path.parts:
+            if part.startswith("connect-"):
+                return part
+        return None
+
+    def _map_swop_manifest(self, relative_str: str) -> tuple[Set[str], Set[str]]:
+        """Map file to SWOP manifest contexts and pytest targets. Returns (contexts, targets)."""
+        contexts: Set[str] = set()
+        targets: Set[str] = set()
+        for src_file, info in self.dependency_graph.items():
+            if src_file in relative_str or relative_str in src_file:
+                contexts.add(info["context"])
+                if info["class"]:
+                    targets.add(f"backend/tests/ -k {info['class']}")
+        return contexts, targets
+
+    def _map_python_unit_tests(self, file_path: Path) -> Set[str]:
+        """Map Python file to unit test targets. Returns set of test paths."""
+        targets: Set[str] = set()
+        if "backend" in file_path.parts or file_path.suffix == ".py":
+            stem = file_path.stem
+            potential_tests = [
+                self.root / "backend" / "tests" / f"test_{stem}.py",
+                self.root / "tests" / f"test_{stem}.py"
+            ]
+            for p_test in potential_tests:
+                if p_test.exists():
+                    targets.add(str(p_test.relative_to(self.root)))
+        return targets
+
+    def _map_frontend_routes(self, file_path: Path) -> Set[str]:
+        """Map frontend file to visual diff routes. Returns set of routes."""
+        routes: Set[str] = set()
+        if "frontend" in file_path.parts and file_path.suffix in {".ts", ".tsx", ".js", ".jsx"}:
+            relative_str = str(file_path)
+            route_match = re.search(r'connect-([\w-]+)', relative_str)
+            if route_match:
+                route = f"/{route_match.group(0)}"
+                routes.add(route)
+        return routes
+
+    def _map_scenarios(self, impacted_contexts: Set[str]) -> tuple[Set[str], Set[str]]:
+        """Map contexts to testql scenarios and visual routes. Returns (scenarios, routes)."""
+        scenarios: Set[str] = set()
+        routes: Set[str] = set()
+        scenarios_dir = self.root / "testql-testing" / "scenarios"
+        if scenarios_dir.exists():
+            for context in impacted_contexts:
+                for scenario in scenarios_dir.glob(f"*{context}*.testql.toon.yaml"):
+                    scenarios.add(str(scenario.relative_to(self.root)))
+                routes.add(f"/{context}")
+        return scenarios, routes
+
     def analyze_impact(self, modified_files: List[str]) -> Dict[str, Any]:
         """Performs change-impact analysis and maps files to selective tests."""
         impacted_contexts: Set[str] = set()
@@ -135,52 +209,24 @@ class ImpactAnalyzer:
         testql_scenarios: Set[str] = set()
         visual_diff_routes: Set[str] = set()
 
-        scenarios_dir = self.root / "testql-testing" / "scenarios"
-
         for file_path_str in modified_files:
             file_path = Path(file_path_str)
             relative_str = str(file_path)
 
-            # 1. Folder structure-based context mapping
-            context = None
-            for part in file_path.parts:
-                if part.startswith("connect-"):
-                    context = part
-                    break
+            context = self._map_folder_to_context(file_path)
             if context:
                 impacted_contexts.add(context)
 
-            # 2. SWOP manifest-based mapping
-            for src_file, info in self.dependency_graph.items():
-                if src_file in relative_str or relative_str in src_file:
-                    impacted_contexts.add(info["context"])
-                    if info["class"]:
-                        pytest_targets.add(f"backend/tests/ -k {info['class']}")
+            swop_contexts, swop_targets = self._map_swop_manifest(relative_str)
+            impacted_contexts.update(swop_contexts)
+            pytest_targets.update(swop_targets)
 
-            # 3. Python unit test mapping
-            if "backend" in file_path.parts or file_path.suffix == ".py":
-                stem = file_path.stem
-                potential_tests = [
-                    self.root / "backend" / "tests" / f"test_{stem}.py",
-                    self.root / "tests" / f"test_{stem}.py"
-                ]
-                for p_test in potential_tests:
-                    if p_test.exists():
-                        pytest_targets.add(str(p_test.relative_to(self.root)))
+            pytest_targets.update(self._map_python_unit_tests(file_path))
+            visual_diff_routes.update(self._map_frontend_routes(file_path))
 
-            # 4. Frontend visual route mapping
-            if "frontend" in file_path.parts and file_path.suffix in {".ts", ".tsx", ".js", ".jsx"}:
-                route_match = re.search(r'connect-([\w-]+)', relative_str)
-                if route_match:
-                    route = f"/{route_match.group(0)}"
-                    visual_diff_routes.add(route)
-
-        # 5. Scenarios matching impacted contexts
-        if scenarios_dir.exists():
-            for context in impacted_contexts:
-                for scenario in scenarios_dir.glob(f"*{context}*.testql.toon.yaml"):
-                    testql_scenarios.add(str(scenario.relative_to(self.root)))
-                visual_diff_routes.add(f"/{context}")
+        scenarios, scenario_routes = self._map_scenarios(impacted_contexts)
+        testql_scenarios.update(scenarios)
+        visual_diff_routes.update(scenario_routes)
 
         return {
             "modified_files": modified_files,

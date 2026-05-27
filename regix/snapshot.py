@@ -17,44 +17,32 @@ from regix.config import RegressionConfig
 from regix.models import Snapshot, SymbolMetrics
 
 
-def _collect_files(
-    workdir: Path,
-    include: list[str],
-    exclude: list[str],
-) -> list[Path]:
-    """Collect Python files matching include/exclude patterns, pruning ignored directories during traversal."""
+def _should_ignore_dir(dirname: str) -> bool:
+    """Check if directory should be ignored during traversal."""
     ignored_dirs = {
         "node_modules", ".venv", ".git", "project", "redeploy", "reports",
         "__pycache__", ".vscode", ".idea", ".windsurf", ".cursor", ".aider", ".claude",
         "archive", "_archive", "tests", "generated", "dist", "build", ".wup", ".planfile"
     }
-    
-    import os
-    all_py = []
-    
-    for root, dirs, files in os.walk(workdir, topdown=True):
-        # Prune ignored directories in-place to prevent os.walk from entering them
-        dirs[:] = [
-            d for d in dirs 
-            if d not in ignored_dirs 
-            and not d.startswith("batch_") 
-            and not d.startswith(".")
-        ]
-        
-        for file in files:
-            if file.endswith(".py"):
-                all_py.append(Path(root) / file)
-                
-    relative = [f.relative_to(workdir) for f in sorted(all_py)]
+    return (
+        dirname in ignored_dirs
+        or dirname.startswith("batch_")
+        or dirname.startswith(".")
+    )
 
-    if include:
-        matched: list[Path] = []
-        for pattern in include:
-            matched.extend(f for f in relative if fnmatch.fnmatch(str(f), pattern))
-        relative = list(dict.fromkeys(matched))  # dedupe, preserve order
+def _apply_include_patterns(files: list[Path], include: list[str]) -> list[Path]:
+    """Apply include patterns to file list."""
+    if not include:
+        return files
+    matched: list[Path] = []
+    for pattern in include:
+        matched.extend(f for f in files if fnmatch.fnmatch(str(f), pattern))
+    return list(dict.fromkeys(matched))  # dedupe, preserve order
 
+def _apply_exclude_patterns(files: list[Path], exclude: list[str]) -> list[Path]:
+    """Apply exclude patterns to file list."""
     filtered: list[Path] = []
-    for f in relative:
+    for f in files:
         skip = False
         for pattern in exclude:
             if fnmatch.fnmatch(str(f), pattern):
@@ -62,8 +50,29 @@ def _collect_files(
                 break
         if not skip:
             filtered.append(f)
-
     return filtered
+
+def _collect_files(
+    workdir: Path,
+    include: list[str],
+    exclude: list[str],
+) -> list[Path]:
+    """Collect Python files matching include/exclude patterns, pruning ignored directories during traversal."""
+    import os
+    all_py = []
+    
+    for root, dirs, files in os.walk(workdir, topdown=True):
+        dirs[:] = [d for d in dirs if not _should_ignore_dir(d)]
+        
+        for file in files:
+            if file.endswith(".py"):
+                all_py.append(Path(root) / file)
+                
+    relative = [f.relative_to(workdir) for f in sorted(all_py)]
+    relative = _apply_include_patterns(relative, include)
+    relative = _apply_exclude_patterns(relative, exclude)
+
+    return relative
 
 
 def _filter_sources(

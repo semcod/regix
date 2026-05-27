@@ -209,6 +209,10 @@ def _process_comparison_key(
     return regs, imps, changed, False
 
 
+def _count_severity_in_list(items: list, severity: str) -> int:
+    """Count items with given severity in a list."""
+    return sum(1 for item in items if getattr(item, "severity", None) == severity)
+
 def compare(
     snap_before: Snapshot,
     snap_after: Snapshot,
@@ -236,11 +240,11 @@ def compare(
         if not changed:
             unchanged += 1
 
-    errors = sum(1 for r in regressions if r.severity == "error")
-    warnings = sum(1 for r in regressions if r.severity == "warning")
+    errors = _count_severity_in_list(regressions, "error")
+    warnings = _count_severity_in_list(regressions, "warning")
     smells = detect_smells(snap_before, snap_after, config)
-    smell_errors = sum(1 for s in smells if s.severity == "error")
-    smell_warnings = sum(1 for s in smells if s.severity == "warning")
+    smell_errors = _count_severity_in_list(smells, "error")
+    smell_warnings = _count_severity_in_list(smells, "warning")
 
     return RegressionReport(
         ref_before=snap_before.ref,

@@ -288,6 +288,10 @@ class RegressionReport:
             return False
         return True
 
+    def _count_severity(self, items: list, severity: str) -> int:
+        """Count items with given severity."""
+        return sum(1 for item in items if getattr(item, "severity", None) == severity)
+
     def filter(
         self,
         file: str | None = None,
@@ -309,10 +313,10 @@ class RegressionReport:
             improvements=filtered_imp,
             smells=filtered_smells,
             unchanged=self.unchanged,
-            errors=sum(1 for r in filtered_reg if r.severity == "error"),
-            warnings=sum(1 for r in filtered_reg if r.severity == "warning"),
-            smell_errors=sum(1 for s in filtered_smells if s.severity == "error"),
-            smell_warnings=sum(1 for s in filtered_smells if s.severity == "warning"),
+            errors=self._count_severity(filtered_reg, "error"),
+            warnings=self._count_severity(filtered_reg, "warning"),
+            smell_errors=self._count_severity(filtered_smells, "error"),
+            smell_warnings=self._count_severity(filtered_smells, "warning"),
             stagnated=self.stagnated,
             duration=self.duration,
         )

@@ -1,5 +1,5 @@
 flowchart TD
-%% generated in 0.01s
+%% generated in 0.00s
 
     %% Entry points (blue)
     classDef entry fill:#4dabf7,stroke:#1971c2,color:#fff
@@ -13,25 +13,26 @@ flowchart TD
         regix__cli__gates["gates"]
         regix__cli__status["status"]
         regix__cli__init["init"]
+        regix__cli__impact["impact"]
     end
 
     subgraph Core
-        regix__snapshot__capture{{capture CC=17}}
-        regix__backends__docstring_backend__DocstringBackend__is_available["is_available"]
-        regix__backends__docstring_backend__DocstringBackend__version["version"]
-        regix__backends__docstring_backend__DocstringBackend__collect["collect"]
-        regix__backends__vallm_backend__VallmBackend__is_available["is_available"]
-        regix__backends__vallm_backend__VallmBackend__version["version"]
-        regix__backends__vallm_backend__VallmBackend__collect["collect"]
-        regix__backends__radon_backend__RadonBackend__is_available["is_available"]
-        regix__backends__radon_backend__RadonBackend__version["version"]
-        regix__backends__radon_backend__RadonBackend__collect["collect"]
-        regix__backends__BackendBase__is_available["is_available"]
-        regix__backends__BackendBase__collect["collect"]
-        regix__backends__BackendBase__version["version"]
-        regix__backends__register_backend["register_backend"]
-        regix__backends__code2llm_backend__Code2llmBackend__is_available["is_available"]
-        ...["+103 more"]
+        regix__cache__lookup["lookup"]
+        regix__cache__store["store"]
+        regix__cache__clear["clear"]
+        regix__backends__base__BackendBase__is_available["is_available"]
+        regix__backends__base__BackendBase__collect["collect"]
+        regix__backends__base__BackendBase__version["version"]
+        regix__backends__base__BackendBase___python_version["_python_version"]
+        regix__backends__base__register_backend["register_backend"]
+        regix__backends__architecture_backend__ArchitectureBackend__is_available["is_available"]
+        regix__backends__architecture_backend__ArchitectureBackend__version["version"]
+        regix__backends__architecture_backend__ArchitectureBackend___read_source["_read_source"]
+        regix__backends__architecture_backend__ArchitectureBackend___iter_functions["_iter_functions"]
+        regix__backends__architecture_backend__ArchitectureBackend___param_count["_param_count"]
+        regix__backends__architecture_backend__ArchitectureBackend___symbol_metrics["_symbol_metrics"]
+        regix__backends__architecture_backend__ArchitectureBackend__collect["collect"]
+        ...["+110 more"]
     end
 
-    class regix__backends__docstring_backend__DocstringBackend__is_available,regix__backends__docstring_backend__DocstringBackend__version,regix__backends__docstring_backend__DocstringBackend__collect,regix__backends__vallm_backend__VallmBackend__is_available,regix__backends__vallm_backend__VallmBackend__version,regix__backends__vallm_backend__VallmBackend__collect,regix__backends__radon_backend__RadonBackend__is_available,regix__backends__radon_backend__RadonBackend__version,regix__backends__radon_backend__RadonBackend__collect,regix__backends__BackendBase__is_available entry
+    class regix__cache__lookup,regix__cache__store,regix__cache__clear,regix__backends__base__BackendBase__is_available,regix__backends__base__BackendBase__collect,regix__backends__base__BackendBase__version,regix__backends__base__BackendBase___python_version,regix__backends__base__register_backend,regix__backends__architecture_backend__ArchitectureBackend__is_available,regix__backends__architecture_backend__ArchitectureBackend__version entry
