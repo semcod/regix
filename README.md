@@ -1,12 +1,12 @@
 ## AI Cost Tracking
 
-![PyPI](https://img.shields.io/badge/pypi-costs-blue) ![Version](https://img.shields.io/badge/version-0.1.18-blue) ![Python](https://img.shields.io/badge/python-3.9+-blue) ![License](https://img.shields.io/badge/license-Apache--2.0-green)
-![AI Cost](https://img.shields.io/badge/AI%20Cost-$2.30-orange) ![Human Time](https://img.shields.io/badge/Human%20Time-12.6h-blue) ![Model](https://img.shields.io/badge/Model-openrouter%2Fqwen%2Fqwen3--coder--next-lightgrey)
+![PyPI](https://img.shields.io/badge/pypi-costs-blue) ![Version](https://img.shields.io/badge/version-0.1.19-blue) ![Python](https://img.shields.io/badge/python-3.9+-blue) ![License](https://img.shields.io/badge/license-Apache--2.0-green)
+![AI Cost](https://img.shields.io/badge/AI%20Cost-$2.30-orange) ![Human Time](https://img.shields.io/badge/Human%20Time-12.8h-blue) ![Model](https://img.shields.io/badge/Model-openrouter%2Fqwen%2Fqwen3--coder--next-lightgrey)
 
-- 🤖 **LLM usage:** $2.2975 (28 commits)
-- 👤 **Human dev:** ~$1256 (12.6h @ $100/h, 30min dedup)
+- 🤖 **LLM usage:** $2.3006 (29 commits)
+- 👤 **Human dev:** ~$1283 (12.8h @ $100/h, 30min dedup)
 
-Generated on 2026-05-19 using [openrouter/qwen/qwen3-coder-next](https://openrouter.ai/qwen/qwen3-coder-next)
+Generated on 2026-05-27 using [openrouter/qwen/qwen3-coder-next](https://openrouter.ai/qwen/qwen3-coder-next)
 
 ---
 
@@ -231,6 +231,7 @@ Commands:
   diff      Show symbol-level metric diff (like git diff but for metrics).
   gates     Check current state against configured quality gates.
   report    Re-render a stored comparison as a different format.
+  impact    Analyze git changes and print or execute targeted selective test suites.
 ```
 
 ### `regix compare` 
@@ -253,6 +254,7 @@ Options:
   --fail-on warning    Exit code 1 on warnings too (default: errors only)
   --no-improvements    Suppress improvement entries from output
   --depth INTEGER      For history mode: number of commits to scan
+  --planfile           Generate planfile tickets for detected regressions
 ```
 
 ### `regix history` 
@@ -281,6 +283,21 @@ regix diff [REF_A] [REF_B] [OPTIONS]
 Options:
   --threshold FLOAT    Only show symbols with delta >= threshold
   --metric TEXT        Filter to specific metric(s)
+```
+
+### `regix impact` 
+
+```
+regix impact [OPTIONS]
+
+  Analyzes git modified files and dynamically determines which test suites are affected
+  by the changes (including PyTest, TestQL scenarios, and visual Playwright routes).
+  Supports automatic selective test suite execution.
+
+Options:
+  --run                Automatically run the selective targeted test suites
+  --dry-run            Dry run the selective targeted test suites
+  --workdir TEXT       Specify the project root directory [default: .]
 ```
 
 ---
@@ -373,6 +390,23 @@ metrics:
 ```
 
 The `regix` preset runs `regix compare HEAD~1 HEAD --format toon --output .regix/` and the gate collector reads `.regix/report.toon.yaml` for `regression_errors` and `regression_warnings` metrics.
+
+### Planfile integration
+
+Regix features first-class integration with the **Planfile** SDLC ticket standard. When comparing refs, passing the `--planfile` flag will automatically generate highly detailed task tickets for any detected regressions and sync them straight into `TODO.md`:
+
+```bash
+regix compare HEAD~1 HEAD --planfile
+```
+
+Each generated ticket contains:
+- **Title**: Symbol and metric that regressed (e.g. `[Regression] CC worsened in bulk_run_cmd`).
+- **Description**: Detailed metrics delta, before/after values, and the violated threshold.
+- **Priority**: Dynamic mapping based on severity (`high` for errors, `normal` for warnings).
+- **Labels**: Auto-labeled with `bug`, `regression`, `regix`, and the metric key (e.g. `cc`, `mi`, `coverage`).
+- **Associated Files**: Linked directly to the regressed source file.
+
+After ticket generation, Regix triggers `planfile sync markdown --direction to` to seamlessly update your local `TODO.md`.
 
 ---
 

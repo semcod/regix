@@ -49,6 +49,12 @@ def compare(
         "error", "--fail-on", help="Exit 1 on: error | warning"
     ),
     workdir: str = typer.Option(".", "--workdir", "-w", help="Project root"),
+    planfile: bool = typer.Option(
+        False, "--planfile", help="Generate planfile tickets for detected regressions"
+    ),
+    changed_only: bool = typer.Option(
+        False, "--changed-only", help="Only analyze files that changed in git status/diff"
+    ),
 ) -> None:
     """Compare metrics between two git refs or local state."""
     from regix.compare import compare as do_compare
@@ -59,8 +65,18 @@ def compare(
     wd = Path(cfg.workdir).resolve()
     if local:
         ref_b = "local"
-    snap_a = capture(ref_a, wd, cfg)
-    snap_b = capture(ref_b, wd, cfg)
+
+    restrict_files = None
+    if changed_only:
+        from regix.impact import ImpactAnalyzer
+        analyzer = ImpactAnalyzer(wd)
+        restrict_files = analyzer.get_git_modified_files()
+        if not restrict_files:
+            typer.echo("✨ No modified files detected in Git workspace. Skipping comparison.")
+            return
+
+    snap_a = capture(ref_a, wd, cfg, restrict_to_files=restrict_files)
+    snap_b = capture(ref_b, wd, cfg, restrict_to_files=restrict_files)
     report = do_compare(snap_a, snap_b, cfg)
     if metric:
         for m in metric:
@@ -70,6 +86,11 @@ def compare(
     text = render(report, fmt=fmt, output=output)
     if not output:
         typer.echo(text)
+
+    if planfile and report.has_regressions:
+        from regix.integrations.planfile import sync_regressions_to_planfile
+        sync_regressions_to_planfile(report, cfg.workdir)
+
     if fail_on == "warning" and (report.has_errors or report.warnings > 0):
         raise SystemExit(cfg.fail_exit_code)
     if report.has_errors:
@@ -271,5 +292,79 @@ def init(
     typer.echo(f"Created {target}")
 
 
+@app.command()
+def impact(
+    run: bool = typer.Option(False, "--run", help="Run the targeted selective tests"),
+    dry_run: bool = typer.Option(False, "--dry-run", help="Dry run selective tests"),
+    pytest_only: bool = typer.Option(
+        False, "--pytest-only", help="Only execute Pytest target suites, skip TestQL"
+    ),
+    workdir: str = typer.Option(".", "--workdir", "-w", help="Project root"),
+) -> None:
+    """Analyze git changes and print or execute targeted selective test suites."""
+    from regix.impact import ImpactAnalyzer
+
+    analyzer = ImpactAnalyzer(workdir)
+    modified_files = analyzer.get_git_modified_files()
+
+    if not modified_files:
+        typer.echo("✨ No modified or untracked files detected in Git workspace.")
+        return
+
+    typer.echo("=" * 60)
+    typer.echo("🔍 TARGETED REGRESSION GUARD: DYNAMIC IMPACT ANALYSIS")
+    typer.echo("=" * 60)
+    typer.echo(f"📁 Detected {len(modified_files)} changed file(s):")
+    for f in modified_files:
+        typer.echo(f"   - {f}")
+
+    analysis = analyzer.analyze_impact(modified_files)
+
+    typer.echo("\n🎯 IMPACT SUMMARY:")
+    typer.echo(f"   - Affected Contexts: {', '.join(analysis['impacted_contexts']) or 'None'}")
+
+    typer.echo("\n🧪 TARGETED PYTEST SUITES:")
+    if analysis["pytest_targets"]:
+        for target in analysis["pytest_targets"]:
+            typer.echo(f"   - [Python] {target}")
+    else:
+        typer.echo("   - None")
+
+    typer.echo("\n🎬 TARGETED TESTQL SCENARIOS:")
+    if analysis["testql_scenarios"]:
+        for scenario in analysis["testql_scenarios"]:
+            typer.echo(f"   - [TestQL] {scenario}")
+    else:
+        typer.echo("   - None")
+
+    typer.echo("\n🖼️  AFFECTED VISUAL ROUTES (Playwright):")
+    if analysis["visual_diff_routes"]:
+        for route in sorted(list(analysis["visual_diff_routes"])):
+            typer.echo(f"   - {route}")
+    else:
+        typer.echo("   - None")
+
+    if run:
+        typer.echo("\n" + "=" * 60)
+        typer.echo("🚀 RUNNING SELECTIVE TESTS")
+        typer.echo("=" * 60)
+        results = analyzer.execute_targeted_tests(
+            analysis, dry_run=dry_run, pytest_only=pytest_only
+        )
+
+        typer.echo("\n📝 RESULTS SUMMARY:")
+        if "pytest" in results:
+            for r in results["pytest"]:
+                status_icon = "✅" if r["status"] in {"PASS", "DRY_RUN"} else "❌"
+                typer.echo(f"   {status_icon} PyTest command: {r['command']} -> {r['status']}")
+        if "testql" in results and not pytest_only:
+            for r in results["testql"]:
+                status_icon = "✅" if r["status"] in {"PASS", "DRY_RUN"} else "❌"
+                typer.echo(f"   {status_icon} TestQL command: {r['command']} -> {r['status']}")
+
+        typer.echo("=" * 60)
+
+
 if __name__ == "__main__":
     app()
+

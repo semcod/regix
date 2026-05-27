@@ -2,6 +2,18 @@
 
 ## [Unreleased]
 
+## [0.1.19] - 2026-05-27
+
+### Docs
+- Update README.md
+
+### Other
+- Update regix/cli.py
+- Update regix/impact.py
+- Update regix/integrations/planfile.py
+- Update regix/snapshot.py
+- Update uv.lock
+
 ## [0.1.18] - 2026-05-19
 
 ### Docs

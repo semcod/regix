@@ -22,10 +22,30 @@ def _collect_files(
     include: list[str],
     exclude: list[str],
 ) -> list[Path]:
-    """Collect Python files matching include/exclude patterns."""
-    # Default: all .py files
-    all_py = sorted(workdir.rglob("*.py"))
-    relative = [f.relative_to(workdir) for f in all_py]
+    """Collect Python files matching include/exclude patterns, pruning ignored directories during traversal."""
+    ignored_dirs = {
+        "node_modules", ".venv", ".git", "project", "redeploy", "reports",
+        "__pycache__", ".vscode", ".idea", ".windsurf", ".cursor", ".aider", ".claude",
+        "archive", "_archive", "tests", "generated", "dist", "build", ".wup", ".planfile"
+    }
+    
+    import os
+    all_py = []
+    
+    for root, dirs, files in os.walk(workdir, topdown=True):
+        # Prune ignored directories in-place to prevent os.walk from entering them
+        dirs[:] = [
+            d for d in dirs 
+            if d not in ignored_dirs 
+            and not d.startswith("batch_") 
+            and not d.startswith(".")
+        ]
+        
+        for file in files:
+            if file.endswith(".py"):
+                all_py.append(Path(root) / file)
+                
+    relative = [f.relative_to(workdir) for f in sorted(all_py)]
 
     if include:
         matched: list[Path] = []
@@ -186,6 +206,7 @@ def capture(
     workdir: Path,
     config: RegressionConfig,
     backend_names: list[str] | None = None,
+    restrict_to_files: list[str] | None = None,
 ) -> Snapshot:
     """Capture a snapshot at a git ref or the local working tree.
 
@@ -202,6 +223,12 @@ def capture(
 
     backends, backend_versions = _resolve_backends(backend_names, config)
     files, sources = _load_sources(ref, workdir, config, is_local)
+
+    # Filter by restrict_to_files if provided
+    if restrict_to_files is not None:
+        restrict_set = {str(Path(f)) for f in restrict_to_files}
+        files = [f for f in files if str(f) in restrict_set]
+        sources = {k: v for k, v in sources.items() if k in restrict_set}
 
     all_results = _run_backends(backends, workdir, files, config, sources)
     symbols = _merge_symbols(all_results)
