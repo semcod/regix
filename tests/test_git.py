@@ -11,6 +11,7 @@ from regix.exceptions import GitRefError
 from regix.git import (
     CommitInfo,
     get_changed_files,
+    get_git_diff_lines,
     get_dirty_files,
     is_clean,
     list_commits,
@@ -165,3 +166,23 @@ class TestGetGitDiffLines:
         # @@ -10,3 +10,4 @@ means new lines are 10, 11, 12, 13
         # @@ -25,2 +26,1 @@ means new line is 26
         assert res["backend/a.py"] == {10, 11, 12, 13, 26}
+
+    @patch("regix.git._run_git")
+    def test_parses_patch_text_without_git(self, mock_run):
+        diff_output = (
+            "diff --git a/regix/a.py b/regix/a.py\n"
+            "--- a/regix/a.py\n"
+            "+++ b/regix/a.py\n"
+            "@@ -1,1 +1,2 @@\n"
+        )
+        res = get_git_diff_lines(patch_text=diff_output)
+        assert "regix/a.py" in res
+        assert res["regix/a.py"] == {1, 2}
+        mock_run.assert_not_called()
+
+    @patch("regix.git._run_git")
+    def test_staged_uses_staged_diff_args(self, mock_run):
+        mock_run.return_value = MagicMock(returncode=0, stdout="")
+        _ = get_git_diff_lines(ref_a="HEAD", staged=True)
+        args = mock_run.call_args[0][0]
+        assert args[:3] == ["diff", "--staged", "-U0"]

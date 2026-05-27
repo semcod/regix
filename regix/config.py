@@ -178,13 +178,19 @@ class RegressionConfig:
     god_func_length_min: int = CONSTANT_30
     hallucination_max_lines: int = MAX_6
     impact_include_prefixes: list[str] = field(
-        default_factory=lambda: ["backend/", "frontend/", "connect-", "packages/", "services/"]
+        default_factory=list
     )
     impact_ignore_globs: list[str] = field(
         default_factory=lambda: [
             "**/node_modules/**",
             "**/.venv/**",
             "**/__pycache__/**",
+            "**/.tox/**",
+            "**/venv/**",
+            "**/.pytest_cache/**",
+            "**/.ruff_cache/**",
+            "**/dist/**",
+            "**/build/**",
             "**/project/**",
             "**/batch_**",
             "**/reports/**",
@@ -197,6 +203,8 @@ class RegressionConfig:
             "backend/tests/test_{stem}.py",
         ]
     )
+    impact_enable_import_graph: bool = True
+    impact_transitive_depth: int = 2
 
     @property
     def cc_max(self) -> float:
@@ -458,6 +466,10 @@ class RegressionConfig:
             kwargs["impact_ignore_globs"] = impact["ignore_globs"]
         if "test_patterns" in impact:
             kwargs["impact_test_patterns"] = impact["test_patterns"]
+        if "enable_import_graph" in impact:
+            kwargs["impact_enable_import_graph"] = bool(impact["enable_import_graph"])
+        if "transitive_depth" in impact:
+            kwargs["impact_transitive_depth"] = int(impact["transitive_depth"])
 
     def delta_thresholds(self, metric: str) -> tuple[float, float]:
         """Return (warn, error) thresholds for a specific metric."""

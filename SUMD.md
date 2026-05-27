@@ -13,11 +13,11 @@ Regression Index — detect and measure code quality regressions between git ver
 ## Metadata
 
 - **name**: `regix`
-- **version**: `0.1.12`
-- **python_requires**: `>=3.13`
-- **license**: MIT
+- **version**: `0.1.24`
+- **python_requires**: `>=3.10`
+- **license**: Apache-2.0
 - **ecosystem**: SUMD + DOQL + testql + taskfile
-- **generated_from**: pyproject.toml, Taskfile.yml, Makefile, src/
+- **generated_from**: pyproject.toml, Taskfile.yml, Makefile, regix/
 
 ## Architecture
 
@@ -25,55 +25,43 @@ Regression Index — detect and measure code quality regressions between git ver
 SUMD (description) → DOQL/source (code) → taskfile (automation) → testql (verification)
 ```
 
+## Dependencies
+
+- **runtime**: `pyyaml>=6.0`, `typer>=0.12`, `rich>=13.0`
+- **analysis (optional)**: `lizard>=1.17`, `radon>=6.0`, `coverage[toml]>=7.0`, `vallm>=0.1`
+- **dev/test**: `pytest>=8.0`, `pytest-cov>=5.0`, `mypy`, `ruff`, `tox`
+
 ## Source Map
 
-- tests/test_gates.py
+- regix/cli.py
+- regix/compare.py
+- regix/config.py
+- regix/git.py
+- regix/history.py
+- regix/impact.py
+- regix/models.py
+- regix/report.py
+- regix/smells.py
+- regix/snapshot.py
+- regix/backends/architecture_backend.py
+- regix/backends/structure_backend.py
+- regix/backends/lizard_backend.py
+- regix/backends/radon_backend.py
+- regix/backends/coverage_backend.py
+- regix/backends/docstring_backend.py
+- regix/backends/vallm_backend.py
+- tests/test_cli.py
+- tests/test_compare.py
+- tests/test_git.py
+- tests/test_smells.py
+- tests/test_snapshot.py
+- tests/test_report.py
 - tests/test_backends.py
 - tests/test_history.py
-- tests/test_exceptions.py
-- tests/conftest.py
-- tests/test_report.py
-- tests/test_config_full.py
-- tests/test_smells.py
-- tests/test_git.py
-- tests/__init__.py
-- tests/test_config.py
-- tests/test_code2llm_backend.py
-- tests/test_benchmark.py
-- tests/test_regix_class.py
-- tests/test_models.py
-- tests/test_cache.py
-- tests/test_report_full.py
-- tests/test_compare.py
-- tests/test_compare_full.py
-- tests/test_snapshot.py
-- tests/test_cli.py
-- tests/test_integrations.py
-- tests/test_regix.py
-- .tox/py313/lib/python3.13/site-packages/_virtualenv.py
-- .tox/py313/lib/python3.13/site-packages/markdown_it/rules_core/inline.py
-- .tox/py313/lib/python3.13/site-packages/markdown_it/rules_core/__init__.py
-- .tox/py313/lib/python3.13/site-packages/markdown_it/rules_core/linkify.py
-- .tox/py313/lib/python3.13/site-packages/markdown_it/rules_core/state_core.py
-- .tox/py313/lib/python3.13/site-packages/markdown_it/rules_core/smartquotes.py
-- .tox/py313/lib/python3.13/site-packages/markdown_it/rules_core/block.py
-- .tox/py313/lib/python3.13/site-packages/markdown_it/rules_core/normalize.py
-- .tox/py313/lib/python3.13/site-packages/markdown_it/rules_core/text_join.py
-- .tox/py313/lib/python3.13/site-packages/markdown_it/rules_core/replacements.py
-- .tox/py313/lib/python3.13/site-packages/markdown_it/rules_inline/fragments_join.py
-- .tox/py313/lib/python3.13/site-packages/markdown_it/rules_inline/entity.py
-- .tox/py313/lib/python3.13/site-packages/markdown_it/rules_inline/newline.py
-- .tox/py313/lib/python3.13/site-packages/markdown_it/rules_inline/backticks.py
-- .tox/py313/lib/python3.13/site-packages/markdown_it/rules_inline/html_inline.py
-- .tox/py313/lib/python3.13/site-packages/markdown_it/rules_inline/__init__.py
-- .tox/py313/lib/python3.13/site-packages/markdown_it/rules_inline/linkify.py
-- .tox/py313/lib/python3.13/site-packages/markdown_it/rules_inline/link.py
-- .tox/py313/lib/python3.13/site-packages/markdown_it/rules_inline/escape.py
-- .tox/py313/lib/python3.13/site-packages/markdown_it/rules_inline/emphasis.py
-- .tox/py313/lib/python3.13/site-packages/markdown_it/rules_inline/balance_pairs.py
-- .tox/py313/lib/python3.13/site-packages/markdown_it/rules_inline/state_inline.py
-- .tox/py313/lib/python3.13/site-packages/markdown_it/rules_inline/image.py
-- .tox/py313/lib/python3.13/site-packages/markdown_it/rules_inline/strikethrough.py
-- .tox/py313/lib/python3.13/site-packages/markdown_it/rules_inline/autolink.py
-- .tox/py313/lib/python3.13/site-packages/markdown_it/rules_inline/text.py
-- .tox/py313/lib/python3.13/site-packages/markdown_it/presets/zero.py
+
+## Intent
+
+- Track code-quality regressions between refs, not only absolute threshold violations.
+- Provide diff-scoped LLM regression gating via `regix review`.
+- Use dependency-aware impact analysis (`regix impact`) to run only relevant tests.
+- Emit machine-readable outputs for CI, quality gates, and automation loops.

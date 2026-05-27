@@ -1,38 +1,54 @@
-# code2llm/evolution | 218 func | 31f | 2026-05-27
+# code2llm/evolution | 239 func | 31f | 2026-05-27
 # generated in 0.00s
 
-NEXT[5] (ranked by impact):
-  [1] !! SPLIT           regix/config.py
-      WHY: 503L, 2 classes, max CC=8
-      EFFORT: ~4h  IMPACT: 4024
+NEXT[9] (ranked by impact):
+  [1] !! SPLIT           regix/smells.py
+      WHY: 519L, 0 classes, max CC=14
+      EFFORT: ~4h  IMPACT: 7266
 
-  [2] !  SPLIT-FUNC      Code2llmBackend._parse_map_toon  CC=21  fan=11
+  [2] !! SPLIT           regix/config.py
+      WHY: 547L, 2 classes, max CC=8
+      EFFORT: ~4h  IMPACT: 4376
+
+  [3] !  SPLIT-FUNC      compare  CC=19  fan=18
+      WHY: CC=19 exceeds 15
+      EFFORT: ~1h  IMPACT: 342
+
+  [4] !  SPLIT-FUNC      review  CC=17  fan=18
+      WHY: CC=17 exceeds 15
+      EFFORT: ~1h  IMPACT: 306
+
+  [5] !  SPLIT-FUNC      Code2llmBackend._parse_map_toon  CC=21  fan=11
       WHY: CC=21 exceeds 15
       EFFORT: ~1h  IMPACT: 231
 
-  [3] !  SPLIT-FUNC      Code2llmBackend._parse_evolution_toon  CC=17  fan=13
+  [6] !  SPLIT-FUNC      get_git_diff_lines  CC=16  fan=14
+      WHY: CC=16 exceeds 15
+      EFFORT: ~1h  IMPACT: 224
+
+  [7] !  SPLIT-FUNC      Code2llmBackend._parse_evolution_toon  CC=17  fan=13
       WHY: CC=17 exceeds 15
       EFFORT: ~1h  IMPACT: 221
 
-  [4] !! SPLIT           planfile.yaml
-      WHY: 721L, 0 classes, max CC=0
-      EFFORT: ~4h  IMPACT: 0
+  [8] !! SPLIT-FUNC      RegressionReport.filter_by_diff  CC=25  fan=8
+      WHY: CC=25 exceeds 15
+      EFFORT: ~1h  IMPACT: 200
 
-  [5] !! SPLIT           goal.yaml
-      WHY: 513L, 0 classes, max CC=0
+  [9] !! SPLIT           planfile.yaml
+      WHY: 721L, 0 classes, max CC=0
       EFFORT: ~4h  IMPACT: 0
 
 
 RISKS[3]:
   ⚠ Splitting planfile.yaml may break 0 import paths
-  ⚠ Splitting goal.yaml may break 0 import paths
-  ⚠ Splitting regix/config.py may break 24 import paths
+  ⚠ Splitting regix/config.py may break 25 import paths
+  ⚠ Splitting regix/smells.py may break 19 import paths
 
 METRICS-TARGET:
-  CC̄:          4.5 → ≤3.1
-  max-CC:      21 → ≤10
-  god-modules: 3 → 0
-  high-CC(≥15): 2 → ≤1
+  CC̄:          4.8 → ≤3.4
+  max-CC:      25 → ≤12
+  god-modules: 4 → 0
+  high-CC(≥15): 6 → ≤3
   hub-types:   0 → ≤0
 
 PATTERNS (language parser shared logic):
@@ -60,4 +76,4 @@ PATTERNS (language parser shared logic):
     - Standardized FunctionInfo/ClassInfo models
 
 HISTORY:
-  prev CC̄=5.0 → now CC̄=4.5
+  prev CC̄=4.6 → now CC̄=4.8

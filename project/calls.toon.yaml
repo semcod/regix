@@ -1,23 +1,27 @@
 # code2llm call graph | /home/tom/github/semcod/regix
-# generated in 0.05s
-# nodes: 77 | edges: 81 | modules: 17
-# CC̄=4.5
+# generated in 0.06s
+# nodes: 79 | edges: 83 | modules: 17
+# CC̄=4.8
 
 HUBS[20]:
+  regix.cli.impact
+    CC=3  in:0  out:25  total:25
+  regix.git.get_git_diff_lines
+    CC=16  in:5  out:20  total:25
+  regix.snapshot.capture
+    CC=8  in:13  out:12  total:25
+  regix.integrations.planfile.sync_regressions_to_planfile
+    CC=13  in:2  out:21  total:23
   regix.cli.status
     CC=4  in:0  out:23  total:23
-  regix.snapshot.capture
-    CC=8  in:11  out:12  total:23
   regix.benchmark.reporter.BenchmarkReporter.print
     CC=4  in:19  out:3  total:22
-  regix.integrations.planfile.sync_regressions_to_planfile
-    CC=13  in:1  out:21  total:22
+  regix.cli.gates
+    CC=11  in:0  out:21  total:21
   regix.benchmark.probes.BackendProbe.run
     CC=7  in:0  out:21  total:21
   regix.cli.diff
     CC=9  in:0  out:21  total:21
-  regix.cli.gates
-    CC=11  in:0  out:21  total:21
   regix.report._render_rich
     CC=14  in:1  out:19  total:20
   regix.cli.snapshot
@@ -26,24 +30,20 @@ HUBS[20]:
     CC=7  in:0  out:17  total:17
   regix.cli.history
     CC=2  in:0  out:16  total:16
+  regix.cli._load_config
+    CC=3  in:8  out:7  total:15
   scripts.check_regression.check_regression
     CC=14  in:0  out:14  total:14
   regix.backends.structure_backend.StructureBackend.collect
     CC=11  in:0  out:14  total:14
   regix.benchmark.reporter.BenchmarkReporter.print_plain
     CC=7  in:0  out:14  total:14
+  regix.cache.lookup
+    CC=4  in:0  out:13  total:13
   regix.history._aggregate_snapshot_metrics
     CC=7  in:1  out:12  total:13
   regix.git.read_tree_sources
     CC=6  in:1  out:12  total:13
-  regix.cache.lookup
-    CC=4  in:0  out:13  total:13
-  regix.cli._load_config
-    CC=3  in:6  out:7  total:13
-  regix.gates.check_gates
-    CC=6  in:2  out:10  total:12
-  regix.benchmark.probes.UnitTestProbe.run
-    CC=9  in:0  out:12  total:12
 
 MODULES:
   regix  [2 funcs]
@@ -74,11 +74,12 @@ MODULES:
     clear  CC=2  out:3
     lookup  CC=4  out:13
     store  CC=3  out:9
-  regix.cli  [6 funcs]
+  regix.cli  [7 funcs]
     _load_config  CC=3  out:7
     diff  CC=9  out:21
     gates  CC=11  out:21
     history  CC=2  out:16
+    impact  CC=3  out:25
     snapshot  CC=3  out:17
     status  CC=4  out:23
   regix.compare  [7 funcs]
@@ -92,11 +93,12 @@ MODULES:
   regix.gates  [2 funcs]
     _passes  CC=3  out:0
     check_gates  CC=6  out:10
-  regix.git  [9 funcs]
+  regix.git  [10 funcs]
     _run_git  CC=1  out:3
     checkout_temporary  CC=2  out:10
     get_changed_files  CC=4  out:4
     get_dirty_files  CC=3  out:7
+    get_git_diff_lines  CC=16  out:20
     is_clean  CC=1  out:3
     list_commits  CC=2  out:8
     read_local_sources  CC=4  out:3
@@ -144,41 +146,36 @@ EDGES:
   regix.gates.check_gates → regix.gates._passes
   regix.Regix.snapshot → regix.snapshot.capture
   regix.Regix.history → regix.history.build_history
-  regix.git.resolve_ref → regix.git._run_git
-  regix.git.list_commits → regix.git._run_git
-  regix.git.is_clean → regix.git._run_git
-  regix.git.get_dirty_files → regix.git._run_git
-  regix.git.get_changed_files → regix.git._run_git
-  regix.git.checkout_temporary → regix.git.resolve_ref
-  regix.git.checkout_temporary → regix.git._run_git
-  regix.git.read_tree_sources → regix.git.resolve_ref
+  regix.compare._compute_delta → regix.compare._severity_for_delta
+  regix.compare._compare_symbol_metrics → regix.compare._compute_delta
+  regix.compare._process_comparison_key → regix.compare._compare_symbol_metrics
+  regix.compare._process_comparison_key → regix.compare._collect_deleted_symbol
+  regix.compare.compare → regix.compare._count_severity_in_list
+  regix.compare.compare → regix.smells.detect_smells
   regix.history._compute_trends → regix.history._linear_slope
   regix.history.build_history → regix.git.list_commits
   regix.history.build_history → regix.snapshot.capture
   regix.history.build_history → regix.history._compute_trends
   regix.history.build_history → regix.history._aggregate_snapshot_metrics
+  regix.snapshot._collect_files → regix.snapshot._apply_include_patterns
+  regix.snapshot._collect_files → regix.snapshot._apply_exclude_patterns
+  regix.snapshot._collect_files → regix.snapshot._should_ignore_dir
+  regix.snapshot._resolve_backends → regix.backends.base.get_backend
+  regix.snapshot._load_sources → regix.git.read_tree_sources
+  regix.snapshot._load_sources → regix.snapshot._filter_sources
+  regix.snapshot._load_sources → regix.snapshot._collect_files
+  regix.snapshot._load_sources → regix.git.read_local_sources
+  regix.snapshot.capture → regix.snapshot._resolve_backends
+  regix.snapshot.capture → regix.snapshot._load_sources
+  regix.snapshot.capture → regix.snapshot._run_backends
+  regix.snapshot.capture → regix.snapshot._merge_symbols
+  regix.snapshot.capture → regix.git.resolve_ref
   regix.report.render → regix.report._render_rich
   regix.cache.lookup → regix.cache._cache_dir
   regix.cache.lookup → regix.cache._cache_key
   regix.cache.store → regix.cache._cache_dir
   regix.cache.store → regix.cache._cache_key
   regix.cache.clear → regix.cache._cache_dir
-  regix.smells._detect_file_smells → regix.smells._check_god_function
-  regix.smells._detect_file_smells → regix.smells._check_symbol_smells
-  regix.smells.detect_smells → regix.smells._detect_file_smells
-  regix.smells._check_symbol_smells → regix.smells._check_hallucination_proxy
-  regix.smells._avg_func_length → regix.smells._func_length
-  regix.smells._largest_function → regix.smells._func_length
-  regix.smells._check_god_function → regix.smells._function_count_drop
-  regix.smells._check_god_function → regix.smells._avg_func_length
-  regix.smells._check_god_function → regix.smells._largest_function
-  regix.smells._check_stub_regression → regix.smells._func_length
-  regix.smells._check_no_delegation → regix.smells._func_length
-  regix.smells._count_hollow_signals → regix.smells._func_length
-  regix.smells._was_already_hollow → regix.smells._func_length
-  regix.smells._check_hallucination_proxy → regix.smells._func_length
-  regix.smells._check_hallucination_proxy → regix.smells._count_hollow_signals
-  regix.smells._check_hallucination_proxy → regix.smells._was_already_hollow
   regix.backends.structure_backend.StructureBackend.collect → regix.backends.structure_backend._analyse_function
   regix.benchmark.reporter.BenchmarkReporter.print_plain → regix.benchmark.reporter.BenchmarkReporter.print
   regix.benchmark.reporter.BenchmarkReporter.print_json → regix.benchmark.reporter.BenchmarkReporter.print
@@ -189,3 +186,8 @@ EDGES:
   regix.benchmark.probes.ImportProbe.run → regix.benchmark.probes._measurement_error
   regix.benchmark.probes.CLIProbe.run → regix.benchmark.probes._measurement_error
   regix.benchmark.probes.UnitTestProbe.run → regix.benchmark.probes._measurement_error
+  regix.benchmark.probes.BackendProbe.run → regix.backends.base.get_backend
+  regix.benchmark.probes.BackendProbe.run → regix.benchmark.probes._measurement_error
+  regix.integrations.planfile.sync_regressions_to_planfile → regix.benchmark.reporter.BenchmarkReporter.print
+  regix.cli.history → regix.cli._load_config
+  regix.cli.snapshot → regix.cli._load_config

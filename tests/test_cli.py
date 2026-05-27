@@ -94,6 +94,43 @@ class TestInitCommand:
         assert "already exists" in result.output
 
 
+class TestReviewCommand:
+    @patch("regix.snapshot.capture")
+    @patch("regix.compare.compare")
+    @patch("regix.report.render")
+    @patch("regix.git.get_git_diff_lines")
+    def test_review_filters_by_diff(self, mock_diff, mock_render, mock_compare, mock_capture, tmp_path):
+        snap_before = _fake_snap("HEAD")
+        snap_after = _fake_snap("local")
+        report = _fake_report(snapshot_before=snap_before, snapshot_after=snap_after)
+        report.filter_by_diff = lambda _: report
+
+        mock_capture.side_effect = [snap_before, snap_after]
+        mock_compare.return_value = report
+        mock_render.return_value = "review output"
+        mock_diff.return_value = {"a.py": {1, 2}}
+
+        result = runner.invoke(app, ["review", "HEAD", "local", "--workdir", str(tmp_path)])
+        assert result.exit_code == 0
+        assert "review output" in result.output
+
+    @patch("regix.git.get_git_diff_lines")
+    def test_review_no_changes_short_circuits(self, mock_diff, tmp_path):
+        mock_diff.return_value = {}
+        result = runner.invoke(app, ["review", "HEAD", "local", "--workdir", str(tmp_path)])
+        assert result.exit_code == 0
+        assert "Nothing to review" in result.output
+
+
+class TestImpactCommand:
+    @patch("regix.impact.ImpactAnalyzer.get_git_modified_files")
+    def test_impact_no_changes(self, mock_modified, tmp_path):
+        mock_modified.return_value = []
+        result = runner.invoke(app, ["impact", "--workdir", str(tmp_path)])
+        assert result.exit_code == 0
+        assert "No modified or untracked files" in result.output
+
+
 class TestCompareCommand:
     @patch("regix.snapshot.capture")
     @patch("regix.compare.compare")

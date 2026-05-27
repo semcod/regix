@@ -71,9 +71,13 @@ def compare(
 
     restrict_files = None
     if changed_only:
-        from regix.impact import ImpactAnalyzer
-        analyzer = ImpactAnalyzer(wd)
-        restrict_files = analyzer.get_git_modified_files()
+        if local or ref_b == "local":
+            from regix.impact import ImpactAnalyzer
+            analyzer = ImpactAnalyzer(wd, cfg)
+            restrict_files = analyzer.get_git_modified_files()
+        else:
+            from regix.git import get_changed_files
+            restrict_files = get_changed_files(ref_a, ref_b, wd)
         if not restrict_files:
             typer.echo("✨ No modified files detected in Git workspace. Skipping comparison.")
             return
@@ -84,7 +88,10 @@ def compare(
 
     if diff_only:
         from regix.git import get_git_diff_lines
-        diff_lines = get_git_diff_lines(ref_a, None if ref_b == "local" else ref_b, wd)
+        if local or ref_b == "local":
+            diff_lines = get_git_diff_lines(ref_a=ref_a, workdir=wd)
+        else:
+            diff_lines = get_git_diff_lines(ref_a=ref_a, ref_b=ref_b, workdir=wd)
         report = report.filter_by_diff(diff_lines)
 
     if metric:
@@ -92,6 +99,82 @@ def compare(
             report = report.filter(metric=m)
     if errors_only:
         report = report.filter(severity="error")
+    text = render(report, fmt=fmt, output=output)
+    if not output:
+        typer.echo(text)
+
+    if planfile and report.has_regressions:
+        from regix.integrations.planfile import sync_regressions_to_planfile
+        sync_regressions_to_planfile(report, cfg.workdir)
+
+    if fail_on == "warning" and (report.has_errors or report.warnings > 0):
+        raise SystemExit(cfg.fail_exit_code)
+    if report.has_errors:
+        raise SystemExit(cfg.fail_exit_code)
+
+
+@app.command()
+def review(
+    base: str = typer.Argument("HEAD", help="Base ref to compare against"),
+    target: str = typer.Argument("local", help="Target ref (or 'local')"),
+    staged: bool = typer.Option(False, "--staged", help="Review staged changes against BASE"),
+    patch: Optional[str] = typer.Option(None, "--patch", "-p", help="Review a unified-diff patch file instead of git diff"),
+    config: Optional[str] = typer.Option(None, "--config", help="Path to regix.yaml"),
+    fmt: str = typer.Option("rich", "--format", "-f", help="Output format: rich | json | yaml | toon"),
+    output: Optional[str] = typer.Option(None, "--output", "-o", help="Write report to file/dir"),
+    metric: Optional[list[str]] = typer.Option(None, "--metric", "-m", help="Filter to specific metric(s)"),
+    errors_only: bool = typer.Option(False, "--errors-only", help="Suppress warnings"),
+    fail_on: str = typer.Option("error", "--fail-on", help="Exit 1 on: error | warning"),
+    workdir: str = typer.Option(".", "--workdir", "-w", help="Project root"),
+    planfile: bool = typer.Option(False, "--planfile", help="Generate planfile tickets for detected regressions"),
+) -> None:
+    """Review changes in the working tree (or a patch) for regressions.
+
+    This is the recommended command for LLM-driven code gates: it only
+    reports regressions that touch symbols or lines present in the diff,
+    eliminating noise from unrelated parts of the codebase.
+    """
+    from regix.compare import compare as do_compare
+    from regix.report import render
+    from regix.snapshot import capture
+    from regix.git import get_git_diff_lines
+
+    cfg = _load_config(config, workdir)
+    wd = Path(cfg.workdir).resolve()
+
+    # Determine diff scope
+    if patch:
+        patch_text = Path(patch).read_text(encoding="utf-8")
+        diff_lines = get_git_diff_lines(patch_text=patch_text)
+        # For patch mode we don't have a meaningful git ref — snapshot everything
+        # but restrict to files mentioned in the patch.
+        restrict_files = sorted(diff_lines.keys()) if diff_lines else None
+        ref_a = base
+        ref_b = target
+    else:
+        if staged:
+            diff_lines = get_git_diff_lines(ref_a=base, workdir=wd, staged=True)
+        else:
+            diff_lines = get_git_diff_lines(ref_a=base, ref_b=target if target != "local" else None, workdir=wd)
+        restrict_files = sorted(diff_lines.keys()) if diff_lines else None
+        ref_a = base
+        ref_b = target
+
+    if not restrict_files:
+        typer.echo("✨ No changed files detected in scope. Nothing to review.")
+        return
+
+    snap_a = capture(ref_a, wd, cfg, restrict_to_files=restrict_files)
+    snap_b = capture(ref_b, wd, cfg, restrict_to_files=restrict_files)
+    report = do_compare(snap_a, snap_b, cfg)
+    report = report.filter_by_diff(diff_lines)
+
+    if metric:
+        for m in metric:
+            report = report.filter(metric=m)
+    if errors_only:
+        report = report.filter(severity="error")
+
     text = render(report, fmt=fmt, output=output)
     if not output:
         typer.echo(text)
@@ -311,6 +394,10 @@ def _print_impact_summary(analysis: dict[str, Any]) -> None:
     """Print impact analysis summary."""
     typer.echo("\n🎯 IMPACT SUMMARY:")
     typer.echo(f"   - Affected Contexts: {', '.join(analysis['impacted_contexts']) or 'None'}")
+    modules = analysis.get("impacted_modules", [])
+    dependents = analysis.get("transitive_dependents", [])
+    typer.echo(f"   - Impacted Modules: {len(modules)}")
+    typer.echo(f"   - Transitive Dependents: {len(dependents)}")
 
 def _print_pytest_targets(targets: list[str]) -> None:
     """Print pytest targets."""
@@ -358,12 +445,14 @@ def impact(
     pytest_only: bool = typer.Option(
         False, "--pytest-only", help="Only execute Pytest target suites, skip TestQL"
     ),
+    config: Optional[str] = typer.Option(None, "--config", help="Path to regix.yaml"),
     workdir: str = typer.Option(".", "--workdir", "-w", help="Project root"),
 ) -> None:
     """Analyze git changes and print or execute targeted selective test suites."""
     from regix.impact import ImpactAnalyzer
 
-    analyzer = ImpactAnalyzer(workdir)
+    cfg = _load_config(config, workdir)
+    analyzer = ImpactAnalyzer(workdir, cfg)
     modified_files = analyzer.get_git_modified_files()
 
     if not modified_files:

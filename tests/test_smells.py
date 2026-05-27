@@ -231,6 +231,33 @@ class TestHallucinationProxy:
         smells = detect_smells(snap_b, snap_a, cfg)
         assert not any((s.smell == 'hallucination_proxy' for s in smells))
 
+
+class TestLlmOrientedSmells:
+
+    def test_assertion_loss_detected_in_tests(self) -> None:
+        before = _sm(file='tests/test_api.py', raw={'assert_count': 3})
+        after = _sm(file='tests/test_api.py', raw={'assert_count': 0})
+        smells = detect_smells(_snap('before', [before]), _snap('after', [after]), RegressionConfig())
+        assert any((s.smell == 'assertion_loss' for s in smells))
+
+    def test_mock_inflation_detected_in_prod(self) -> None:
+        before = _sm(file='regix/core.py', raw={'mock_usage_count': 0})
+        after = _sm(file='regix/core.py', raw={'mock_usage_count': 4})
+        smells = detect_smells(_snap('before', [before]), _snap('after', [after]), RegressionConfig())
+        assert any((s.smell == 'mock_inflation' for s in smells))
+
+    def test_dead_branch_detected(self) -> None:
+        before = _sm(file='regix/core.py', raw={'dead_branch_count': 0})
+        after = _sm(file='regix/core.py', raw={'dead_branch_count': 1})
+        smells = detect_smells(_snap('before', [before]), _snap('after', [after]), RegressionConfig())
+        assert any((s.smell == 'dead_branch' for s in smells))
+
+    def test_silent_except_detected(self) -> None:
+        before = _sm(file='regix/core.py', raw={'except_pass_count': 0, 'bare_except_count': 0})
+        after = _sm(file='regix/core.py', raw={'except_pass_count': 1, 'bare_except_count': 0})
+        smells = detect_smells(_snap('before', [before]), _snap('after', [after]), RegressionConfig())
+        assert any((s.smell == 'silent_except' for s in smells))
+
 class TestSmellsInReport:
 
     def test_compare_returns_smells(self) -> None:

@@ -191,7 +191,7 @@ tasks:
       echo "" >> SUMD.md
       echo "- **name**: \`$(basename $(pwd))\`" >> SUMD.md
       echo "- **version**: \`$(python3 -c "import tomllib; f=open('pyproject.toml','rb'); d=tomllib.load(f); print(d.get('project',{}).get('version','unknown'))" 2>/dev/null || echo 'unknown')\`" >> SUMD.md
-      echo "- **python_requires**: \`>=$(python3 --version 2>/dev/null | cut -d' ' -f2 | cut -d. -f1,2)\`" >> SUMD.md
+      echo "- **python_requires**: \`>=$(python3 -c "import tomllib; f=open('pyproject.toml','rb'); d=tomllib.load(f); print(d.get('project',{}).get('requires-python','3.10').replace('>=','').replace('^',''))" 2>/dev/null || echo '3.10')\`" >> SUMD.md
       echo "- **license**: $(python3 -c "import tomllib; f=open('pyproject.toml','rb'); d=tomllib.load(f); print(d.get('project',{}).get('license',{}).get('text','MIT'))" 2>/dev/null || echo 'MIT')" >> SUMD.md
       echo "- **ecosystem**: SUMD + DOQL + testql + taskfile" >> SUMD.md
       echo "- **generated_from**: pyproject.toml, Taskfile.yml, Makefile, src/" >> SUMD.md
@@ -204,7 +204,7 @@ tasks:
       echo "" >> SUMD.md
       echo "## Source Map" >> SUMD.md
       echo "" >> SUMD.md
-      find . -name '*.py' -not -path './.venv/*' -not -path './venv/*' -not -path './__pycache__/*' -not -path './.git/*' | head -50 | sed 's|^./||' | sed 's|^|- |' >> SUMD.md
+      find . -name '*.py' -not -path './.venv/*' -not -path './venv/*' -not -path './__pycache__/*' -not -path './.git/*' -not -path './.tox/*' -not -path './dist/*' -not -path './build/*' -not -path './.pytest_cache/*' -not -path './.ruff_cache/*' -not -path './.coverage/*' -not -path './.code2llm_cache/*' -not -path './.taskill/*' | head -50 | sed 's|^./||' | sed 's|^|- |' >> SUMD.md
       echo "Generated SUMD.md"
     - |
       python3 -c "
@@ -212,7 +212,8 @@ tasks:
       from pathlib import Path
       project_name = Path.cwd().name
       py_files = list(Path('.').rglob('*.py'))
-      py_files = [f for f in py_files if not any(x in str(f) for x in ['.venv', 'venv', '__pycache__', '.git'])]
+      skip_parts = ['.venv', 'venv', '__pycache__', '.git', '.tox', 'dist', 'build', '.pytest_cache', '.ruff_cache', '.coverage', '.code2llm_cache', '.taskill']
+      py_files = [f for f in py_files if not any(x in str(f).split(os.sep) for x in skip_parts)]
       data = {
           'project_name': project_name,
           'description': 'SUMD - Structured Unified Markdown Descriptor for AI-aware project refactorization',

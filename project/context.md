@@ -7,24 +7,29 @@
 - **Primary Language**: python
 - **Languages**: python: 36, yaml: 4, json: 2, shell: 2, ini: 1
 - **Analysis Mode**: static
-- **Total Functions**: 221
+- **Total Functions**: 242
 - **Total Classes**: 44
 - **Modules**: 48
-- **Entry Points**: 158
+- **Entry Points**: 177
 
 ## Architecture by Module
 
 ### regix.config
-- **Functions**: 24
+- **Functions**: 25
 - **Classes**: 2
 - **File**: `config.py`
 
+### regix.impact
+- **Functions**: 24
+- **Classes**: 1
+- **File**: `impact.py`
+
 ### regix.smells
-- **Functions**: 15
+- **Functions**: 19
 - **File**: `smells.py`
 
 ### regix.cli
-- **Functions**: 15
+- **Functions**: 16
 - **File**: `cli.py`
 
 ### regix.benchmark.probes
@@ -32,13 +37,8 @@
 - **Classes**: 6
 - **File**: `probes.py`
 
-### regix.impact
-- **Functions**: 14
-- **Classes**: 1
-- **File**: `impact.py`
-
 ### regix.models
-- **Functions**: 12
+- **Functions**: 13
 - **Classes**: 13
 - **File**: `models.py`
 
@@ -52,19 +52,23 @@
 - **File**: `snapshot.py`
 
 ### regix.git
-- **Functions**: 9
+- **Functions**: 10
 - **Classes**: 1
 - **File**: `git.py`
+
+### regix.backends.architecture_backend
+- **Functions**: 10
+- **Classes**: 1
+- **File**: `architecture_backend.py`
 
 ### regix.benchmark.reporter
 - **Functions**: 8
 - **Classes**: 1
 - **File**: `reporter.py`
 
-### regix.backends.architecture_backend
+### regix.compare
 - **Functions**: 7
-- **Classes**: 1
-- **File**: `architecture_backend.py`
+- **File**: `compare.py`
 
 ### regix.backends.base
 - **Functions**: 7
@@ -75,10 +79,6 @@
 - **Functions**: 7
 - **Classes**: 2
 - **File**: `structure_backend.py`
-
-### regix.compare
-- **Functions**: 7
-- **File**: `compare.py`
 
 ### regix
 - **Functions**: 6
@@ -115,6 +115,17 @@ Main execution flows into the system:
 > Build the default regix benchmark suite.
 - **Calls**: BenchmarkSuite, suite.add, suite.add, suite.add, suite.add, suite.add, suite.add, suite.add
 
+### regix.cli.review
+> Review changes in the working tree (or a patch) for regressions.
+
+This is the recommended command for LLM-driven code gates: it only
+reports regressio
+- **Calls**: app.command, typer.Argument, typer.Argument, typer.Option, typer.Option, typer.Option, typer.Option, typer.Option
+
+### regix.impact.ImpactAnalyzer.analyze_impact
+> Performs change-impact analysis and maps files to selective tests.
+- **Calls**: set, set, set, set, set, set, self._map_scenarios, testql_scenarios.update
+
 ### regix.cli.compare
 > Compare metrics between two git refs or local state.
 - **Calls**: app.command, typer.Argument, typer.Argument, typer.Option, typer.Option, typer.Option, typer.Option, typer.Option
@@ -122,9 +133,9 @@ Main execution flows into the system:
 ### regix.benchmark.reporter.BenchmarkReporter.print_rich
 - **Calls**: Console, console.print, console.print, suites.items, len, sum, sum, sum
 
-### regix.impact.ImpactAnalyzer.analyze_impact
-> Performs change-impact analysis and maps files to selective tests.
-- **Calls**: set, set, set, set, self._map_scenarios, testql_scenarios.update, visual_diff_routes.update, Path
+### regix.cli.impact
+> Analyze git changes and print or execute targeted selective test suites.
+- **Calls**: app.command, typer.Option, typer.Option, typer.Option, typer.Option, typer.Option, regix.cli._load_config, ImpactAnalyzer
 
 ### regix.models.RegressionReport.to_toon
 > TOON format — machine-readable plain text.
@@ -134,9 +145,8 @@ Main execution flows into the system:
 > Show Regix configuration and available backends.
 - **Calls**: app.command, typer.Option, typer.Option, regix.cli._load_config, typer.echo, typer.echo, typer.echo, typer.echo
 
-### regix.cli.impact
-> Analyze git changes and print or execute targeted selective test suites.
-- **Calls**: app.command, typer.Option, typer.Option, typer.Option, typer.Option, ImpactAnalyzer, analyzer.get_git_modified_files, typer.echo
+### regix.backends.architecture_backend.ArchitectureBackend._symbol_metrics
+- **Calls**: getattr, max, list, sum, round, sum, sum, sum
 
 ### regix.benchmark.probes.BackendProbe.run
 - **Calls**: regix.backends.base.get_backend, Path, regix.benchmark.probes._measurement_error, backend.is_available, BenchmarkResult, tempfile.mkdtemp, self._generate_files, RegressionConfig
@@ -152,13 +162,27 @@ Main execution flows into the system:
 ### regix.integrations.RegixCollector._parse
 - **Calls**: path.read_text, text.splitlines, json.loads, line.strip, line.startswith, line.startswith, line.startswith, data.get
 
+### regix.compare.compare
+> Compare two snapshots and produce a regression report.
+- **Calls**: time.monotonic, sorted, regix.compare._count_severity_in_list, regix.compare._count_severity_in_list, regix.smells.detect_smells, regix.compare._count_severity_in_list, regix.compare._count_severity_in_list, RegressionReport
+
+### regix.models.RegressionReport.filter_by_diff
+> Return a copy of this report containing only regressions/improvements/smells in modified hunks.
+
+A symbol-level metric is kept if its line span overla
+- **Calls**: RegressionReport, self.snapshot_after.get, filtered_reg.append, self.snapshot_after.get, filtered_imp.append, self.snapshot_after.get, filtered_smells.append, set
+
 ### regix.cli.snapshot
 > Capture and store a snapshot without comparing.
 - **Calls**: app.command, typer.Argument, typer.Option, typer.Option, typer.Option, typer.Option, regix.cli._load_config, None.resolve
 
-### regix.compare.compare
-> Compare two snapshots and produce a regression report.
-- **Calls**: time.monotonic, sorted, regix.compare._count_severity_in_list, regix.compare._count_severity_in_list, regix.smells.detect_smells, regix.compare._count_severity_in_list, regix.compare._count_severity_in_list, RegressionReport
+### regix.impact.ImpactAnalyzer._discover_python_files
+> Discover Python files eligible for import-graph analysis.
+- **Calls**: os.walk, None.relative_to, None.replace, self._is_ignored_path, pruned_dirs.append, None.replace, self._is_ignored_path, files.append
+
+### regix.impact.ImpactAnalyzer._build_import_graph
+> Build local module import graph and its reverse index.
+- **Calls**: self._discover_python_files, self.module_to_file.clear, self.file_to_module.clear, self.import_graph.clear, self.reverse_import_graph.clear, self.module_to_file.items, self.import_graph.items, self._module_name_from_relpath
 
 ### regix.cli.history
 > Show metric timeline across N historical commits.
@@ -167,10 +191,6 @@ Main execution flows into the system:
 ### regix.backends.vallm_backend.VallmBackend.collect
 > Run ``vallm batch`` and collect quality scores per file.
 - **Calls**: self.is_available, subprocess.run, json.loads, set, isinstance, data.get, entry.get, entry.get
-
-### regix.impact.ImpactAnalyzer.get_git_modified_files
-> Detects changed, added, and untracked files in git workspace.
-- **Calls**: subprocess.run, subprocess.run, sorted, line.strip, any, filtered_files.append, list, str
 
 ### regix.backends.code2llm_backend.Code2llmBackend._parse_map_toon
 > Parse map.toon.yaml and extract file-level and symbol metrics.
@@ -184,9 +204,6 @@ Main execution flows into the system:
 > Main regression check function.
 - **Calls**: scripts.check_regression.load_json_file, scripts.check_regression.load_json_file, scripts.check_regression.load_json_file, None.append, open, json.dump, regix.benchmark.reporter.BenchmarkReporter.print, sys.exit
 
-### regix.backends.architecture_backend.ArchitectureBackend._symbol_metrics
-- **Calls**: getattr, max, sum, round, SymbolMetrics, str, sum, ArchitectureBackend._param_count
-
 ### regix.backends.structure_backend.StructureBackend.collect
 > Collect fan_out, call_count per function and symbol_count per file.
 - **Calls**: str, self._collect_functions, results.append, ast.parse, SymbolMetrics, regix.backends.structure_backend._analyse_function, results.append, full.read_text
@@ -198,6 +215,10 @@ Main execution flows into the system:
 > Loads CQRS and SWOP mappings if present in the workspace.
 - **Calls**: manifests_dir.glob, manifests_dir.exists, manifest_file.read_text, data.get, yaml.safe_load, self._fallback_yaml_parse, data.get, item.get
 
+### regix.impact.ImpactAnalyzer._collect_transitive_dependents
+> Return modules that transitively depend on changed modules.
+- **Calls**: self._build_import_graph, max, set, set, set, range, set, int
+
 ### regix.cache.lookup
 > Return cached snapshot or None.
 - **Calls**: regix.cache._cache_dir, regix.cache._cache_key, path.exists, None.decode, json.loads, Snapshot, SymbolMetrics, gzip.decompress
@@ -205,22 +226,9 @@ Main execution flows into the system:
 ### regix.benchmark.cli.main
 - **Calls**: argparse.ArgumentParser, parser.add_argument, parser.add_argument, parser.add_argument, parser.add_argument, parser.parse_args, importlib.import_module, benchmark_pkg.build_regix_suite
 
-### regix.backends.docstring_backend.DocstringBackend.collect
-> Compute docstring coverage per file.
-- **Calls**: str, ast.walk, results.append, ast.parse, isinstance, SymbolMetrics, full.read_text, ast.get_docstring
-
-### regix.backends.radon_backend.RadonBackend.collect
-> Collect MI (module-level) and CC (per-function) using radon.
-- **Calls**: str, results.append, mi_visit, cc_visit, SymbolMetrics, results.append, full.read_text, SymbolMetrics
-
-### regix.benchmark.probes.ImportProbe.run
-- **Calls**: range, BenchmarkResult, time.perf_counter, regix.benchmark.probes._measurement_error, subprocess.run, times.append, min, time.perf_counter
-
-### regix.benchmark.probes.CLIProbe.run
-- **Calls**: range, BenchmarkResult, time.perf_counter, regix.benchmark.probes._measurement_error, subprocess.run, times.append, min, time.perf_counter
-
-### regix.benchmark.probes.UnitTestProbe.run
-- **Calls**: time.perf_counter, output.splitlines, BenchmarkResult, str, subprocess.run, None.strip, time.perf_counter, regix.benchmark.probes._measurement_error
+### regix.impact.ImpactAnalyzer.get_git_modified_files
+> Detects changed, added, and untracked files in git workspace.
+- **Calls**: subprocess.run, subprocess.run, sorted, line.strip, self._is_ignored_path, filtered_files.append, list, str
 
 ## Process Flows
 
@@ -231,69 +239,69 @@ Key execution flows identified:
 build_regix_suite [regix.benchmark.factory]
 ```
 
-### Flow 2: compare
+### Flow 2: review
 ```
-compare [regix.cli]
-```
-
-### Flow 3: print_rich
-```
-print_rich [regix.benchmark.reporter.BenchmarkReporter]
+review [regix.cli]
 ```
 
-### Flow 4: analyze_impact
+### Flow 3: analyze_impact
 ```
 analyze_impact [regix.impact.ImpactAnalyzer]
 ```
 
-### Flow 5: to_toon
+### Flow 4: compare
+```
+compare [regix.cli]
+```
+
+### Flow 5: print_rich
+```
+print_rich [regix.benchmark.reporter.BenchmarkReporter]
+```
+
+### Flow 6: impact
+```
+impact [regix.cli]
+```
+
+### Flow 7: to_toon
 ```
 to_toon [regix.models.RegressionReport]
 ```
 
-### Flow 6: status
+### Flow 8: status
 ```
 status [regix.cli]
   └─> _load_config
 ```
 
-### Flow 7: impact
+### Flow 9: _symbol_metrics
 ```
-impact [regix.cli]
+_symbol_metrics [regix.backends.architecture_backend.ArchitectureBackend]
 ```
 
-### Flow 8: run
+### Flow 10: run
 ```
 run [regix.benchmark.probes.BackendProbe]
   └─ →> get_backend
   └─ →> _measurement_error
 ```
 
-### Flow 9: diff
-```
-diff [regix.cli]
-```
-
-### Flow 10: gates
-```
-gates [regix.cli]
-```
-
 ## Key Classes
 
 ### regix.config.RegressionConfig
 > All user-configurable values for a Regix run.
-- **Methods**: 35
+- **Methods**: 36
 - **Key Methods**: regix.config.RegressionConfig.cc_max, regix.config.RegressionConfig.cc_max, regix.config.RegressionConfig.mi_min, regix.config.RegressionConfig.mi_min, regix.config.RegressionConfig.coverage_min, regix.config.RegressionConfig.coverage_min, regix.config.RegressionConfig.length_max, regix.config.RegressionConfig.length_max, regix.config.RegressionConfig.docstring_min, regix.config.RegressionConfig.docstring_min
 
 ### regix.impact.ImpactAnalyzer
 > Generic impact analyzer for local code changes and test suite mapping.
-- **Methods**: 14
-- **Key Methods**: regix.impact.ImpactAnalyzer.__init__, regix.impact.ImpactAnalyzer._load_swop_mappings, regix.impact.ImpactAnalyzer._parse_yaml_section_header, regix.impact.ImpactAnalyzer._parse_yaml_item_start, regix.impact.ImpactAnalyzer._parse_yaml_item_field, regix.impact.ImpactAnalyzer._fallback_yaml_parse, regix.impact.ImpactAnalyzer.get_git_modified_files, regix.impact.ImpactAnalyzer._map_folder_to_context, regix.impact.ImpactAnalyzer._map_swop_manifest, regix.impact.ImpactAnalyzer._map_python_unit_tests
+- **Methods**: 24
+- **Key Methods**: regix.impact.ImpactAnalyzer.__init__, regix.impact.ImpactAnalyzer._is_ignored_path, regix.impact.ImpactAnalyzer._is_allowed_path, regix.impact.ImpactAnalyzer._load_swop_mappings, regix.impact.ImpactAnalyzer._parse_yaml_section_header, regix.impact.ImpactAnalyzer._parse_yaml_item_start, regix.impact.ImpactAnalyzer._parse_yaml_item_field, regix.impact.ImpactAnalyzer._fallback_yaml_parse, regix.impact.ImpactAnalyzer.get_git_modified_files, regix.impact.ImpactAnalyzer._map_folder_to_context
 
 ### regix.models.RegressionReport
 > Aggregated result of a comparison between two snapshots.
-- **Methods**: 13
+- **Methods**: 14
 - **Key Methods**: regix.models.RegressionReport.has_errors, regix.models.RegressionReport.has_regressions, regix.models.RegressionReport.passed, regix.models.RegressionReport.summary, regix.models.RegressionReport.to_dict, regix.models.RegressionReport.to_json, regix.models.RegressionReport.to_yaml, regix.models.RegressionReport._toon_regression_section, regix.models.RegressionReport._toon_smell_section, regix.models.RegressionReport.to_toon
 
 ### regix.backends.code2llm_backend.Code2llmBackend
@@ -307,8 +315,8 @@ Generates metrics from code2llm output:
 
 ### regix.backends.architecture_backend.ArchitectureBackend
 > Computes per-function structural metrics via AST for smell detection.
-- **Methods**: 7
-- **Key Methods**: regix.backends.architecture_backend.ArchitectureBackend.is_available, regix.backends.architecture_backend.ArchitectureBackend.version, regix.backends.architecture_backend.ArchitectureBackend._read_source, regix.backends.architecture_backend.ArchitectureBackend._iter_functions, regix.backends.architecture_backend.ArchitectureBackend._param_count, regix.backends.architecture_backend.ArchitectureBackend._symbol_metrics, regix.backends.architecture_backend.ArchitectureBackend.collect
+- **Methods**: 10
+- **Key Methods**: regix.backends.architecture_backend.ArchitectureBackend.is_available, regix.backends.architecture_backend.ArchitectureBackend.version, regix.backends.architecture_backend.ArchitectureBackend._read_source, regix.backends.architecture_backend.ArchitectureBackend._iter_functions, regix.backends.architecture_backend.ArchitectureBackend._param_count, regix.backends.architecture_backend.ArchitectureBackend._is_mock_call, regix.backends.architecture_backend.ArchitectureBackend._is_dead_branch, regix.backends.architecture_backend.ArchitectureBackend._except_pass_count, regix.backends.architecture_backend.ArchitectureBackend._symbol_metrics, regix.backends.architecture_backend.ArchitectureBackend.collect
 - **Inherits**: BackendBase
 
 ### regix.benchmark.reporter.BenchmarkReporter
@@ -326,6 +334,11 @@ Generates metrics from code2llm output:
 - **Key Methods**: regix.backends.coverage_backend.CoverageBackend.is_available, regix.backends.coverage_backend.CoverageBackend.version, regix.backends.coverage_backend.CoverageBackend.collect, regix.backends.coverage_backend.CoverageBackend._from_json, regix.backends.coverage_backend.CoverageBackend._from_coverage_file
 - **Inherits**: BackendBase
 
+### regix.models.Snapshot
+> Immutable record of all SymbolMetrics for a codebase at a point in time.
+- **Methods**: 4
+- **Key Methods**: regix.models.Snapshot.metrics, regix.models.Snapshot.get, regix.models.Snapshot.save, regix.models.Snapshot.load
+
 ### regix.backends.base.BackendBase
 > Interface that all analysis backends must implement.
 - **Methods**: 4
@@ -338,10 +351,10 @@ Generates metrics from code2llm output:
 - **Key Methods**: regix.backends.structure_backend.StructureBackend.is_available, regix.backends.structure_backend.StructureBackend.version, regix.backends.structure_backend.StructureBackend.collect, regix.backends.structure_backend.StructureBackend._collect_functions
 - **Inherits**: BackendBase
 
-### regix.models.Snapshot
-> Immutable record of all SymbolMetrics for a codebase at a point in time.
-- **Methods**: 4
-- **Key Methods**: regix.models.Snapshot.metrics, regix.models.Snapshot.get, regix.models.Snapshot.save, regix.models.Snapshot.load
+### regix.models.GateResult
+> Aggregate gate evaluation result.
+- **Methods**: 3
+- **Key Methods**: regix.models.GateResult.all_passed, regix.models.GateResult.errors, regix.models.GateResult.warnings
 
 ### regix.backends.docstring_backend.DocstringBackend
 > Measure docstring coverage using the ``ast`` module.
@@ -387,76 +400,9 @@ Generates metrics from code2llm output:
 - **Key Methods**: regix.benchmark.probes.BackendProbe.__init__, regix.benchmark.probes.BackendProbe._generate_files, regix.benchmark.probes.BackendProbe.run
 - **Inherits**: BenchmarkProbe
 
-### regix.models.GateResult
-> Aggregate gate evaluation result.
-- **Methods**: 3
-- **Key Methods**: regix.models.GateResult.all_passed, regix.models.GateResult.errors, regix.models.GateResult.warnings
-
 ## Data Transformation Functions
 
 Key functions that process and transform data:
-
-### regix.config.RegressionConfig._parse_gates
-> Parse gates.hard / gates.target (new format).
-- **Output to**: root.get, int, isinstance, GateThresholds, float
-
-### regix.config.RegressionConfig._parse_legacy_metrics
-> Parse legacy flat metrics: cc_max, mi_min, cc_target, …
-- **Output to**: root.get, _MAP.items, float, GateThresholds, mapping.items
-
-### regix.config.RegressionConfig._parse_deltas
-> Parse deltas (new) and thresholds (legacy).
-- **Output to**: root.get, root.get, float, float, kwargs.setdefault
-
-### regix.config.RegressionConfig._parse_smells
-> Parse architectural smell thresholds.
-- **Output to**: root.get, int, float
-
-### regix.config.RegressionConfig._parse_files
-> Parse include/exclude patterns.
-
-### regix.config.RegressionConfig._parse_backends
-> Parse backend configuration.
-- **Output to**: isinstance, bk.items
-
-### regix.config.RegressionConfig._parse_output
-> Parse output format settings.
-- **Output to**: root.get, _KEYS.items
-
-### regix.config.RegressionConfig._parse_cache
-> Parse cache settings.
-- **Output to**: root.get
-
-### regix.config.RegressionConfig._parse_loop
-> Parse loop settings.
-- **Output to**: root.get, int
-
-### regix.benchmark.reporter.BenchmarkReporter._format_result_details
-> Build the details string for a single benchmark result.
-- **Output to**: None.join, parts.append, parts.append
-
-### regix.benchmark.factory._make_config_parse_probe
-> Benchmark config parsing throughput.
-- **Output to**: ThroughputProbe, tempfile.mkdtemp, cfg_path.write_text, str, RegressionConfig.from_file
-
-### regix.integrations.RegixCollector._parse
-- **Output to**: path.read_text, text.splitlines, json.loads, line.strip, line.startswith
-
-### regix.impact.ImpactAnalyzer._parse_yaml_section_header
-> Parse YAML section header. Returns section name or None.
-- **Output to**: line.startswith, line.startswith, line.startswith
-
-### regix.impact.ImpactAnalyzer._parse_yaml_item_start
-> Parse start of a YAML item. Returns new item dict or None.
-- **Output to**: re.search, name_match.group
-
-### regix.impact.ImpactAnalyzer._parse_yaml_item_field
-> Parse a YAML item field and update item dict.
-- **Output to**: re.search, file_match.group, re.search, class_match.group
-
-### regix.impact.ImpactAnalyzer._fallback_yaml_parse
-> Simple fallback YAML parser to avoid external dependencies in regix core.
-- **Output to**: re.search, content.splitlines, context_match.group, self._parse_yaml_section_header, None.append
 
 ### regix.compare._process_comparison_key
 > Process one (file, symbol) key.
@@ -496,6 +442,68 @@ Returns (regressions, improvements, changed, skip).
 > Parse evolution.toon.yaml for complexity alerts and hotspots.
 - **Output to**: content.splitlines, evo_file.exists, evo_file.read_text, line.startswith, None.startswith
 
+### regix.benchmark.reporter.BenchmarkReporter._format_result_details
+> Build the details string for a single benchmark result.
+- **Output to**: None.join, parts.append, parts.append
+
+### regix.benchmark.factory._make_config_parse_probe
+> Benchmark config parsing throughput.
+- **Output to**: ThroughputProbe, tempfile.mkdtemp, cfg_path.write_text, str, RegressionConfig.from_file
+
+### regix.integrations.RegixCollector._parse
+- **Output to**: path.read_text, text.splitlines, json.loads, line.strip, line.startswith
+
+### regix.config.RegressionConfig._parse_gates
+> Parse gates.hard / gates.target (new format).
+- **Output to**: root.get, int, isinstance, GateThresholds, float
+
+### regix.config.RegressionConfig._parse_legacy_metrics
+> Parse legacy flat metrics: cc_max, mi_min, cc_target, …
+- **Output to**: root.get, _MAP.items, float, GateThresholds, mapping.items
+
+### regix.config.RegressionConfig._parse_deltas
+> Parse deltas (new) and thresholds (legacy).
+- **Output to**: root.get, root.get, float, float, kwargs.setdefault
+
+### regix.config.RegressionConfig._parse_smells
+> Parse architectural smell thresholds.
+- **Output to**: root.get, int, float
+
+### regix.config.RegressionConfig._parse_files
+> Parse include/exclude patterns.
+
+### regix.config.RegressionConfig._parse_backends
+> Parse backend configuration.
+- **Output to**: isinstance, bk.items
+
+### regix.config.RegressionConfig._parse_output
+> Parse output format settings.
+- **Output to**: root.get, _KEYS.items
+
+### regix.config.RegressionConfig._parse_cache
+> Parse cache settings.
+- **Output to**: root.get
+
+### regix.config.RegressionConfig._parse_loop
+> Parse loop settings.
+- **Output to**: root.get, int
+
+### regix.config.RegressionConfig._parse_impact
+> Parse impact settings.
+- **Output to**: root.get, bool, int
+
+### regix.impact.ImpactAnalyzer._parse_yaml_section_header
+> Parse YAML section header. Returns section name or None.
+- **Output to**: line.startswith, line.startswith, line.startswith
+
+### regix.impact.ImpactAnalyzer._parse_yaml_item_start
+> Parse start of a YAML item. Returns new item dict or None.
+- **Output to**: re.search, name_match.group
+
+### regix.impact.ImpactAnalyzer._parse_yaml_item_field
+> Parse a YAML item field and update item dict.
+- **Output to**: re.search, file_match.group, re.search, class_match.group
+
 ## Behavioral Patterns
 
 ### recursion_check_gates
@@ -508,45 +516,45 @@ Returns (regressions, improvements, changed, skip).
 Functions exposed as public API (no underscore prefix):
 
 - `regix.benchmark.factory.build_regix_suite` - 43 calls
-- `regix.cli.compare` - 29 calls
+- `regix.cli.review` - 37 calls
+- `regix.impact.ImpactAnalyzer.analyze_impact` - 36 calls
+- `regix.cli.compare` - 34 calls
 - `regix.benchmark.reporter.BenchmarkReporter.print_rich` - 27 calls
-- `regix.impact.ImpactAnalyzer.analyze_impact` - 26 calls
+- `regix.cli.impact` - 25 calls
 - `regix.models.RegressionReport.to_toon` - 24 calls
 - `regix.cli.status` - 23 calls
-- `regix.cli.impact` - 23 calls
 - `regix.benchmark.probes.BackendProbe.run` - 21 calls
 - `regix.integrations.planfile.sync_regressions_to_planfile` - 21 calls
 - `regix.cli.diff` - 21 calls
 - `regix.cli.gates` - 21 calls
-- `regix.cli.snapshot` - 17 calls
+- `regix.git.get_git_diff_lines` - 20 calls
 - `regix.compare.compare` - 17 calls
+- `regix.models.RegressionReport.filter_by_diff` - 17 calls
+- `regix.cli.snapshot` - 17 calls
 - `regix.report.render_history` - 16 calls
 - `regix.cli.history` - 16 calls
 - `regix.backends.vallm_backend.VallmBackend.collect` - 15 calls
-- `regix.impact.ImpactAnalyzer.get_git_modified_files` - 15 calls
 - `scripts.check_regression.check_regression` - 14 calls
 - `regix.backends.structure_backend.StructureBackend.collect` - 14 calls
 - `regix.benchmark.reporter.BenchmarkReporter.print_plain` - 14 calls
 - `regix.cache.lookup` - 13 calls
 - `regix.benchmark.cli.main` - 13 calls
-- `regix.git.read_tree_sources` - 12 calls
+- `regix.impact.ImpactAnalyzer.get_git_modified_files` - 13 calls
+- `regix.snapshot.capture` - 12 calls
 - `regix.backends.docstring_backend.DocstringBackend.collect` - 12 calls
 - `regix.backends.radon_backend.RadonBackend.collect` - 12 calls
 - `regix.benchmark.probes.ImportProbe.run` - 12 calls
 - `regix.benchmark.probes.CLIProbe.run` - 12 calls
 - `regix.benchmark.probes.UnitTestProbe.run` - 12 calls
 - `regix.benchmark.probes.ThroughputProbe.run` - 12 calls
+- `regix.config.RegressionConfig.from_dict` - 12 calls
 - `regix.impact.ImpactAnalyzer.execute_targeted_tests` - 12 calls
-- `regix.snapshot.capture` - 12 calls
-- `regix.config.RegressionConfig.from_dict` - 11 calls
+- `regix.git.read_tree_sources` - 12 calls
 - `regix.gates.check_gates` - 10 calls
-- `regix.git.checkout_temporary` - 10 calls
-- `regix.report.render` - 10 calls
 - `regix.models.Snapshot.load` - 10 calls
+- `regix.report.render` - 10 calls
+- `regix.git.checkout_temporary` - 10 calls
 - `regix.cache.store` - 9 calls
-- `regix.backends.architecture_backend.ArchitectureBackend.collect` - 9 calls
-- `regix.backends.lizard_backend.LizardBackend.collect` - 9 calls
-- `regix.cli.init` - 9 calls
 
 ## System Interactions
 
@@ -556,6 +564,10 @@ How components interact:
 graph TD
     build_regix_suite --> BenchmarkSuite
     build_regix_suite --> add
+    review --> command
+    review --> Argument
+    review --> Option
+    analyze_impact --> set
     compare --> command
     compare --> Argument
     compare --> Option
@@ -563,27 +575,23 @@ graph TD
     print_rich --> print
     print_rich --> items
     print_rich --> len
-    analyze_impact --> set
-    analyze_impact --> _map_scenarios
+    impact --> command
+    impact --> Option
     to_toon --> strftime
     to_toon --> append
     status --> command
     status --> Option
     status --> _load_config
     status --> echo
-    impact --> command
-    impact --> Option
+    _symbol_metrics --> getattr
+    _symbol_metrics --> max
+    _symbol_metrics --> list
+    _symbol_metrics --> sum
+    _symbol_metrics --> round
     run --> get_backend
     run --> Path
     run --> _measurement_error
     run --> is_available
-    run --> BenchmarkResult
-    diff --> command
-    diff --> Argument
-    diff --> Option
-    gates --> command
-    gates --> Option
-    _parse --> read_text
 ```
 
 ## Reverse Engineering Guidelines

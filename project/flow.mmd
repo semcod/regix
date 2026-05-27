@@ -7,6 +7,7 @@ flowchart TD
     subgraph CLI
         regix__cli___load_config["_load_config"]
         regix__cli__compare["compare"]
+        regix__cli__review["review"]
         regix__cli__history["history"]
         regix__cli__snapshot["snapshot"]
         regix__cli__diff["diff"]
@@ -19,26 +20,26 @@ flowchart TD
         regix__cli___print_testql_scenarios["_print_testql_scenarios"]
         regix__cli___print_visual_routes["_print_visual_routes"]
         regix__cli___print_test_results["_print_test_results"]
-        regix__cli__impact["impact"]
+        ...["+1 more"]
     end
 
     subgraph Core
-        regix__config__GateThresholds__get["get"]
-        regix__config__RegressionConfig__cc_max["cc_max"]
-        regix__config__RegressionConfig__mi_min["mi_min"]
-        regix__config__RegressionConfig__coverage_min["coverage_min"]
-        regix__config__RegressionConfig__length_max["length_max"]
-        regix__config__RegressionConfig__docstring_min["docstring_min"]
-        regix__config__RegressionConfig__quality_min["quality_min"]
-        regix__config__RegressionConfig__from_file["from_file"]
-        regix__config__RegressionConfig__from_dict["from_dict"]
-        regix__config__RegressionConfig___parse_gates["_parse_gates"]
-        regix__config__RegressionConfig___parse_legacy_metrics["_parse_legacy_metrics"]
-        regix__config__RegressionConfig___parse_deltas["_parse_deltas"]
-        regix__config__RegressionConfig___parse_smells["_parse_smells"]
-        regix__config__RegressionConfig___parse_files["_parse_files"]
-        regix__config__RegressionConfig___parse_backends["_parse_backends"]
-        ...["+124 more"]
+        regix__Regix__snapshot["snapshot"]
+        regix__Regix__compare["compare"]
+        regix__Regix__compare_local["compare_local"]
+        regix__Regix__history["history"]
+        regix__compare__compare["compare"]
+        regix__history__build_history["build_history"]
+        regix__models__Snapshot__get["get"]
+        regix__models__Snapshot__save["save"]
+        regix__models__Snapshot__load["load"]
+        regix__models__RegressionReport__to_dict["to_dict"]
+        regix__models__RegressionReport__to_json["to_json"]
+        regix__models__RegressionReport__to_yaml["to_yaml"]
+        regix__models__RegressionReport___toon_regression_section["_toon_regression_section"]
+        regix__models__RegressionReport___toon_smell_section["_toon_smell_section"]
+        regix__models__RegressionReport__to_toon["to_toon"]
+        ...["+143 more"]
     end
 
-    class regix__config__GateThresholds__get,regix__config__RegressionConfig__cc_max,regix__config__RegressionConfig__mi_min,regix__config__RegressionConfig__coverage_min,regix__config__RegressionConfig__length_max,regix__config__RegressionConfig__docstring_min,regix__config__RegressionConfig__quality_min,regix__config__RegressionConfig__from_file,regix__config__RegressionConfig__from_dict,regix__config__RegressionConfig___parse_gates entry
+    class regix__Regix__snapshot,regix__Regix__compare,regix__Regix__compare_local,regix__Regix__history,regix__compare__compare,regix__models__Snapshot__get,regix__models__Snapshot__save,regix__models__Snapshot__load,regix__models__RegressionReport__to_dict,regix__models__RegressionReport__to_json entry

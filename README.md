@@ -1,10 +1,10 @@
 ## AI Cost Tracking
 
-![PyPI](https://img.shields.io/badge/pypi-costs-blue) ![Version](https://img.shields.io/badge/version-0.1.24-blue) ![Python](https://img.shields.io/badge/python-3.9+-blue) ![License](https://img.shields.io/badge/license-Apache--2.0-green)
-![AI Cost](https://img.shields.io/badge/AI%20Cost-$2.71-orange) ![Human Time](https://img.shields.io/badge/Human%20Time-14.1h-blue) ![Model](https://img.shields.io/badge/Model-openrouter%2Fqwen%2Fqwen3--coder--next-lightgrey)
+![PyPI](https://img.shields.io/badge/pypi-costs-blue) ![Version](https://img.shields.io/badge/version-0.1.25-blue) ![Python](https://img.shields.io/badge/python-3.9+-blue) ![License](https://img.shields.io/badge/license-Apache--2.0-green)
+![AI Cost](https://img.shields.io/badge/AI%20Cost-$2.71-orange) ![Human Time](https://img.shields.io/badge/Human%20Time-14.2h-blue) ![Model](https://img.shields.io/badge/Model-openrouter%2Fqwen%2Fqwen3--coder--next-lightgrey)
 
-- 🤖 **LLM usage:** $2.7094 (34 commits)
-- 👤 **Human dev:** ~$1413 (14.1h @ $100/h, 30min dedup)
+- 🤖 **LLM usage:** $2.7136 (35 commits)
+- 👤 **Human dev:** ~$1417 (14.2h @ $100/h, 30min dedup)
 
 Generated on 2026-05-27 using [openrouter/qwen/qwen3-coder-next](https://openrouter.ai/qwen/qwen3-coder-next)
 
@@ -87,6 +87,8 @@ Regressions are reported at **three granularity levels**:
 - **Machine-readable output**: JSON, YAML, or TOON format for CI integration.
 - **Human-readable output**: rich terminal tables and diff-style reports.
 - **Zero false-positives mode**: only report regressions that cross a configured threshold delta.
+- **LLM patch gate (`review`)**: detect regressions only in changed hunks/symbols to reduce noisy failures.
+- **Dependency-aware impact**: selective tests from changed files + transitive import dependents.
 
 ---
 
@@ -105,7 +107,7 @@ pip install "regix[coverage]"  # pytest-cov integration only
 pip install "regix[vallm]"     # LLM-based quality scoring
 ```
 
-Python requirement: **>= 3.9**
+Python requirement: **>= 3.10**
 
 ---
 
@@ -226,6 +228,7 @@ regix [OPTIONS] COMMAND [ARGS]
 
 Commands:
   compare   Compare metrics between two git refs or local state.
+  review    Compare diff scope only (LLM/pre-commit regression gate).
   history   Show metric timeline across N historical commits.
   snapshot  Capture and store a snapshot without comparing.
   diff      Show symbol-level metric diff (like git diff but for metrics).
@@ -272,6 +275,23 @@ Options:
   --output FILE
 ```
 
+### `regix review`
+
+```
+regix review [BASE] [TARGET] [OPTIONS]
+
+  Reviews working-tree/staged changes and reports only regressions overlapping
+  changed hunks/symbols. Useful for LLM patch validation and pre-commit gates.
+
+Options:
+  --staged             Review staged diff against BASE
+  --patch FILE         Review unified-diff patch file
+  --config FILE        Path to regix.yaml
+  --format             rich | json | yaml | toon  [default: rich]
+  --errors-only        Suppress warnings
+  --fail-on warning    Exit code 1 on warnings too
+```
+
 ### `regix diff` 
 
 ```
@@ -297,6 +317,7 @@ regix impact [OPTIONS]
 Options:
   --run                Automatically run the selective targeted test suites
   --dry-run            Dry run the selective targeted test suites
+  --config FILE        Path to regix.yaml
   --workdir TEXT       Specify the project root directory [default: .]
 ```
 
@@ -326,6 +347,19 @@ regix:
     mi: radon
     coverage: pytest-cov
     quality: vallm          # optional LLM-based score
+
+  impact:
+    include_prefixes: []    # optional, empty = whole repo
+    ignore_globs:
+      - "**/.venv/**"
+      - "**/.tox/**"
+      - "**/dist/**"
+    test_patterns:
+      - "tests/test_{stem}.py"
+      - "tests/**/test_{stem}.py"
+      - "{dir}/tests/test_{stem}.py"
+    enable_import_graph: true
+    transitive_depth: 2
 
   exclude:
     - "tests/**"
@@ -516,10 +550,10 @@ Regix is designed to sit **above** analysis tools (lizard, radon, vallm) as the 
 
 ## Roadmap
 
-- [ ] `v0.1` — Core compare/history CLI, lizard + radon backends, JSON/rich output
-- [ ] `v0.2` — pytest-cov backend, configuration file, CI presets
-- [ ] `v0.3` — vallm backend, pyqual integration preset
-- [ ] `v0.4` — Symbol-level caching, incremental snapshots for large repos
+- [x] `v0.1` — Core compare/history CLI, lizard + radon backends, JSON/rich output
+- [x] `v0.2` — pytest-cov backend, configuration file, CI presets
+- [x] `v0.3` — vallm backend, pyqual integration preset
+- [x] `v0.4` — Symbol-level caching, incremental snapshots for large repos
 - [ ] `v0.5` — Web dashboard (static HTML report), trend charts
 - [ ] `v1.0` — Stable API, full docs, PyPI release
 
@@ -530,14 +564,14 @@ Regix is designed to sit **above** analysis tools (lizard, radon, vallm) as the 
 Licensed under Apache-2.0.
 ## Status
 
-_Last updated by [taskill](https://github.com/oqlos/taskill) at 2026-04-25 13:47 UTC_
+_Last updated by [taskill](https://github.com/oqlos/taskill) at 2026-05-27 19:04 UTC_
 
 | Metric | Value |
 |---|---|
 | HEAD | `d469837` |
 | Coverage | — |
 | Failing tests | — |
-| Commits in last cycle | 30 |
+| Commits in last cycle | 34 |
 
 > Refactors and docs updates across the project: CLI/test refactoring and configuration handling were improved, a configuration-management feature was added, and documentation/TODOs were refreshed. CI/test infra was updated (tox, pyqual) and multiple version bumps and lint auto-fix iterations were applied.
 

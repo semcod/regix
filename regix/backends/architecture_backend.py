@@ -83,6 +83,46 @@ class ArchitectureBackend(BackendBase):
         return count
 
     @staticmethod
+    def _is_mock_call(call_node: ast.Call) -> bool:
+        """Return True when call node looks like a mock/patch invocation."""
+        func = call_node.func
+        if isinstance(func, ast.Name):
+            name = func.id.lower()
+            return name in {"mock", "magicmock", "asyncmock", "patch"}
+        if isinstance(func, ast.Attribute):
+            attr = func.attr.lower()
+            return attr in {"mock", "magicmock", "asyncmock", "patch", "patch.object"}
+        return False
+
+    @staticmethod
+    def _is_dead_branch(node: ast.AST) -> bool:
+        """Return True if node is a branch guarded by a constant false condition."""
+        test = None
+        if isinstance(node, ast.If):
+            test = node.test
+        elif isinstance(node, ast.While):
+            test = node.test
+        if test is None:
+            return False
+        if isinstance(test, ast.Constant):
+            return bool(test.value) is False
+        return False
+
+    @staticmethod
+    def _except_pass_count(node: ast.FunctionDef | ast.AsyncFunctionDef) -> tuple[int, int]:
+        """Return (except_pass_count, bare_except_count) for function body."""
+        except_pass_count = 0
+        bare_except_count = 0
+        for n in ast.walk(node):
+            if not isinstance(n, ast.ExceptHandler):
+                continue
+            if n.type is None:
+                bare_except_count += 1
+            if n.body and all(isinstance(stmt, ast.Pass) for stmt in n.body):
+                except_pass_count += 1
+        return except_pass_count, bare_except_count
+
+    @staticmethod
     def _symbol_metrics(
         fpath: Path,
         node: ast.FunctionDef | ast.AsyncFunctionDef,
@@ -90,17 +130,35 @@ class ArchitectureBackend(BackendBase):
         line_start = node.lineno
         line_end = getattr(node, "end_lineno", node.lineno)
         total_lines = max(line_end - line_start + 1, 1)
-        stmt_count = sum(1 for n in ast.walk(node) if isinstance(n, _STMT_TYPES))
+        node_walk = list(ast.walk(node))
+        stmt_count = sum(1 for n in node_walk if isinstance(n, _STMT_TYPES))
         logic_density = round(stmt_count / total_lines, 3)
+        assert_count = sum(1 for n in node_walk if isinstance(n, ast.Assert))
+        mock_usage_count = sum(
+            1
+            for n in node_walk
+            if isinstance(n, ast.Call) and ArchitectureBackend._is_mock_call(n)
+        )
+        dead_branch_count = sum(
+            1 for n in node_walk if ArchitectureBackend._is_dead_branch(n)
+        )
+        except_pass_count, bare_except_count = ArchitectureBackend._except_pass_count(node)
         return SymbolMetrics(
             file=str(fpath),
             symbol=node.name,
             line_start=line_start,
             line_end=line_end,
-            call_count=sum(1 for n in ast.walk(node) if isinstance(n, ast.Call)),
+            call_count=sum(1 for n in node_walk if isinstance(n, ast.Call)),
             param_count=ArchitectureBackend._param_count(node),
             node_type_diversity=len({type(s).__name__ for s in node.body}),
             logic_density=logic_density,
+            raw={
+                "assert_count": assert_count,
+                "mock_usage_count": mock_usage_count,
+                "dead_branch_count": dead_branch_count,
+                "except_pass_count": except_pass_count,
+                "bare_except_count": bare_except_count,
+            },
         )
 
     def collect(

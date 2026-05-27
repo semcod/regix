@@ -9,13 +9,6 @@ flowchart TD
         regix__Regix__check_gates["check_gates"]
     end
     subgraph regix__backends
-        regix__backends__architecture_backend__ArchitectureBackend__is_available["is_available"]
-        regix__backends__architecture_backend__ArchitectureBackend__version["version"]
-        regix__backends__architecture_backend__ArchitectureBackend___read_source["_read_source"]
-        regix__backends__architecture_backend__ArchitectureBackend___iter_functions["_iter_functions"]
-        regix__backends__architecture_backend__ArchitectureBackend___param_count["_param_count"]
-        regix__backends__architecture_backend__ArchitectureBackend___symbol_metrics["_symbol_metrics"]
-        regix__backends__architecture_backend__ArchitectureBackend__collect["collect"]
         regix__backends__base__BackendBase__is_available["is_available"]
         regix__backends__base__BackendBase__collect["collect"]
         regix__backends__base__BackendBase__version["version"]
@@ -39,14 +32,6 @@ flowchart TD
         regix__backends__structure_backend__StructureBackend__version["version"]
         regix__backends__structure_backend__StructureBackend__collect("collect CC=11")
         regix__backends__structure_backend__StructureBackend___collect_functions["_collect_functions"]
-        regix__backends__coverage_backend__CoverageBackend__is_available["is_available"]
-        regix__backends__coverage_backend__CoverageBackend__version["version"]
-        regix__backends__coverage_backend__CoverageBackend__collect["collect"]
-        regix__backends__coverage_backend__CoverageBackend___from_json["_from_json"]
-        regix__backends__coverage_backend__CoverageBackend___from_coverage_file["_from_coverage_file"]
-        regix__backends__lizard_backend__LizardBackend__is_available["is_available"]
-        regix__backends__lizard_backend__LizardBackend__version["version"]
-        regix__backends__lizard_backend__LizardBackend__collect("collect CC=9")
         regix__backends__code2llm_backend__Code2llmBackend__is_available["is_available"]
         regix__backends__code2llm_backend__Code2llmBackend__version["version"]
         regix__backends__code2llm_backend__Code2llmBackend___run_code2llm["_run_code2llm"]
@@ -59,6 +44,24 @@ flowchart TD
         regix__backends__code2llm_backend__Code2llmBackend___parse_target_to_symbol_file["_parse_target_to_symbol_file"]
         regix__backends__code2llm_backend__Code2llmBackend___parse_evolution_toon{{_parse_evolution_toon CC=17}}
         regix__backends__code2llm_backend__Code2llmBackend__collect("collect CC=11")
+        regix__backends__coverage_backend__CoverageBackend__is_available["is_available"]
+        regix__backends__coverage_backend__CoverageBackend__version["version"]
+        regix__backends__coverage_backend__CoverageBackend__collect["collect"]
+        regix__backends__coverage_backend__CoverageBackend___from_json["_from_json"]
+        regix__backends__coverage_backend__CoverageBackend___from_coverage_file["_from_coverage_file"]
+        regix__backends__lizard_backend__LizardBackend__is_available["is_available"]
+        regix__backends__lizard_backend__LizardBackend__version["version"]
+        regix__backends__lizard_backend__LizardBackend__collect("collect CC=9")
+        regix__backends__architecture_backend__ArchitectureBackend__is_available["is_available"]
+        regix__backends__architecture_backend__ArchitectureBackend__version["version"]
+        regix__backends__architecture_backend__ArchitectureBackend___read_source["_read_source"]
+        regix__backends__architecture_backend__ArchitectureBackend___iter_functions["_iter_functions"]
+        regix__backends__architecture_backend__ArchitectureBackend___param_count["_param_count"]
+        regix__backends__architecture_backend__ArchitectureBackend___is_mock_call["_is_mock_call"]
+        regix__backends__architecture_backend__ArchitectureBackend___is_dead_branch["_is_dead_branch"]
+        regix__backends__architecture_backend__ArchitectureBackend___except_pass_count["_except_pass_count"]
+        regix__backends__architecture_backend__ArchitectureBackend___symbol_metrics("_symbol_metrics CC=13")
+        regix__backends__architecture_backend__ArchitectureBackend__collect["collect"]
     end
     subgraph regix__benchmark
         regix__benchmark__cli__main["main"]
@@ -104,7 +107,8 @@ flowchart TD
     end
     subgraph regix__cli
         regix__cli___load_config["_load_config"]
-        regix__cli__compare("compare CC=14")
+        regix__cli__compare{{compare CC=19}}
+        regix__cli__review{{review CC=17}}
         regix__cli__history["history"]
         regix__cli__snapshot["snapshot"]
         regix__cli__diff("diff CC=9")
@@ -147,6 +151,7 @@ flowchart TD
         regix__config__RegressionConfig___parse_output["_parse_output"]
         regix__config__RegressionConfig___parse_cache["_parse_cache"]
         regix__config__RegressionConfig___parse_loop["_parse_loop"]
+        regix__config__RegressionConfig___parse_impact["_parse_impact"]
         regix__config__RegressionConfig__delta_thresholds["delta_thresholds"]
         regix__config__RegressionConfig__is_lower_better["is_lower_better"]
         regix__config__RegressionConfig___find_config["_find_config"]
@@ -174,6 +179,7 @@ flowchart TD
         regix__git__checkout_temporary["checkout_temporary"]
         regix__git__read_tree_sources["read_tree_sources"]
         regix__git__read_local_sources["read_local_sources"]
+        regix__git__get_git_diff_lines{{get_git_diff_lines CC=16}}
     end
     subgraph regix__history
         regix__history___aggregate_snapshot_metrics["_aggregate_snapshot_metrics"]
@@ -183,15 +189,25 @@ flowchart TD
     end
     subgraph regix__impact
         regix__impact__ImpactAnalyzer____init__["__init__"]
+        regix__impact__ImpactAnalyzer___is_ignored_path["_is_ignored_path"]
+        regix__impact__ImpactAnalyzer___is_allowed_path["_is_allowed_path"]
         regix__impact__ImpactAnalyzer___load_swop_mappings("_load_swop_mappings CC=9")
         regix__impact__ImpactAnalyzer___parse_yaml_section_header["_parse_yaml_section_header"]
         regix__impact__ImpactAnalyzer___parse_yaml_item_start["_parse_yaml_item_start"]
         regix__impact__ImpactAnalyzer___parse_yaml_item_field["_parse_yaml_item_field"]
         regix__impact__ImpactAnalyzer___fallback_yaml_parse("_fallback_yaml_parse CC=11")
-        regix__impact__ImpactAnalyzer__get_git_modified_files("get_git_modified_files CC=11")
+        regix__impact__ImpactAnalyzer__get_git_modified_files["get_git_modified_files"]
         regix__impact__ImpactAnalyzer___map_folder_to_context["_map_folder_to_context"]
         regix__impact__ImpactAnalyzer___map_swop_manifest["_map_swop_manifest"]
         regix__impact__ImpactAnalyzer___map_python_unit_tests["_map_python_unit_tests"]
+        regix__impact__ImpactAnalyzer___module_name_from_relpath["_module_name_from_relpath"]
+        regix__impact__ImpactAnalyzer___extract_imports("_extract_imports CC=12")
+        regix__impact__ImpactAnalyzer___resolve_local_import["_resolve_local_import"]
+        regix__impact__ImpactAnalyzer___discover_python_files("_discover_python_files CC=10")
+        regix__impact__ImpactAnalyzer___build_import_graph("_build_import_graph CC=10")
+        regix__impact__ImpactAnalyzer___collect_transitive_dependents["_collect_transitive_dependents"]
+        regix__impact__ImpactAnalyzer___is_test_file["_is_test_file"]
+        regix__impact__ImpactAnalyzer___impact_from_import_graph["_impact_from_import_graph"]
         regix__impact__ImpactAnalyzer___map_frontend_routes["_map_frontend_routes"]
         regix__impact__ImpactAnalyzer___map_scenarios["_map_scenarios"]
         regix__impact__ImpactAnalyzer__analyze_impact["analyze_impact"]
@@ -217,6 +233,7 @@ flowchart TD
         regix__models__RegressionReport___matches("_matches CC=9")
         regix__models__RegressionReport___count_severity["_count_severity"]
         regix__models__RegressionReport__filter["filter"]
+        regix__models__RegressionReport__filter_by_diff{{filter_by_diff CC=25}}
     end
     subgraph regix__report
         regix__report__render["render"]
@@ -239,6 +256,10 @@ flowchart TD
         regix__smells___count_hollow_signals["_count_hollow_signals"]
         regix__smells___was_already_hollow["_was_already_hollow"]
         regix__smells___check_hallucination_proxy("_check_hallucination_proxy CC=9")
+        regix__smells___check_assertion_loss("_check_assertion_loss CC=8")
+        regix__smells___check_mock_inflation["_check_mock_inflation"]
+        regix__smells___check_dead_branch["_check_dead_branch"]
+        regix__smells___check_silent_except["_check_silent_except"]
     end
     subgraph regix__snapshot
         regix__snapshot___should_ignore_dir["_should_ignore_dir"]
@@ -262,6 +283,67 @@ flowchart TD
     regix__gates__check_gates --> regix__gates___passes
     regix__Regix__snapshot --> regix__snapshot__capture
     regix__Regix__history --> regix__history__build_history
+    regix__compare___compute_delta --> regix__compare___severity_for_delta
+    regix__compare___compare_symbol_metrics --> regix__compare___compute_delta
+    regix__compare___process_comparison_key --> regix__compare___compare_symbol_metrics
+    regix__compare___process_comparison_key --> regix__compare___collect_deleted_symbol
+    regix__compare__compare --> regix__compare___count_severity_in_list
+    regix__compare__compare --> regix__smells__detect_smells
+    regix__compare__compare --> regix__compare___process_comparison_key
+    regix__history___compute_trends --> regix__history___linear_slope
+    regix__history__build_history --> regix__git__list_commits
+    regix__history__build_history --> regix__snapshot__capture
+    regix__history__build_history --> regix__history___compute_trends
+    regix__history__build_history --> regix__history___aggregate_snapshot_metrics
+    regix__snapshot___collect_files --> regix__snapshot___apply_include_patterns
+    regix__snapshot___collect_files --> regix__snapshot___apply_exclude_patterns
+    regix__snapshot___collect_files --> regix__snapshot___should_ignore_dir
+    regix__snapshot___resolve_backends --> regix__backends__base__get_backend
+    regix__snapshot___load_sources --> regix__git__read_tree_sources
+    regix__snapshot___load_sources --> regix__snapshot___filter_sources
+    regix__snapshot___load_sources --> regix__snapshot___collect_files
+    regix__snapshot___load_sources --> regix__git__read_local_sources
+    regix__snapshot__capture --> regix__snapshot___resolve_backends
+    regix__snapshot__capture --> regix__snapshot___load_sources
+    regix__snapshot__capture --> regix__snapshot___run_backends
+    regix__snapshot__capture --> regix__snapshot___merge_symbols
+    regix__snapshot__capture --> regix__git__resolve_ref
+    regix__report__render --> regix__report___render_rich
+    regix__cache__lookup --> regix__cache___cache_dir
+    regix__cache__lookup --> regix__cache___cache_key
+    regix__cache__store --> regix__cache___cache_dir
+    regix__cache__store --> regix__cache___cache_key
+    regix__cache__clear --> regix__cache___cache_dir
+    regix__backends__structure_backend__StructureBackend__collect --> regix__backends__structure_backend___analyse_function
+    regix__benchmark__reporter__BenchmarkReporter__print_plain --> regix__benchmark__reporter__BenchmarkReporter__print
+    regix__benchmark__reporter__BenchmarkReporter__print_plain --> regix__benchmark__reporter___fmt_time
+    regix__benchmark__reporter__BenchmarkReporter__print_json --> regix__benchmark__reporter__BenchmarkReporter__print
+    regix__benchmark__factory___make_snapshot_probe --> regix__snapshot__capture
+    regix__benchmark__factory___make_compare_probe --> regix__snapshot__capture
+    regix__benchmark__factory___make_gates_probe --> regix__snapshot__capture
+    regix__benchmark__factory___make_gates_probe --> regix__gates__check_gates
+    regix__benchmark__probes__ImportProbe__run --> regix__benchmark__probes___measurement_error
+    regix__benchmark__probes__CLIProbe__run --> regix__benchmark__probes___measurement_error
+    regix__benchmark__probes__UnitTestProbe__run --> regix__benchmark__probes___measurement_error
+    regix__benchmark__probes__BackendProbe__run --> regix__backends__base__get_backend
+    regix__benchmark__probes__BackendProbe__run --> regix__benchmark__probes___measurement_error
+    regix__integrations__planfile__sync_regressions_to_planfile --> regix__benchmark__reporter__BenchmarkReporter__print
+    regix__cli__compare --> regix__cli___load_config
+    regix__cli__review --> regix__cli___load_config
+    regix__cli__history --> regix__cli___load_config
+    regix__cli__history --> regix__history__build_history
+    regix__cli__history --> regix__report__render_history
+    regix__cli__snapshot --> regix__cli___load_config
+    regix__cli__snapshot --> regix__snapshot__capture
+    regix__cli__diff --> regix__cli___load_config
+    regix__cli__diff --> regix__snapshot__capture
+    regix__cli__gates --> regix__cli___load_config
+    regix__cli__gates --> regix__snapshot__capture
+    regix__cli__gates --> regix__gates__check_gates
+    regix__cli__status --> regix__cli___load_config
+    regix__cli__impact --> regix__cli___load_config
+    regix__cli__impact --> regix__cli___print_modified_files
+    regix__cli__impact --> regix__cli___print_impact_summary
     regix__git__resolve_ref --> regix__git___run_git
     regix__git__list_commits --> regix__git___run_git
     regix__git__is_clean --> regix__git___run_git
@@ -270,17 +352,7 @@ flowchart TD
     regix__git__checkout_temporary --> regix__git__resolve_ref
     regix__git__checkout_temporary --> regix__git___run_git
     regix__git__read_tree_sources --> regix__git__resolve_ref
-    regix__history___compute_trends --> regix__history___linear_slope
-    regix__history__build_history --> regix__git__list_commits
-    regix__history__build_history --> regix__snapshot__capture
-    regix__history__build_history --> regix__history___compute_trends
-    regix__history__build_history --> regix__history___aggregate_snapshot_metrics
-    regix__report__render --> regix__report___render_rich
-    regix__cache__lookup --> regix__cache___cache_dir
-    regix__cache__lookup --> regix__cache___cache_key
-    regix__cache__store --> regix__cache___cache_dir
-    regix__cache__store --> regix__cache___cache_key
-    regix__cache__clear --> regix__cache___cache_dir
+    regix__git__get_git_diff_lines --> regix__git___run_git
     regix__smells___detect_file_smells --> regix__smells___check_god_function
     regix__smells___detect_file_smells --> regix__smells___check_symbol_smells
     regix__smells__detect_smells --> regix__smells___detect_file_smells
@@ -297,58 +369,8 @@ flowchart TD
     regix__smells___check_hallucination_proxy --> regix__smells___func_length
     regix__smells___check_hallucination_proxy --> regix__smells___count_hollow_signals
     regix__smells___check_hallucination_proxy --> regix__smells___was_already_hollow
-    regix__backends__structure_backend__StructureBackend__collect --> regix__backends__structure_backend___analyse_function
-    regix__benchmark__reporter__BenchmarkReporter__print_plain --> regix__benchmark__reporter__BenchmarkReporter__print
-    regix__benchmark__reporter__BenchmarkReporter__print_plain --> regix__benchmark__reporter___fmt_time
-    regix__benchmark__reporter__BenchmarkReporter__print_json --> regix__benchmark__reporter__BenchmarkReporter__print
-    regix__benchmark__factory___make_snapshot_probe --> regix__snapshot__capture
-    regix__benchmark__factory___make_compare_probe --> regix__snapshot__capture
-    regix__benchmark__factory___make_gates_probe --> regix__snapshot__capture
-    regix__benchmark__factory___make_gates_probe --> regix__gates__check_gates
-    regix__benchmark__probes__ImportProbe__run --> regix__benchmark__probes___measurement_error
-    regix__benchmark__probes__CLIProbe__run --> regix__benchmark__probes___measurement_error
-    regix__benchmark__probes__UnitTestProbe__run --> regix__benchmark__probes___measurement_error
-    regix__benchmark__probes__BackendProbe__run --> regix__backends__base__get_backend
-    regix__benchmark__probes__BackendProbe__run --> regix__benchmark__probes___measurement_error
-    regix__integrations__planfile__sync_regressions_to_planfile --> regix__benchmark__reporter__BenchmarkReporter__print
-    regix__cli__compare --> regix__cli___load_config
-    regix__cli__history --> regix__cli___load_config
-    regix__cli__history --> regix__history__build_history
-    regix__cli__history --> regix__report__render_history
-    regix__cli__snapshot --> regix__cli___load_config
-    regix__cli__snapshot --> regix__snapshot__capture
-    regix__cli__diff --> regix__cli___load_config
-    regix__cli__diff --> regix__snapshot__capture
-    regix__cli__gates --> regix__cli___load_config
-    regix__cli__gates --> regix__snapshot__capture
-    regix__cli__gates --> regix__gates__check_gates
-    regix__cli__status --> regix__cli___load_config
-    regix__cli__impact --> regix__cli___print_modified_files
-    regix__cli__impact --> regix__cli___print_impact_summary
-    regix__cli__impact --> regix__cli___print_pytest_targets
-    regix__cli__impact --> regix__cli___print_testql_scenarios
-    regix__compare___compute_delta --> regix__compare___severity_for_delta
-    regix__compare___compare_symbol_metrics --> regix__compare___compute_delta
-    regix__compare___process_comparison_key --> regix__compare___compare_symbol_metrics
-    regix__compare___process_comparison_key --> regix__compare___collect_deleted_symbol
-    regix__compare__compare --> regix__compare___count_severity_in_list
-    regix__compare__compare --> regix__smells__detect_smells
-    regix__compare__compare --> regix__compare___process_comparison_key
-    regix__snapshot___collect_files --> regix__snapshot___apply_include_patterns
-    regix__snapshot___collect_files --> regix__snapshot___apply_exclude_patterns
-    regix__snapshot___collect_files --> regix__snapshot___should_ignore_dir
-    regix__snapshot___resolve_backends --> regix__backends__base__get_backend
-    regix__snapshot___load_sources --> regix__git__read_tree_sources
-    regix__snapshot___load_sources --> regix__snapshot___filter_sources
-    regix__snapshot___load_sources --> regix__snapshot___collect_files
-    regix__snapshot___load_sources --> regix__git__read_local_sources
-    regix__snapshot__capture --> regix__snapshot___resolve_backends
-    regix__snapshot__capture --> regix__snapshot___load_sources
-    regix__snapshot__capture --> regix__snapshot___run_backends
-    regix__snapshot__capture --> regix__snapshot___merge_symbols
-    regix__snapshot__capture --> regix__git__resolve_ref
 
     classDef highCC fill:#ff6b6b,stroke:#c92a2a,color:#fff
     classDef medCC fill:#ffd43b,stroke:#f08c00,color:#000
-    class regix__backends__code2llm_backend__Code2llmBackend___parse_map_toon,regix__backends__code2llm_backend__Code2llmBackend___parse_evolution_toon highCC
-    class scripts__check_regression__check_regression,regix__config__RegressionConfig___parse_gates,regix__history___compute_trends,regix__report___render_rich,regix__report__render_history,regix__smells___detect_file_smells,regix__smells___function_count_drop,regix__smells___check_god_function,regix__smells___check_stub_regression,regix__smells___check_no_delegation,regix__smells___check_hallucination_proxy,regix__backends__docstring_backend__DocstringBackend__collect,regix__backends__radon_backend__RadonBackend__collect,regix__backends__vallm_backend__VallmBackend__collect,regix__backends__structure_backend__StructureBackend__collect,regix__backends__lizard_backend__LizardBackend__collect,regix__benchmark__reporter__BenchmarkReporter___format_result_details,regix__benchmark__reporter__BenchmarkReporter__print_rich,regix__benchmark__probes__ImportProbe__run,regix__benchmark__probes__CLIProbe__run,regix__benchmark__probes__UnitTestProbe__run,regix__benchmark__probes__ThroughputProbe__run,regix__integrations__RegixCollector___parse,regix__integrations__planfile__sync_regressions_to_planfile,regix__cli__compare,regix__cli__diff,regix__cli__gates,regix__cli___print_test_results,regix__impact__ImpactAnalyzer___load_swop_mappings,regix__impact__ImpactAnalyzer___fallback_yaml_parse medCC
+    class regix__models__RegressionReport__filter_by_diff,regix__backends__code2llm_backend__Code2llmBackend___parse_map_toon,regix__backends__code2llm_backend__Code2llmBackend___parse_evolution_toon,regix__cli__compare,regix__cli__review,regix__git__get_git_diff_lines highCC
+    class scripts__check_regression__check_regression,regix__compare___compute_delta,regix__history___compute_trends,regix__models__RegressionReport__to_toon,regix__models__RegressionReport___matches,regix__snapshot___filter_sources,regix__snapshot___resolve_backends,regix__snapshot__capture,regix__report___render_rich,regix__report__render_history,regix__backends__docstring_backend__DocstringBackend__collect,regix__backends__radon_backend__RadonBackend__collect,regix__backends__vallm_backend__VallmBackend__collect,regix__backends__structure_backend__StructureBackend__collect,regix__backends__code2llm_backend__Code2llmBackend__collect,regix__backends__lizard_backend__LizardBackend__collect,regix__benchmark__reporter__BenchmarkReporter___format_result_details,regix__benchmark__reporter__BenchmarkReporter__print_rich,regix__benchmark__probes__ImportProbe__run,regix__benchmark__probes__CLIProbe__run,regix__benchmark__probes__UnitTestProbe__run,regix__benchmark__probes__ThroughputProbe__run,regix__integrations__RegixCollector___parse,regix__integrations__planfile__sync_regressions_to_planfile,regix__config__RegressionConfig___parse_gates,regix__cli__diff,regix__cli__gates,regix__cli___print_test_results,regix__impact__ImpactAnalyzer___load_swop_mappings,regix__impact__ImpactAnalyzer___fallback_yaml_parse medCC

@@ -97,6 +97,10 @@ def _check_symbol_smells(
         _check_logic_density_drop,
         _check_cohesion_loss,
         _check_no_delegation,
+        _check_assertion_loss,
+        _check_mock_inflation,
+        _check_dead_branch,
+        _check_silent_except,
     )
     if m_before is not None:
         for check in _PAIRED_CHECKS:
@@ -388,6 +392,128 @@ def _check_hallucination_proxy(
         line=m_after.line_start,
         severity="warning",
         detail=f"'{sym}': calls=0, density={m_after.logic_density:.2f}, length={len_a or '?'}, cc={m_after.cc or '?'} — appears hollow (stub or placeholder)",
+        ref_before=ref_b,
+        ref_after=ref_a,
+    )
+
+
+def _check_assertion_loss(
+    file: str,
+    sym: str,
+    m_before: SymbolMetrics,
+    m_after: SymbolMetrics,
+    config: RegressionConfig,
+    ref_b: str,
+    ref_a: str,
+) -> ArchSmell | None:
+    """Detect loss of assertions in test symbols."""
+    if not ("tests/" in file or file.startswith("tests/") or file.endswith("_test.py") or file.startswith("test_")):
+        return None
+    before = int(m_before.raw.get("assert_count", 0))
+    after = int(m_after.raw.get("assert_count", 0))
+    if before <= 0 or after >= before:
+        return None
+    severity = "error" if after == 0 else "warning"
+    return ArchSmell(
+        smell="assertion_loss",
+        file=file,
+        symbol=sym,
+        line=m_after.line_start,
+        severity=severity,
+        detail=f"Assertions dropped {before}→{after} in test symbol '{sym}'",
+        ref_before=ref_b,
+        ref_after=ref_a,
+    )
+
+
+def _check_mock_inflation(
+    file: str,
+    sym: str,
+    m_before: SymbolMetrics,
+    m_after: SymbolMetrics,
+    config: RegressionConfig,
+    ref_b: str,
+    ref_a: str,
+) -> ArchSmell | None:
+    """Detect sudden growth in mock usage in non-test code."""
+    if "tests/" in file or file.startswith("tests/"):
+        return None
+    before = int(m_before.raw.get("mock_usage_count", 0))
+    after = int(m_after.raw.get("mock_usage_count", 0))
+    delta = after - before
+    if delta < 2:
+        return None
+    severity = "error" if delta >= 4 else "warning"
+    return ArchSmell(
+        smell="mock_inflation",
+        file=file,
+        symbol=sym,
+        line=m_after.line_start,
+        severity=severity,
+        detail=f"Mock usage increased {before}→{after} (+{delta}) in production symbol '{sym}'",
+        ref_before=ref_b,
+        ref_after=ref_a,
+    )
+
+
+def _check_dead_branch(
+    file: str,
+    sym: str,
+    m_before: SymbolMetrics,
+    m_after: SymbolMetrics,
+    config: RegressionConfig,
+    ref_b: str,
+    ref_a: str,
+) -> ArchSmell | None:
+    """Detect newly introduced dead branches like `if False:`."""
+    before = int(m_before.raw.get("dead_branch_count", 0))
+    after = int(m_after.raw.get("dead_branch_count", 0))
+    if after <= before:
+        return None
+    delta = after - before
+    severity = "error" if delta >= 2 else "warning"
+    return ArchSmell(
+        smell="dead_branch",
+        file=file,
+        symbol=sym,
+        line=m_after.line_start,
+        severity=severity,
+        detail=f"Dead branch count increased {before}→{after} in '{sym}'",
+        ref_before=ref_b,
+        ref_after=ref_a,
+    )
+
+
+def _check_silent_except(
+    file: str,
+    sym: str,
+    m_before: SymbolMetrics,
+    m_after: SymbolMetrics,
+    config: RegressionConfig,
+    ref_b: str,
+    ref_a: str,
+) -> ArchSmell | None:
+    """Detect newly introduced `except: pass` and bare excepts."""
+    pass_before = int(m_before.raw.get("except_pass_count", 0))
+    pass_after = int(m_after.raw.get("except_pass_count", 0))
+    bare_before = int(m_before.raw.get("bare_except_count", 0))
+    bare_after = int(m_after.raw.get("bare_except_count", 0))
+
+    if pass_after <= pass_before and bare_after <= bare_before:
+        return None
+
+    severity = "error" if pass_after > pass_before else "warning"
+    return ArchSmell(
+        smell="silent_except",
+        file=file,
+        symbol=sym,
+        line=m_after.line_start,
+        severity=severity,
+        detail=(
+            "Exception swallowing increased: "
+            f"except-pass {pass_before}→{pass_after}, "
+            f"bare-except {bare_before}→{bare_after}"
+        ),
         ref_before=ref_b,
         ref_after=ref_a,
     )

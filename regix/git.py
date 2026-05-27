@@ -181,29 +181,48 @@ def read_local_sources(
 
 
 def get_git_diff_lines(
-    ref_a: str,
+    ref_a: str | None = None,
     ref_b: str | None = None,
     workdir: Path = Path("."),
+    staged: bool = False,
+    patch_text: str | None = None,
 ) -> dict[str, set[int]]:
-    """Parse modified line ranges for each file in git diff between ref_a and ref_b/local.
+    """Parse modified line ranges for each file in git diff.
+
+    * ``patch_text`` — if provided, parse raw unified-diff text instead of
+      invoking ``git diff``.
+    * ``staged`` — diff the index against ``ref_a`` (default ``HEAD``).
+    * ``ref_a`` / ``ref_b`` — compare two refs; ``ref_b=None`` compares
+      ``ref_a`` against the working tree.
 
     Returns a dict mapping relative file path to a set of 1-indexed modified line numbers.
     """
     import re
     diff_lines: dict[str, set[int]] = {}
 
-    args = ["diff", "-U0", ref_a]
-    if ref_b and ref_b != "local":
-        args.append(ref_b)
+    if patch_text is not None:
+        stdout = patch_text
+    else:
+        if staged:
+            args = ["diff", "--staged", "-U0"]
+            if ref_a:
+                args.append(ref_a)
+        else:
+            args = ["diff", "-U0"]
+            if ref_a:
+                args.append(ref_a)
+            if ref_b and ref_b != "local":
+                args.append(ref_b)
 
-    result = _run_git(args, workdir, check=False)
-    if result.returncode != 0:
-        return diff_lines
+        result = _run_git(args, workdir, check=False)
+        if result.returncode != 0:
+            return diff_lines
+        stdout = result.stdout
 
     current_file = None
     hunk_pattern = re.compile(r'^@@ -\d+(?:,\d+)? \+(\d+)(?:,(\d+))? @@')
 
-    for line in result.stdout.splitlines():
+    for line in stdout.splitlines():
         if line.startswith("+++ b/"):
             current_file = line[6:].strip()
             diff_lines.setdefault(current_file, set())

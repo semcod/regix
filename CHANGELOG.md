@@ -2,6 +2,33 @@
 
 ## [Unreleased]
 
+## [0.1.25] - 2026-05-27
+
+### Docs
+- Update README.md
+- Update SUMD.md
+- Update project/README.md
+- Update project/context.md
+
+### Test
+- Update tests/test_cli.py
+- Update tests/test_git.py
+- Update tests/test_impact.py
+- Update tests/test_smells.py
+
+### Other
+- Update .code2llm_cache/Taskfile_1779900343305000000_11833.pkl
+- Update .code2llm_cache/__init___1779897835519850039_3516.pkl
+- Update .code2llm_cache/architecture_backend_1779908930768000000_6443.pkl
+- Update .code2llm_cache/cli_1779897644973144597_16374.pkl
+- Update .code2llm_cache/cli_1779909017065000000_20518.pkl
+- Update .code2llm_cache/config_1779897397247131857_17077.pkl
+- Update .code2llm_cache/config_1779908889928000000_17516.pkl
+- Update .code2llm_cache/git_1779897531094775179_6594.pkl
+- Update .code2llm_cache/git_1779900255809000000_7252.pkl
+- Update .code2llm_cache/impact_1779897417207313405_11925.pkl
+- ... and 28 more files
+
 ## [0.1.24] - 2026-05-27
 
 ### Docs
