@@ -2,6 +2,18 @@
 
 ## [Unreleased]
 
+## [0.1.24] - 2026-05-27
+
+### Docs
+- Update README.md
+
+### Test
+- Update tests/test_git.py
+- Update tests/test_models.py
+
+### Other
+- Update regix/models.py
+
 ## [0.1.23] - 2026-05-27
 
 ### Docs

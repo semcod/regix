@@ -335,6 +335,9 @@ class RegressionReport:
                 line_range = set(range(sm.line_start, sm.line_end + 1))
                 if not (line_range & diff_lines[r.file]):
                     continue
+            elif r.line is not None:
+                if r.line not in diff_lines[r.file]:
+                    continue
             filtered_reg.append(r)
 
         filtered_imp = []
@@ -345,6 +348,9 @@ class RegressionReport:
             if sm and sm.line_start is not None and sm.line_end is not None:
                 line_range = set(range(sm.line_start, sm.line_end + 1))
                 if not (line_range & diff_lines[i.file]):
+                    continue
+            elif i.line is not None:
+                if i.line not in diff_lines[i.file]:
                     continue
             filtered_imp.append(i)
 

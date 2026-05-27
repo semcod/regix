@@ -146,3 +146,22 @@ class TestCommitInfo:
         ci = CommitInfo(sha="abc", timestamp=datetime.now(), author="tom", message="test")
         assert ci.sha == "abc"
         assert ci.author == "tom"
+
+
+class TestGetGitDiffLines:
+    @patch("regix.git._run_git")
+    def test_parses_diff_correctly(self, mock_run):
+        diff_output = (
+            "diff --git a/backend/a.py b/backend/a.py\n"
+            "--- a/backend/a.py\n"
+            "+++ b/backend/a.py\n"
+            "@@ -10,3 +10,4 @@\n"
+            "@@ -25,2 +26,1 @@\n"
+        )
+        mock_run.return_value = MagicMock(returncode=0, stdout=diff_output)
+        from regix.git import get_git_diff_lines
+        res = get_git_diff_lines("HEAD~1", "HEAD")
+        assert "backend/a.py" in res
+        # @@ -10,3 +10,4 @@ means new lines are 10, 11, 12, 13
+        # @@ -25,2 +26,1 @@ means new line is 26
+        assert res["backend/a.py"] == {10, 11, 12, 13, 26}

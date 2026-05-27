@@ -164,6 +164,37 @@ class TestRegressionReport:
         filtered = report.filter(file="a.py")
         assert len(filtered.regressions) == 1
 
+    def test_filter_by_diff(self):
+        from datetime import timezone
+        sm = SymbolMetrics(file="a.py", symbol="foo", line_start=10, line_end=20)
+        snap_after = Snapshot(
+            ref="HEAD", commit_sha="bbb", timestamp=datetime.now(timezone.utc),
+            workdir=".", symbols=[sm],
+        )
+        snap_before = Snapshot(
+            ref="HEAD~1", commit_sha="aaa", timestamp=datetime.now(timezone.utc),
+            workdir=".", symbols=[],
+        )
+        reg_in_hunk = Regression(
+            file="a.py", symbol="foo", line=15, metric="cc",
+            before=5, after=10, delta=5, severity="error", threshold=5
+        )
+        reg_outside = Regression(
+            file="a.py", symbol="bar", line=30, metric="cc",
+            before=5, after=10, delta=5, severity="error", threshold=5
+        )
+
+        report = RegressionReport(
+            ref_before="HEAD~1", ref_after="HEAD",
+            snapshot_before=snap_before, snapshot_after=snap_after,
+            regressions=[reg_in_hunk, reg_outside],
+        )
+
+        diff_lines = {"a.py": {15}}
+        filtered = report.filter_by_diff(diff_lines)
+        assert len(filtered.regressions) == 1
+        assert filtered.regressions[0].symbol == "foo"
+
 
 class TestGateResult:
     def test_all_passed(self):
