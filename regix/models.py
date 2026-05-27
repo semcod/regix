@@ -316,6 +316,64 @@ class RegressionReport:
             errors=self._count_severity(filtered_reg, "error"),
             warnings=self._count_severity(filtered_reg, "warning"),
             smell_errors=self._count_severity(filtered_smells, "error"),
+            stagnated=self.stagnated,
+            duration=self.duration,
+        )
+
+    def filter_by_diff(self, diff_lines: dict[str, set[int]]) -> RegressionReport:
+        """Return a copy of this report containing only regressions/improvements/smells in modified hunks.
+
+        A symbol-level metric is kept if its line span overlaps with modified lines of that file.
+        A file-level metric (symbol is None/module) is kept if the file has any modifications in diff_lines.
+        """
+        filtered_reg = []
+        for r in self.regressions:
+            if r.file not in diff_lines:
+                continue
+            sm = self.snapshot_after.get(r.file, r.symbol)
+            if sm and sm.line_start is not None and sm.line_end is not None:
+                line_range = set(range(sm.line_start, sm.line_end + 1))
+                if not (line_range & diff_lines[r.file]):
+                    continue
+            filtered_reg.append(r)
+
+        filtered_imp = []
+        for i in self.improvements:
+            if i.file not in diff_lines:
+                continue
+            sm = self.snapshot_after.get(i.file, i.symbol)
+            if sm and sm.line_start is not None and sm.line_end is not None:
+                line_range = set(range(sm.line_start, sm.line_end + 1))
+                if not (line_range & diff_lines[i.file]):
+                    continue
+            filtered_imp.append(i)
+
+        filtered_smells = []
+        for s in self.smells:
+            if s.file not in diff_lines:
+                continue
+            sm = self.snapshot_after.get(s.file, s.symbol)
+            if sm and sm.line_start is not None and sm.line_end is not None:
+                line_range = set(range(sm.line_start, sm.line_end + 1))
+                if not (line_range & diff_lines[s.file]):
+                    continue
+            elif s.line is not None:
+                if s.line not in diff_lines[s.file]:
+                    continue
+            filtered_smells.append(s)
+
+        return RegressionReport(
+            ref_before=self.ref_before,
+            ref_after=self.ref_after,
+            snapshot_before=self.snapshot_before,
+            snapshot_after=self.snapshot_after,
+            regressions=filtered_reg,
+            improvements=filtered_imp,
+            smells=filtered_smells,
+            unchanged=self.unchanged,
+            errors=self._count_severity(filtered_reg, "error"),
+            warnings=self._count_severity(filtered_reg, "warning"),
+            smell_errors=self._count_severity(filtered_smells, "error"),
             smell_warnings=self._count_severity(filtered_smells, "warning"),
             stagnated=self.stagnated,
             duration=self.duration,

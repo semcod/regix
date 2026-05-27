@@ -55,6 +55,9 @@ def compare(
     changed_only: bool = typer.Option(
         False, "--changed-only", help="Only analyze files that changed in git status/diff"
     ),
+    diff_only: bool = typer.Option(
+        False, "--diff-only", help="Only show regressions/improvements in modified hunks/lines"
+    ),
 ) -> None:
     """Compare metrics between two git refs or local state."""
     from regix.compare import compare as do_compare
@@ -78,6 +81,12 @@ def compare(
     snap_a = capture(ref_a, wd, cfg, restrict_to_files=restrict_files)
     snap_b = capture(ref_b, wd, cfg, restrict_to_files=restrict_files)
     report = do_compare(snap_a, snap_b, cfg)
+
+    if diff_only:
+        from regix.git import get_git_diff_lines
+        diff_lines = get_git_diff_lines(ref_a, None if ref_b == "local" else ref_b, wd)
+        report = report.filter_by_diff(diff_lines)
+
     if metric:
         for m in metric:
             report = report.filter(metric=m)

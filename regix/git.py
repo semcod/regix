@@ -178,3 +178,42 @@ def read_local_sources(
         except (OSError, UnicodeDecodeError):
             continue
     return sources
+
+
+def get_git_diff_lines(
+    ref_a: str,
+    ref_b: str | None = None,
+    workdir: Path = Path("."),
+) -> dict[str, set[int]]:
+    """Parse modified line ranges for each file in git diff between ref_a and ref_b/local.
+
+    Returns a dict mapping relative file path to a set of 1-indexed modified line numbers.
+    """
+    import re
+    diff_lines: dict[str, set[int]] = {}
+
+    args = ["diff", "-U0", ref_a]
+    if ref_b and ref_b != "local":
+        args.append(ref_b)
+
+    result = _run_git(args, workdir, check=False)
+    if result.returncode != 0:
+        return diff_lines
+
+    current_file = None
+    hunk_pattern = re.compile(r'^@@ -\d+(?:,\d+)? \+(\d+)(?:,(\d+))? @@')
+
+    for line in result.stdout.splitlines():
+        if line.startswith("+++ b/"):
+            current_file = line[6:].strip()
+            diff_lines.setdefault(current_file, set())
+        elif line.startswith("@@ -") and current_file:
+            match = hunk_pattern.match(line)
+            if match:
+                new_start = int(match.group(1))
+                new_len = int(match.group(2)) if match.group(2) is not None else 1
+                if new_len > 0:
+                    for line_num in range(new_start, new_start + new_len):
+                        diff_lines[current_file].add(line_num)
+
+    return diff_lines

@@ -2,6 +2,16 @@
 
 ## [Unreleased]
 
+## [0.1.23] - 2026-05-27
+
+### Docs
+- Update README.md
+
+### Other
+- Update regix/cli.py
+- Update regix/git.py
+- Update regix/models.py
+
 ## [0.1.22] - 2026-05-27
 
 ### Docs
