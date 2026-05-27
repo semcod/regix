@@ -2,6 +2,26 @@
 
 ## [Unreleased]
 
+## [0.1.22] - 2026-05-27
+
+### Docs
+- Update README.md
+- Update project/README.md
+- Update project/context.md
+
+### Other
+- Update .code2llm_cache/cli_1779896484248062833_16027.pkl
+- Update .code2llm_cache/code2llm_backend_1779895967831000000_10086.pkl
+- Update .code2llm_cache/compare_1779895984053000000_7953.pkl
+- Update .code2llm_cache/impact_1779895977074000000_11668.pkl
+- Update .code2llm_cache/models_1779895979625000000_13153.pkl
+- Update .code2llm_cache/snapshot_1779895982038000000_8273.pkl
+- Update project/analysis.toon.yaml
+- Update project/calls.mmd
+- Update project/calls.png
+- Update project/calls.toon.yaml
+- ... and 15 more files
+
 ## [0.1.21] - 2026-05-27
 
 ### Docs

@@ -3,28 +3,9 @@ source: code2llm
 schema: code2llm.planfile_tickets.v1
 project_root: /home/tom/github/semcod/regix
 tickets:
-- signal: code2llm_cc
-  title: 'Reduce cyclomatic complexity: regix.backends.code2llm_backend.Code2llmBackend._parse_map_toon
-    (CC=25)'
-  description: 'code2llm reports `regix.backends.code2llm_backend.Code2llmBackend._parse_map_toon`
-    at `regix/backends/code2llm_backend.py:91` with cyclomatic complexity 25 (limit
-    15).
-
-
-    Extract smaller functions, flatten conditionals, or split strategy branches. Re-run
-    code2llm after the change and keep tests green.'
-  priority: high
-  labels:
-  - llm-ready
-  - code2llm
-  - complexity
-  - refactor
-  files:
-  - regix/backends/code2llm_backend.py
-  dedupe_key: code2llm:cc:regix/backends/code2llm_backend.py:regix.backends.code2llm_backend.Code2llmBackend._parse_map_toon
 - signal: code2llm_smell_shotgun_surgery
   title: 'Address code smell: Shotgun Surgery: cfg'
-  description: 'code2llm reports `Shotgun Surgery: cfg` in `regix/cli.py:14`.
+  description: 'code2llm reports `Shotgun Surgery: cfg` in `regix/cli.py:251`.
 
 
     Mutation of variable ''cfg'' spans 9 functions. Changing this logic requires work
@@ -40,68 +21,10 @@ tickets:
   - shotgun-surgery
   files:
   - regix/cli.py
-  dedupe_key: 'code2llm:smell:shotgun_surgery:regix/cli.py:14:Shotgun Surgery: cfg'
-- signal: code2llm_smell_shotgun_surgery
-  title: 'Address code smell: Shotgun Surgery: files'
-  description: 'code2llm reports `Shotgun Surgery: files` in `regix/snapshot.py:204`.
-
-
-    Mutation of variable ''files'' spans 8 functions. Changing this logic requires
-    work in many places.
-
-
-    Make the smallest refactor that removes the smell and run local tests.'
-  priority: high
-  labels:
-  - llm-ready
-  - code2llm
-  - code-smell
-  - shotgun-surgery
-  files:
-  - regix/snapshot.py
-  dedupe_key: 'code2llm:smell:shotgun_surgery:regix/snapshot.py:204:Shotgun Surgery:
-    files'
-- signal: code2llm_smell_shotgun_surgery
-  title: 'Address code smell: Shotgun Surgery: lines'
-  description: 'code2llm reports `Shotgun Surgery: lines` in `regix/git.py:50`.
-
-
-    Mutation of variable ''lines'' spans 8 functions. Changing this logic requires
-    work in many places.
-
-
-    Make the smallest refactor that removes the smell and run local tests.'
-  priority: high
-  labels:
-  - llm-ready
-  - code2llm
-  - code-smell
-  - shotgun-surgery
-  files:
-  - regix/git.py
-  dedupe_key: 'code2llm:smell:shotgun_surgery:regix/git.py:50:Shotgun Surgery: lines'
-- signal: code2llm_smell_shotgun_surgery
-  title: 'Address code smell: Shotgun Surgery: parts'
-  description: 'code2llm reports `Shotgun Surgery: parts` in `regix/git.py:82`.
-
-
-    Mutation of variable ''parts'' spans 5 functions. Changing this logic requires
-    work in many places.
-
-
-    Make the smallest refactor that removes the smell and run local tests.'
-  priority: high
-  labels:
-  - llm-ready
-  - code2llm
-  - code-smell
-  - shotgun-surgery
-  files:
-  - regix/git.py
-  dedupe_key: 'code2llm:smell:shotgun_surgery:regix/git.py:82:Shotgun Surgery: parts'
+  dedupe_key: 'code2llm:smell:shotgun_surgery:regix/cli.py:251:Shotgun Surgery: cfg'
 - signal: code2llm_smell_shotgun_surgery
   title: 'Address code smell: Shotgun Surgery: sources'
-  description: 'code2llm reports `Shotgun Surgery: sources` in `regix/snapshot.py:204`.
+  description: 'code2llm reports `Shotgun Surgery: sources` in `regix/snapshot.py:180`.
 
 
     Mutation of variable ''sources'' spans 5 functions. Changing this logic requires
@@ -117,11 +40,11 @@ tickets:
   - shotgun-surgery
   files:
   - regix/snapshot.py
-  dedupe_key: 'code2llm:smell:shotgun_surgery:regix/snapshot.py:204:Shotgun Surgery:
+  dedupe_key: 'code2llm:smell:shotgun_surgery:regix/snapshot.py:180:Shotgun Surgery:
     sources'
 - signal: code2llm_smell_shotgun_surgery
   title: 'Address code smell: Shotgun Surgery: wd'
-  description: 'code2llm reports `Shotgun Surgery: wd` in `regix/cli.py:14`.
+  description: 'code2llm reports `Shotgun Surgery: wd` in `regix/cli.py:101`.
 
 
     Mutation of variable ''wd'' spans 8 functions. Changing this logic requires work
@@ -137,12 +60,12 @@ tickets:
   - shotgun-surgery
   files:
   - regix/cli.py
-  dedupe_key: 'code2llm:smell:shotgun_surgery:regix/cli.py:14:Shotgun Surgery: wd'
+  dedupe_key: 'code2llm:smell:shotgun_surgery:regix/cli.py:101:Shotgun Surgery: wd'
 - signal: code2llm_cc
   title: 'Reduce cyclomatic complexity: regix.backends.code2llm_backend.Code2llmBackend._parse_evolution_toon
-    (CC=16)'
+    (CC=17)'
   description: 'code2llm reports `regix.backends.code2llm_backend.Code2llmBackend._parse_evolution_toon`
-    at `regix/backends/code2llm_backend.py:167` with cyclomatic complexity 16 (limit
+    at `regix/backends/code2llm_backend.py:197` with cyclomatic complexity 17 (limit
     15).
 
 
@@ -158,9 +81,11 @@ tickets:
   - regix/backends/code2llm_backend.py
   dedupe_key: code2llm:cc:regix/backends/code2llm_backend.py:regix.backends.code2llm_backend.Code2llmBackend._parse_evolution_toon
 - signal: code2llm_cc
-  title: 'Reduce cyclomatic complexity: regix.cli.impact (CC=18)'
-  description: 'code2llm reports `regix.cli.impact` at `regix/cli.py:296` with cyclomatic
-    complexity 18 (limit 15).
+  title: 'Reduce cyclomatic complexity: regix.backends.code2llm_backend.Code2llmBackend._parse_map_toon
+    (CC=21)'
+  description: 'code2llm reports `regix.backends.code2llm_backend.Code2llmBackend._parse_map_toon`
+    at `regix/backends/code2llm_backend.py:124` with cyclomatic complexity 21 (limit
+    15).
 
 
     Extract smaller functions, flatten conditionals, or split strategy branches. Re-run
@@ -172,132 +97,20 @@ tickets:
   - complexity
   - refactor
   files:
-  - regix/cli.py
-  dedupe_key: code2llm:cc:regix/cli.py:regix.cli.impact
-- signal: code2llm_cc
-  title: 'Reduce cyclomatic complexity: regix.compare.compare (CC=15)'
-  description: 'code2llm reports `regix.compare.compare` at `regix/compare.py:212`
-    with cyclomatic complexity 15 (limit 15).
-
-
-    Extract smaller functions, flatten conditionals, or split strategy branches. Re-run
-    code2llm after the change and keep tests green.'
-  priority: normal
-  labels:
-  - llm-ready
-  - code2llm
-  - complexity
-  - refactor
-  files:
-  - regix/compare.py
-  dedupe_key: code2llm:cc:regix/compare.py:regix.compare.compare
-- signal: code2llm_cc
-  title: 'Reduce cyclomatic complexity: regix.impact.ImpactAnalyzer._fallback_yaml_parse
-    (CC=18)'
-  description: 'code2llm reports `regix.impact.ImpactAnalyzer._fallback_yaml_parse`
-    at `regix/impact.py:59` with cyclomatic complexity 18 (limit 15).
-
-
-    Extract smaller functions, flatten conditionals, or split strategy branches. Re-run
-    code2llm after the change and keep tests green.'
-  priority: normal
-  labels:
-  - llm-ready
-  - code2llm
-  - complexity
-  - refactor
-  files:
-  - regix/impact.py
-  dedupe_key: code2llm:cc:regix/impact.py:regix.impact.ImpactAnalyzer._fallback_yaml_parse
-- signal: code2llm_cc
-  title: 'Reduce cyclomatic complexity: regix.impact.ImpactAnalyzer.analyze_impact
-    (CC=19)'
-  description: 'code2llm reports `regix.impact.ImpactAnalyzer.analyze_impact` at `regix/impact.py:131`
-    with cyclomatic complexity 19 (limit 15).
-
-
-    Extract smaller functions, flatten conditionals, or split strategy branches. Re-run
-    code2llm after the change and keep tests green.'
-  priority: normal
-  labels:
-  - llm-ready
-  - code2llm
-  - complexity
-  - refactor
-  files:
-  - regix/impact.py
-  dedupe_key: code2llm:cc:regix/impact.py:regix.impact.ImpactAnalyzer.analyze_impact
-- signal: code2llm_cc
-  title: 'Reduce cyclomatic complexity: regix.models.RegressionReport.filter (CC=15)'
-  description: 'code2llm reports `regix.models.RegressionReport.filter` at `regix/models.py:291`
-    with cyclomatic complexity 15 (limit 15).
-
-
-    Extract smaller functions, flatten conditionals, or split strategy branches. Re-run
-    code2llm after the change and keep tests green.'
-  priority: normal
-  labels:
-  - llm-ready
-  - code2llm
-  - complexity
-  - refactor
-  files:
-  - regix/models.py
-  dedupe_key: code2llm:cc:regix/models.py:regix.models.RegressionReport.filter
-- signal: code2llm_cc
-  title: 'Reduce cyclomatic complexity: regix.snapshot._collect_files (CC=17)'
-  description: 'code2llm reports `regix.snapshot._collect_files` at `regix/snapshot.py:20`
-    with cyclomatic complexity 17 (limit 15).
-
-
-    Extract smaller functions, flatten conditionals, or split strategy branches. Re-run
-    code2llm after the change and keep tests green.'
-  priority: normal
-  labels:
-  - llm-ready
-  - code2llm
-  - complexity
-  - refactor
-  files:
-  - regix/snapshot.py
-  dedupe_key: code2llm:cc:regix/snapshot.py:regix.snapshot._collect_files
+  - regix/backends/code2llm_backend.py
+  dedupe_key: code2llm:cc:regix/backends/code2llm_backend.py:regix.backends.code2llm_backend.Code2llmBackend._parse_map_toon
 - signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: files, self, sources, config, workdir'
-  description: 'code2llm reports `Data Clump: files, self, sources, config, workdir`
-    in `regix/backends/base.py:34`.
-
-
-    Arguments (files, self, sources, config, workdir) are used together in multiple
-    functions: regix.backends.base.BackendBase.collect, regix.backends.architecture_backend.ArchitectureBackend.collect,
-    regix.backends.docstring_backend.DocstringBackend.collect, regix.backends.vallm_backend.VallmBackend.collect,
-    regix.backends.radon_backend.RadonBackend.collect, regix.backends.code2llm_backend.Code2llmBackend.collect,
-    regix.backends.coverage_backend.CoverageBackend.collect, regix.backends.lizard_backend.LizardBackend.collect,
-    regix.backends.structure_backend.StructureBackend.collect.
-
-
-    Make the smallest refactor that removes the smell and run local tests.'
-  priority: normal
-  labels:
-  - llm-ready
-  - code2llm
-  - code-smell
-  - data-clump
-  files:
-  - regix/backends/base.py
-  dedupe_key: 'code2llm:smell:data_clump:regix/backends/base.py:34:Data Clump: files,
-    self, sources, config, workdir'
-- signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: files, self, sources, config, workdir'
-  description: 'code2llm reports `Data Clump: files, self, sources, config, workdir`
+  title: 'Address code smell: Data Clump: config, files, self, sources, workdir'
+  description: 'code2llm reports `Data Clump: config, files, self, sources, workdir`
     in `regix/backends/architecture_backend.py:106`.
 
 
-    Arguments (files, self, sources, config, workdir) are used together in multiple
-    functions: regix.backends.base.BackendBase.collect, regix.backends.architecture_backend.ArchitectureBackend.collect,
-    regix.backends.docstring_backend.DocstringBackend.collect, regix.backends.vallm_backend.VallmBackend.collect,
-    regix.backends.radon_backend.RadonBackend.collect, regix.backends.code2llm_backend.Code2llmBackend.collect,
+    Arguments (config, files, self, sources, workdir) are used together in multiple
+    functions: regix.backends.architecture_backend.ArchitectureBackend.collect, regix.backends.base.BackendBase.collect,
+    regix.backends.docstring_backend.DocstringBackend.collect, regix.backends.radon_backend.RadonBackend.collect,
+    regix.backends.vallm_backend.VallmBackend.collect, regix.backends.structure_backend.StructureBackend.collect,
     regix.backends.coverage_backend.CoverageBackend.collect, regix.backends.lizard_backend.LizardBackend.collect,
-    regix.backends.structure_backend.StructureBackend.collect.
+    regix.backends.code2llm_backend.Code2llmBackend.collect.
 
 
     Make the smallest refactor that removes the smell and run local tests.'
@@ -310,19 +123,44 @@ tickets:
   files:
   - regix/backends/architecture_backend.py
   dedupe_key: 'code2llm:smell:data_clump:regix/backends/architecture_backend.py:106:Data
-    Clump: files, self, sources, config, workdir'
+    Clump: config, files, self, sources, workdir'
 - signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: files, self, sources, config, workdir'
-  description: 'code2llm reports `Data Clump: files, self, sources, config, workdir`
+  title: 'Address code smell: Data Clump: config, files, self, sources, workdir'
+  description: 'code2llm reports `Data Clump: config, files, self, sources, workdir`
+    in `regix/backends/base.py:34`.
+
+
+    Arguments (config, files, self, sources, workdir) are used together in multiple
+    functions: regix.backends.architecture_backend.ArchitectureBackend.collect, regix.backends.base.BackendBase.collect,
+    regix.backends.docstring_backend.DocstringBackend.collect, regix.backends.radon_backend.RadonBackend.collect,
+    regix.backends.vallm_backend.VallmBackend.collect, regix.backends.structure_backend.StructureBackend.collect,
+    regix.backends.coverage_backend.CoverageBackend.collect, regix.backends.lizard_backend.LizardBackend.collect,
+    regix.backends.code2llm_backend.Code2llmBackend.collect.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - regix/backends/base.py
+  dedupe_key: 'code2llm:smell:data_clump:regix/backends/base.py:34:Data Clump: config,
+    files, self, sources, workdir'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: config, files, self, sources, workdir'
+  description: 'code2llm reports `Data Clump: config, files, self, sources, workdir`
     in `regix/backends/docstring_backend.py:26`.
 
 
-    Arguments (files, self, sources, config, workdir) are used together in multiple
-    functions: regix.backends.base.BackendBase.collect, regix.backends.architecture_backend.ArchitectureBackend.collect,
-    regix.backends.docstring_backend.DocstringBackend.collect, regix.backends.vallm_backend.VallmBackend.collect,
-    regix.backends.radon_backend.RadonBackend.collect, regix.backends.code2llm_backend.Code2llmBackend.collect,
+    Arguments (config, files, self, sources, workdir) are used together in multiple
+    functions: regix.backends.architecture_backend.ArchitectureBackend.collect, regix.backends.base.BackendBase.collect,
+    regix.backends.docstring_backend.DocstringBackend.collect, regix.backends.radon_backend.RadonBackend.collect,
+    regix.backends.vallm_backend.VallmBackend.collect, regix.backends.structure_backend.StructureBackend.collect,
     regix.backends.coverage_backend.CoverageBackend.collect, regix.backends.lizard_backend.LizardBackend.collect,
-    regix.backends.structure_backend.StructureBackend.collect.
+    regix.backends.code2llm_backend.Code2llmBackend.collect.
 
 
     Make the smallest refactor that removes the smell and run local tests.'
@@ -335,44 +173,19 @@ tickets:
   files:
   - regix/backends/docstring_backend.py
   dedupe_key: 'code2llm:smell:data_clump:regix/backends/docstring_backend.py:26:Data
-    Clump: files, self, sources, config, workdir'
+    Clump: config, files, self, sources, workdir'
 - signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: files, self, sources, config, workdir'
-  description: 'code2llm reports `Data Clump: files, self, sources, config, workdir`
-    in `regix/backends/vallm_backend.py:38`.
-
-
-    Arguments (files, self, sources, config, workdir) are used together in multiple
-    functions: regix.backends.base.BackendBase.collect, regix.backends.architecture_backend.ArchitectureBackend.collect,
-    regix.backends.docstring_backend.DocstringBackend.collect, regix.backends.vallm_backend.VallmBackend.collect,
-    regix.backends.radon_backend.RadonBackend.collect, regix.backends.code2llm_backend.Code2llmBackend.collect,
-    regix.backends.coverage_backend.CoverageBackend.collect, regix.backends.lizard_backend.LizardBackend.collect,
-    regix.backends.structure_backend.StructureBackend.collect.
-
-
-    Make the smallest refactor that removes the smell and run local tests.'
-  priority: normal
-  labels:
-  - llm-ready
-  - code2llm
-  - code-smell
-  - data-clump
-  files:
-  - regix/backends/vallm_backend.py
-  dedupe_key: 'code2llm:smell:data_clump:regix/backends/vallm_backend.py:38:Data Clump:
-    files, self, sources, config, workdir'
-- signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: files, self, sources, config, workdir'
-  description: 'code2llm reports `Data Clump: files, self, sources, config, workdir`
+  title: 'Address code smell: Data Clump: config, files, self, sources, workdir'
+  description: 'code2llm reports `Data Clump: config, files, self, sources, workdir`
     in `regix/backends/radon_backend.py:37`.
 
 
-    Arguments (files, self, sources, config, workdir) are used together in multiple
-    functions: regix.backends.base.BackendBase.collect, regix.backends.architecture_backend.ArchitectureBackend.collect,
-    regix.backends.docstring_backend.DocstringBackend.collect, regix.backends.vallm_backend.VallmBackend.collect,
-    regix.backends.radon_backend.RadonBackend.collect, regix.backends.code2llm_backend.Code2llmBackend.collect,
+    Arguments (config, files, self, sources, workdir) are used together in multiple
+    functions: regix.backends.architecture_backend.ArchitectureBackend.collect, regix.backends.base.BackendBase.collect,
+    regix.backends.docstring_backend.DocstringBackend.collect, regix.backends.radon_backend.RadonBackend.collect,
+    regix.backends.vallm_backend.VallmBackend.collect, regix.backends.structure_backend.StructureBackend.collect,
     regix.backends.coverage_backend.CoverageBackend.collect, regix.backends.lizard_backend.LizardBackend.collect,
-    regix.backends.structure_backend.StructureBackend.collect.
+    regix.backends.code2llm_backend.Code2llmBackend.collect.
 
 
     Make the smallest refactor that removes the smell and run local tests.'
@@ -385,19 +198,19 @@ tickets:
   files:
   - regix/backends/radon_backend.py
   dedupe_key: 'code2llm:smell:data_clump:regix/backends/radon_backend.py:37:Data Clump:
-    files, self, sources, config, workdir'
+    config, files, self, sources, workdir'
 - signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: files, self, sources, config, workdir'
-  description: 'code2llm reports `Data Clump: files, self, sources, config, workdir`
-    in `regix/backends/code2llm_backend.py:223`.
+  title: 'Address code smell: Data Clump: config, files, self, sources, workdir'
+  description: 'code2llm reports `Data Clump: config, files, self, sources, workdir`
+    in `regix/backends/vallm_backend.py:38`.
 
 
-    Arguments (files, self, sources, config, workdir) are used together in multiple
-    functions: regix.backends.base.BackendBase.collect, regix.backends.architecture_backend.ArchitectureBackend.collect,
-    regix.backends.docstring_backend.DocstringBackend.collect, regix.backends.vallm_backend.VallmBackend.collect,
-    regix.backends.radon_backend.RadonBackend.collect, regix.backends.code2llm_backend.Code2llmBackend.collect,
+    Arguments (config, files, self, sources, workdir) are used together in multiple
+    functions: regix.backends.architecture_backend.ArchitectureBackend.collect, regix.backends.base.BackendBase.collect,
+    regix.backends.docstring_backend.DocstringBackend.collect, regix.backends.radon_backend.RadonBackend.collect,
+    regix.backends.vallm_backend.VallmBackend.collect, regix.backends.structure_backend.StructureBackend.collect,
     regix.backends.coverage_backend.CoverageBackend.collect, regix.backends.lizard_backend.LizardBackend.collect,
-    regix.backends.structure_backend.StructureBackend.collect.
+    regix.backends.code2llm_backend.Code2llmBackend.collect.
 
 
     Make the smallest refactor that removes the smell and run local tests.'
@@ -408,71 +221,21 @@ tickets:
   - code-smell
   - data-clump
   files:
-  - regix/backends/code2llm_backend.py
-  dedupe_key: 'code2llm:smell:data_clump:regix/backends/code2llm_backend.py:223:Data
-    Clump: files, self, sources, config, workdir'
+  - regix/backends/vallm_backend.py
+  dedupe_key: 'code2llm:smell:data_clump:regix/backends/vallm_backend.py:38:Data Clump:
+    config, files, self, sources, workdir'
 - signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: files, self, sources, config, workdir'
-  description: 'code2llm reports `Data Clump: files, self, sources, config, workdir`
-    in `regix/backends/coverage_backend.py:33`.
-
-
-    Arguments (files, self, sources, config, workdir) are used together in multiple
-    functions: regix.backends.base.BackendBase.collect, regix.backends.architecture_backend.ArchitectureBackend.collect,
-    regix.backends.docstring_backend.DocstringBackend.collect, regix.backends.vallm_backend.VallmBackend.collect,
-    regix.backends.radon_backend.RadonBackend.collect, regix.backends.code2llm_backend.Code2llmBackend.collect,
-    regix.backends.coverage_backend.CoverageBackend.collect, regix.backends.lizard_backend.LizardBackend.collect,
-    regix.backends.structure_backend.StructureBackend.collect.
-
-
-    Make the smallest refactor that removes the smell and run local tests.'
-  priority: normal
-  labels:
-  - llm-ready
-  - code2llm
-  - code-smell
-  - data-clump
-  files:
-  - regix/backends/coverage_backend.py
-  dedupe_key: 'code2llm:smell:data_clump:regix/backends/coverage_backend.py:33:Data
-    Clump: files, self, sources, config, workdir'
-- signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: files, self, sources, config, workdir'
-  description: 'code2llm reports `Data Clump: files, self, sources, config, workdir`
-    in `regix/backends/lizard_backend.py:36`.
-
-
-    Arguments (files, self, sources, config, workdir) are used together in multiple
-    functions: regix.backends.base.BackendBase.collect, regix.backends.architecture_backend.ArchitectureBackend.collect,
-    regix.backends.docstring_backend.DocstringBackend.collect, regix.backends.vallm_backend.VallmBackend.collect,
-    regix.backends.radon_backend.RadonBackend.collect, regix.backends.code2llm_backend.Code2llmBackend.collect,
-    regix.backends.coverage_backend.CoverageBackend.collect, regix.backends.lizard_backend.LizardBackend.collect,
-    regix.backends.structure_backend.StructureBackend.collect.
-
-
-    Make the smallest refactor that removes the smell and run local tests.'
-  priority: normal
-  labels:
-  - llm-ready
-  - code2llm
-  - code-smell
-  - data-clump
-  files:
-  - regix/backends/lizard_backend.py
-  dedupe_key: 'code2llm:smell:data_clump:regix/backends/lizard_backend.py:36:Data
-    Clump: files, self, sources, config, workdir'
-- signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: files, self, sources, config, workdir'
-  description: 'code2llm reports `Data Clump: files, self, sources, config, workdir`
+  title: 'Address code smell: Data Clump: config, files, self, sources, workdir'
+  description: 'code2llm reports `Data Clump: config, files, self, sources, workdir`
     in `regix/backends/structure_backend.py:124`.
 
 
-    Arguments (files, self, sources, config, workdir) are used together in multiple
-    functions: regix.backends.base.BackendBase.collect, regix.backends.architecture_backend.ArchitectureBackend.collect,
-    regix.backends.docstring_backend.DocstringBackend.collect, regix.backends.vallm_backend.VallmBackend.collect,
-    regix.backends.radon_backend.RadonBackend.collect, regix.backends.code2llm_backend.Code2llmBackend.collect,
+    Arguments (config, files, self, sources, workdir) are used together in multiple
+    functions: regix.backends.architecture_backend.ArchitectureBackend.collect, regix.backends.base.BackendBase.collect,
+    regix.backends.docstring_backend.DocstringBackend.collect, regix.backends.radon_backend.RadonBackend.collect,
+    regix.backends.vallm_backend.VallmBackend.collect, regix.backends.structure_backend.StructureBackend.collect,
     regix.backends.coverage_backend.CoverageBackend.collect, regix.backends.lizard_backend.LizardBackend.collect,
-    regix.backends.structure_backend.StructureBackend.collect.
+    regix.backends.code2llm_backend.Code2llmBackend.collect.
 
 
     Make the smallest refactor that removes the smell and run local tests.'
@@ -485,18 +248,19 @@ tickets:
   files:
   - regix/backends/structure_backend.py
   dedupe_key: 'code2llm:smell:data_clump:regix/backends/structure_backend.py:124:Data
-    Clump: files, self, sources, config, workdir'
+    Clump: config, files, self, sources, workdir'
 - signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: ref_a, sym, config, file, ref_b, m_after,
-    m_before'
-  description: 'code2llm reports `Data Clump: ref_a, sym, config, file, ref_b, m_after,
-    m_before` in `regix/smells.py:84`.
+  title: 'Address code smell: Data Clump: config, files, self, sources, workdir'
+  description: 'code2llm reports `Data Clump: config, files, self, sources, workdir`
+    in `regix/backends/coverage_backend.py:33`.
 
 
-    Arguments (ref_a, sym, config, file, ref_b, m_after, m_before) are used together
-    in multiple functions: regix.smells._check_symbol_smells, regix.smells._check_stub_regression,
-    regix.smells._check_no_delegation, regix.smells._check_logic_density_drop, regix.smells._check_cohesion_loss,
-    regix.smells._check_hallucination_proxy.
+    Arguments (config, files, self, sources, workdir) are used together in multiple
+    functions: regix.backends.architecture_backend.ArchitectureBackend.collect, regix.backends.base.BackendBase.collect,
+    regix.backends.docstring_backend.DocstringBackend.collect, regix.backends.radon_backend.RadonBackend.collect,
+    regix.backends.vallm_backend.VallmBackend.collect, regix.backends.structure_backend.StructureBackend.collect,
+    regix.backends.coverage_backend.CoverageBackend.collect, regix.backends.lizard_backend.LizardBackend.collect,
+    regix.backends.code2llm_backend.Code2llmBackend.collect.
 
 
     Make the smallest refactor that removes the smell and run local tests.'
@@ -507,20 +271,21 @@ tickets:
   - code-smell
   - data-clump
   files:
-  - regix/smells.py
-  dedupe_key: 'code2llm:smell:data_clump:regix/smells.py:84:Data Clump: ref_a, sym,
-    config, file, ref_b, m_after, m_before'
+  - regix/backends/coverage_backend.py
+  dedupe_key: 'code2llm:smell:data_clump:regix/backends/coverage_backend.py:33:Data
+    Clump: config, files, self, sources, workdir'
 - signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: ref_a, sym, config, file, ref_b, m_after,
-    m_before'
-  description: 'code2llm reports `Data Clump: ref_a, sym, config, file, ref_b, m_after,
-    m_before` in `regix/smells.py:197`.
+  title: 'Address code smell: Data Clump: config, files, self, sources, workdir'
+  description: 'code2llm reports `Data Clump: config, files, self, sources, workdir`
+    in `regix/backends/lizard_backend.py:36`.
 
 
-    Arguments (ref_a, sym, config, file, ref_b, m_after, m_before) are used together
-    in multiple functions: regix.smells._check_symbol_smells, regix.smells._check_stub_regression,
-    regix.smells._check_no_delegation, regix.smells._check_logic_density_drop, regix.smells._check_cohesion_loss,
-    regix.smells._check_hallucination_proxy.
+    Arguments (config, files, self, sources, workdir) are used together in multiple
+    functions: regix.backends.architecture_backend.ArchitectureBackend.collect, regix.backends.base.BackendBase.collect,
+    regix.backends.docstring_backend.DocstringBackend.collect, regix.backends.radon_backend.RadonBackend.collect,
+    regix.backends.vallm_backend.VallmBackend.collect, regix.backends.structure_backend.StructureBackend.collect,
+    regix.backends.coverage_backend.CoverageBackend.collect, regix.backends.lizard_backend.LizardBackend.collect,
+    regix.backends.code2llm_backend.Code2llmBackend.collect.
 
 
     Make the smallest refactor that removes the smell and run local tests.'
@@ -531,20 +296,21 @@ tickets:
   - code-smell
   - data-clump
   files:
-  - regix/smells.py
-  dedupe_key: 'code2llm:smell:data_clump:regix/smells.py:197:Data Clump: ref_a, sym,
-    config, file, ref_b, m_after, m_before'
+  - regix/backends/lizard_backend.py
+  dedupe_key: 'code2llm:smell:data_clump:regix/backends/lizard_backend.py:36:Data
+    Clump: config, files, self, sources, workdir'
 - signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: ref_a, sym, config, file, ref_b, m_after,
-    m_before'
-  description: 'code2llm reports `Data Clump: ref_a, sym, config, file, ref_b, m_after,
-    m_before` in `regix/smells.py:233`.
+  title: 'Address code smell: Data Clump: config, files, self, sources, workdir'
+  description: 'code2llm reports `Data Clump: config, files, self, sources, workdir`
+    in `regix/backends/code2llm_backend.py:242`.
 
 
-    Arguments (ref_a, sym, config, file, ref_b, m_after, m_before) are used together
-    in multiple functions: regix.smells._check_symbol_smells, regix.smells._check_stub_regression,
-    regix.smells._check_no_delegation, regix.smells._check_logic_density_drop, regix.smells._check_cohesion_loss,
-    regix.smells._check_hallucination_proxy.
+    Arguments (config, files, self, sources, workdir) are used together in multiple
+    functions: regix.backends.architecture_backend.ArchitectureBackend.collect, regix.backends.base.BackendBase.collect,
+    regix.backends.docstring_backend.DocstringBackend.collect, regix.backends.radon_backend.RadonBackend.collect,
+    regix.backends.vallm_backend.VallmBackend.collect, regix.backends.structure_backend.StructureBackend.collect,
+    regix.backends.coverage_backend.CoverageBackend.collect, regix.backends.lizard_backend.LizardBackend.collect,
+    regix.backends.code2llm_backend.Code2llmBackend.collect.
 
 
     Make the smallest refactor that removes the smell and run local tests.'
@@ -555,88 +321,16 @@ tickets:
   - code-smell
   - data-clump
   files:
-  - regix/smells.py
-  dedupe_key: 'code2llm:smell:data_clump:regix/smells.py:233:Data Clump: ref_a, sym,
-    config, file, ref_b, m_after, m_before'
+  - regix/backends/code2llm_backend.py
+  dedupe_key: 'code2llm:smell:data_clump:regix/backends/code2llm_backend.py:242:Data
+    Clump: config, files, self, sources, workdir'
 - signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: ref_a, sym, config, file, ref_b, m_after,
-    m_before'
-  description: 'code2llm reports `Data Clump: ref_a, sym, config, file, ref_b, m_after,
-    m_before` in `regix/smells.py:275`.
-
-
-    Arguments (ref_a, sym, config, file, ref_b, m_after, m_before) are used together
-    in multiple functions: regix.smells._check_symbol_smells, regix.smells._check_stub_regression,
-    regix.smells._check_no_delegation, regix.smells._check_logic_density_drop, regix.smells._check_cohesion_loss,
-    regix.smells._check_hallucination_proxy.
-
-
-    Make the smallest refactor that removes the smell and run local tests.'
-  priority: normal
-  labels:
-  - llm-ready
-  - code2llm
-  - code-smell
-  - data-clump
-  files:
-  - regix/smells.py
-  dedupe_key: 'code2llm:smell:data_clump:regix/smells.py:275:Data Clump: ref_a, sym,
-    config, file, ref_b, m_after, m_before'
-- signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: ref_a, sym, config, file, ref_b, m_after,
-    m_before'
-  description: 'code2llm reports `Data Clump: ref_a, sym, config, file, ref_b, m_after,
-    m_before` in `regix/smells.py:307`.
-
-
-    Arguments (ref_a, sym, config, file, ref_b, m_after, m_before) are used together
-    in multiple functions: regix.smells._check_symbol_smells, regix.smells._check_stub_regression,
-    regix.smells._check_no_delegation, regix.smells._check_logic_density_drop, regix.smells._check_cohesion_loss,
-    regix.smells._check_hallucination_proxy.
-
-
-    Make the smallest refactor that removes the smell and run local tests.'
-  priority: normal
-  labels:
-  - llm-ready
-  - code2llm
-  - code-smell
-  - data-clump
-  files:
-  - regix/smells.py
-  dedupe_key: 'code2llm:smell:data_clump:regix/smells.py:307:Data Clump: ref_a, sym,
-    config, file, ref_b, m_after, m_before'
-- signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: ref_a, sym, config, file, ref_b, m_after,
-    m_before'
-  description: 'code2llm reports `Data Clump: ref_a, sym, config, file, ref_b, m_after,
-    m_before` in `regix/smells.py:362`.
-
-
-    Arguments (ref_a, sym, config, file, ref_b, m_after, m_before) are used together
-    in multiple functions: regix.smells._check_symbol_smells, regix.smells._check_stub_regression,
-    regix.smells._check_no_delegation, regix.smells._check_logic_density_drop, regix.smells._check_cohesion_loss,
-    regix.smells._check_hallucination_proxy.
-
-
-    Make the smallest refactor that removes the smell and run local tests.'
-  priority: normal
-  labels:
-  - llm-ready
-  - code2llm
-  - code-smell
-  - data-clump
-  files:
-  - regix/smells.py
-  dedupe_key: 'code2llm:smell:data_clump:regix/smells.py:362:Data Clump: ref_a, sym,
-    config, file, ref_b, m_after, m_before'
-- signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: snap_after, snap_before, config'
-  description: 'code2llm reports `Data Clump: snap_after, snap_before, config` in
+  title: 'Address code smell: Data Clump: snap_before, config, snap_after'
+  description: 'code2llm reports `Data Clump: snap_before, config, snap_after` in
     `regix/smells.py:71`.
 
 
-    Arguments (snap_after, snap_before, config) are used together in multiple functions:
+    Arguments (snap_before, config, snap_after) are used together in multiple functions:
     regix.smells.detect_smells, regix.compare.compare.
 
 
@@ -649,15 +343,15 @@ tickets:
   - data-clump
   files:
   - regix/smells.py
-  dedupe_key: 'code2llm:smell:data_clump:regix/smells.py:71:Data Clump: snap_after,
-    snap_before, config'
+  dedupe_key: 'code2llm:smell:data_clump:regix/smells.py:71:Data Clump: snap_before,
+    config, snap_after'
 - signal: code2llm_smell_data_clump
-  title: 'Address code smell: Data Clump: snap_after, snap_before, config'
-  description: 'code2llm reports `Data Clump: snap_after, snap_before, config` in
-    `regix/compare.py:212`.
+  title: 'Address code smell: Data Clump: snap_before, config, snap_after'
+  description: 'code2llm reports `Data Clump: snap_before, config, snap_after` in
+    `regix/compare.py:216`.
 
 
-    Arguments (snap_after, snap_before, config) are used together in multiple functions:
+    Arguments (snap_before, config, snap_after) are used together in multiple functions:
     regix.smells.detect_smells, regix.compare.compare.
 
 
@@ -670,8 +364,152 @@ tickets:
   - data-clump
   files:
   - regix/compare.py
-  dedupe_key: 'code2llm:smell:data_clump:regix/compare.py:212:Data Clump: snap_after,
-    snap_before, config'
+  dedupe_key: 'code2llm:smell:data_clump:regix/compare.py:216:Data Clump: snap_before,
+    config, snap_after'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: sym, file, config, ref_b, m_before, ref_a,
+    m_after'
+  description: 'code2llm reports `Data Clump: sym, file, config, ref_b, m_before,
+    ref_a, m_after` in `regix/smells.py:84`.
+
+
+    Arguments (sym, file, config, ref_b, m_before, ref_a, m_after) are used together
+    in multiple functions: regix.smells._check_symbol_smells, regix.smells._check_stub_regression,
+    regix.smells._check_no_delegation, regix.smells._check_logic_density_drop, regix.smells._check_cohesion_loss,
+    regix.smells._check_hallucination_proxy.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - regix/smells.py
+  dedupe_key: 'code2llm:smell:data_clump:regix/smells.py:84:Data Clump: sym, file,
+    config, ref_b, m_before, ref_a, m_after'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: sym, file, config, ref_b, m_before, ref_a,
+    m_after'
+  description: 'code2llm reports `Data Clump: sym, file, config, ref_b, m_before,
+    ref_a, m_after` in `regix/smells.py:197`.
+
+
+    Arguments (sym, file, config, ref_b, m_before, ref_a, m_after) are used together
+    in multiple functions: regix.smells._check_symbol_smells, regix.smells._check_stub_regression,
+    regix.smells._check_no_delegation, regix.smells._check_logic_density_drop, regix.smells._check_cohesion_loss,
+    regix.smells._check_hallucination_proxy.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - regix/smells.py
+  dedupe_key: 'code2llm:smell:data_clump:regix/smells.py:197:Data Clump: sym, file,
+    config, ref_b, m_before, ref_a, m_after'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: sym, file, config, ref_b, m_before, ref_a,
+    m_after'
+  description: 'code2llm reports `Data Clump: sym, file, config, ref_b, m_before,
+    ref_a, m_after` in `regix/smells.py:233`.
+
+
+    Arguments (sym, file, config, ref_b, m_before, ref_a, m_after) are used together
+    in multiple functions: regix.smells._check_symbol_smells, regix.smells._check_stub_regression,
+    regix.smells._check_no_delegation, regix.smells._check_logic_density_drop, regix.smells._check_cohesion_loss,
+    regix.smells._check_hallucination_proxy.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - regix/smells.py
+  dedupe_key: 'code2llm:smell:data_clump:regix/smells.py:233:Data Clump: sym, file,
+    config, ref_b, m_before, ref_a, m_after'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: sym, file, config, ref_b, m_before, ref_a,
+    m_after'
+  description: 'code2llm reports `Data Clump: sym, file, config, ref_b, m_before,
+    ref_a, m_after` in `regix/smells.py:275`.
+
+
+    Arguments (sym, file, config, ref_b, m_before, ref_a, m_after) are used together
+    in multiple functions: regix.smells._check_symbol_smells, regix.smells._check_stub_regression,
+    regix.smells._check_no_delegation, regix.smells._check_logic_density_drop, regix.smells._check_cohesion_loss,
+    regix.smells._check_hallucination_proxy.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - regix/smells.py
+  dedupe_key: 'code2llm:smell:data_clump:regix/smells.py:275:Data Clump: sym, file,
+    config, ref_b, m_before, ref_a, m_after'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: sym, file, config, ref_b, m_before, ref_a,
+    m_after'
+  description: 'code2llm reports `Data Clump: sym, file, config, ref_b, m_before,
+    ref_a, m_after` in `regix/smells.py:307`.
+
+
+    Arguments (sym, file, config, ref_b, m_before, ref_a, m_after) are used together
+    in multiple functions: regix.smells._check_symbol_smells, regix.smells._check_stub_regression,
+    regix.smells._check_no_delegation, regix.smells._check_logic_density_drop, regix.smells._check_cohesion_loss,
+    regix.smells._check_hallucination_proxy.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - regix/smells.py
+  dedupe_key: 'code2llm:smell:data_clump:regix/smells.py:307:Data Clump: sym, file,
+    config, ref_b, m_before, ref_a, m_after'
+- signal: code2llm_smell_data_clump
+  title: 'Address code smell: Data Clump: sym, file, config, ref_b, m_before, ref_a,
+    m_after'
+  description: 'code2llm reports `Data Clump: sym, file, config, ref_b, m_before,
+    ref_a, m_after` in `regix/smells.py:362`.
+
+
+    Arguments (sym, file, config, ref_b, m_before, ref_a, m_after) are used together
+    in multiple functions: regix.smells._check_symbol_smells, regix.smells._check_stub_regression,
+    regix.smells._check_no_delegation, regix.smells._check_logic_density_drop, regix.smells._check_cohesion_loss,
+    regix.smells._check_hallucination_proxy.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - data-clump
+  files:
+  - regix/smells.py
+  dedupe_key: 'code2llm:smell:data_clump:regix/smells.py:362:Data Clump: sym, file,
+    config, ref_b, m_before, ref_a, m_after'
 - signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: _check_god_function'
   description: 'code2llm reports `God Function: _check_god_function` in `regix/smells.py:155`.
@@ -746,7 +584,7 @@ tickets:
   dedupe_key: 'code2llm:smell:god_function:regix/smells.py:18:God Function: _detect_file_smells'
 - signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: _filter_sources'
-  description: 'code2llm reports `God Function: _filter_sources` in `regix/snapshot.py:69`.
+  description: 'code2llm reports `God Function: _filter_sources` in `regix/snapshot.py:78`.
 
 
     Function ''_filter_sources'' is oversized: CC=11, fan-out=8, mutations=8.
@@ -761,7 +599,7 @@ tickets:
   - god-function
   files:
   - regix/snapshot.py
-  dedupe_key: 'code2llm:smell:god_function:regix/snapshot.py:69:God Function: _filter_sources'
+  dedupe_key: 'code2llm:smell:god_function:regix/snapshot.py:78:God Function: _filter_sources'
 - signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: _process_comparison_key'
   description: 'code2llm reports `God Function: _process_comparison_key` in `regix/compare.py:168`.
@@ -818,6 +656,24 @@ tickets:
   dedupe_key: 'code2llm:smell:god_function:regix/backends/architecture_backend.py:86:God
     Function: _symbol_metrics'
 - signal: code2llm_smell_god_function
+  title: 'Address code smell: God Function: analyze_impact'
+  description: 'code2llm reports `God Function: analyze_impact` in `regix/impact.py:205`.
+
+
+    Function ''analyze_impact'' is oversized: CC=3, fan-out=15, mutations=0.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - god-function
+  files:
+  - regix/impact.py
+  dedupe_key: 'code2llm:smell:god_function:regix/impact.py:205:God Function: analyze_impact'
+- signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: build_regix_suite'
   description: 'code2llm reports `God Function: build_regix_suite` in `regix/benchmark/factory.py:21`.
 
@@ -838,7 +694,7 @@ tickets:
     build_regix_suite'
 - signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: capture'
-  description: 'code2llm reports `God Function: capture` in `regix/snapshot.py:204`.
+  description: 'code2llm reports `God Function: capture` in `regix/snapshot.py:213`.
 
 
     Function ''capture'' is oversized: CC=8, fan-out=10, mutations=15.
@@ -853,7 +709,7 @@ tickets:
   - god-function
   files:
   - regix/snapshot.py
-  dedupe_key: 'code2llm:smell:god_function:regix/snapshot.py:204:God Function: capture'
+  dedupe_key: 'code2llm:smell:god_function:regix/snapshot.py:213:God Function: capture'
 - signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: check_regression'
   description: 'code2llm reports `God Function: check_regression` in `scripts/check_regression.py:25`.
@@ -930,6 +786,24 @@ tickets:
   - regix/cli.py
   dedupe_key: 'code2llm:smell:god_function:regix/cli.py:31:God Function: compare'
 - signal: code2llm_smell_god_function
+  title: 'Address code smell: God Function: compare'
+  description: 'code2llm reports `God Function: compare` in `regix/compare.py:216`.
+
+
+    Function ''compare'' is oversized: CC=7, fan-out=12, mutations=21.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - god-function
+  files:
+  - regix/compare.py
+  dedupe_key: 'code2llm:smell:god_function:regix/compare.py:216:God Function: compare'
+- signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: diff'
   description: 'code2llm reports `God Function: diff` in `regix/cli.py:165`.
 
@@ -983,6 +857,24 @@ tickets:
   files:
   - regix/cli.py
   dedupe_key: 'code2llm:smell:god_function:regix/cli.py:212:God Function: gates'
+- signal: code2llm_smell_god_function
+  title: 'Address code smell: God Function: impact'
+  description: 'code2llm reports `God Function: impact` in `regix/cli.py:346`.
+
+
+    Function ''impact'' is oversized: CC=3, fan-out=13, mutations=4.
+
+
+    Make the smallest refactor that removes the smell and run local tests.'
+  priority: normal
+  labels:
+  - llm-ready
+  - code2llm
+  - code-smell
+  - god-function
+  files:
+  - regix/cli.py
+  dedupe_key: 'code2llm:smell:god_function:regix/cli.py:346:God Function: impact'
 - signal: code2llm_smell_god_function
   title: 'Address code smell: God Function: list_commits'
   description: 'code2llm reports `God Function: list_commits` in `regix/git.py:50`.
@@ -1228,7 +1120,7 @@ tickets:
   description: 'code2llm reports `God Module: regix.models` in `regix/models.py:1`.
 
 
-    Module ''regix.models'' is too large (11 functions, 13 classes). Consider splitting
+    Module ''regix.models'' is too large (12 functions, 13 classes). Consider splitting
     into sub-modules.
 
 

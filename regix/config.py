@@ -177,6 +177,26 @@ class RegressionConfig:
     min_node_diversity: int = 2
     god_func_length_min: int = CONSTANT_30
     hallucination_max_lines: int = MAX_6
+    impact_include_prefixes: list[str] = field(
+        default_factory=lambda: ["backend/", "frontend/", "connect-", "packages/", "services/"]
+    )
+    impact_ignore_globs: list[str] = field(
+        default_factory=lambda: [
+            "**/node_modules/**",
+            "**/.venv/**",
+            "**/__pycache__/**",
+            "**/project/**",
+            "**/batch_**",
+            "**/reports/**",
+            "**/redeploy/**",
+        ]
+    )
+    impact_test_patterns: list[str] = field(
+        default_factory=lambda: [
+            "tests/test_{stem}.py",
+            "backend/tests/test_{stem}.py",
+        ]
+    )
 
     @property
     def cc_max(self) -> float:
@@ -291,6 +311,7 @@ class RegressionConfig:
         cls._parse_output(root, kwargs)
         cls._parse_cache(root, kwargs)
         cls._parse_loop(root, kwargs)
+        cls._parse_impact(root, kwargs)
         return cls(**kwargs)
 
     @staticmethod
@@ -426,6 +447,17 @@ class RegressionConfig:
         loop = root.get("loop", {})
         if "stagnation_window" in loop:
             kwargs["stagnation_window"] = int(loop["stagnation_window"])
+
+    @staticmethod
+    def _parse_impact(root: dict, kwargs: dict) -> None:
+        """Parse impact settings."""
+        impact = root.get("impact", {})
+        if "include_prefixes" in impact:
+            kwargs["impact_include_prefixes"] = impact["include_prefixes"]
+        if "ignore_globs" in impact:
+            kwargs["impact_ignore_globs"] = impact["ignore_globs"]
+        if "test_patterns" in impact:
+            kwargs["impact_test_patterns"] = impact["test_patterns"]
 
     def delta_thresholds(self, metric: str) -> tuple[float, float]:
         """Return (warn, error) thresholds for a specific metric."""

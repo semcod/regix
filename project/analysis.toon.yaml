@@ -1,138 +1,132 @@
-# code2llm | 48f 8157L | python:36,yaml:4,json:2,shell:2,ini:1,yml:1,toml:1 | 2026-05-27
-# generated in 0.01s
-# CC̅=5.0 | critical:8/196 | dups:0 | cycles:1
+# code2llm | 48f 8257L | python:36,yaml:4,json:2,shell:2,ini:1,toml:1,yml:1 | 2026-05-27
+# generated in 0.02s
+# CC̅=4.5 | critical:2/221 | dups:0 | cycles:1
 
-HEALTH[8]:
-  🟡 CC    _parse_map_toon CC=25 (limit:15)
-  🟡 CC    _parse_evolution_toon CC=16 (limit:15)
-  🟡 CC    _fallback_yaml_parse CC=18 (limit:15)
-  🟡 CC    analyze_impact CC=19 (limit:15)
-  🟡 CC    filter CC=15 (limit:15)
-  🟡 CC    _collect_files CC=17 (limit:15)
-  🟡 CC    compare CC=15 (limit:15)
-  🟡 CC    impact CC=18 (limit:15)
+HEALTH[2]:
+  🟡 CC    _parse_map_toon CC=21 (limit:15)
+  🟡 CC    _parse_evolution_toon CC=17 (limit:15)
 
 REFACTOR[2]:
-  1. split 8 high-CC methods  (CC>15)
+  1. split 2 high-CC methods  (CC>15)
   2. break 1 circular dependencies
 
-PIPELINES[119]:
-  [1] Src [__init__]: __init__
+PIPELINES[134]:
+  [1] Src [run_command]: run_command
       PURITY: 100% pure
-  [2] Src [__init__]: __init__
+  [2] Src [check_regression]: check_regression → load_json_file
       PURITY: 100% pure
-  [3] Src [__init__]: __init__
+  [3] Src [get]: get
       PURITY: 100% pure
-  [4] Src [__init__]: __init__
+  [4] Src [from_file]: from_file
       PURITY: 100% pure
-  [5] Src [lookup]: lookup → _cache_dir
+  [5] Src [from_dict]: from_dict
       PURITY: 100% pure
-  [6] Src [store]: store → _cache_dir
+  [6] Src [_parse_gates]: _parse_gates
       PURITY: 100% pure
-  [7] Src [clear]: clear → _cache_dir
+  [7] Src [_parse_legacy_metrics]: _parse_legacy_metrics
       PURITY: 100% pure
-  [8] Src [is_available]: is_available
+  [8] Src [_parse_deltas]: _parse_deltas
       PURITY: 100% pure
-  [9] Src [version]: version
+  [9] Src [_parse_smells]: _parse_smells
       PURITY: 100% pure
-  [10] Src [_read_source]: _read_source
+  [10] Src [_parse_backends]: _parse_backends
       PURITY: 100% pure
-  [11] Src [_iter_functions]: _iter_functions
+  [11] Src [_parse_output]: _parse_output
       PURITY: 100% pure
-  [12] Src [_param_count]: _param_count
+  [12] Src [_parse_cache]: _parse_cache
       PURITY: 100% pure
-  [13] Src [_symbol_metrics]: _symbol_metrics
+  [13] Src [_parse_loop]: _parse_loop
       PURITY: 100% pure
-  [14] Src [collect]: collect
+  [14] Src [delta_thresholds]: delta_thresholds
       PURITY: 100% pure
-  [15] Src [version]: version
+  [15] Src [is_lower_better]: is_lower_better
       PURITY: 100% pure
-  [16] Src [collect]: collect
+  [16] Src [_find_config]: _find_config
       PURITY: 100% pure
-  [17] Src [is_available]: is_available
+  [17] Src [_from_yaml]: _from_yaml
       PURITY: 100% pure
-  [18] Src [version]: version
+  [18] Src [_from_pyproject]: _from_pyproject
       PURITY: 100% pure
-  [19] Src [collect]: collect
+  [19] Src [apply_env_overrides]: apply_env_overrides
       PURITY: 100% pure
-  [20] Src [version]: version
+  [20] Src [__init__]: __init__
       PURITY: 100% pure
-  [21] Src [collect]: collect
+  [21] Src [__init__]: __init__
       PURITY: 100% pure
-  [22] Src [is_available]: is_available
+  [22] Src [__init__]: __init__
       PURITY: 100% pure
-  [23] Src [version]: version
+  [23] Src [__init__]: __init__
       PURITY: 100% pure
-  [24] Src [_run_code2llm]: _run_code2llm
+  [24] Src [__init__]: __init__
       PURITY: 100% pure
-  [25] Src [_parse_map_toon]: _parse_map_toon
+  [25] Src [snapshot]: snapshot → capture → _resolve_backends → get_backend
       PURITY: 100% pure
-  [26] Src [_parse_evolution_toon]: _parse_evolution_toon
+  [26] Src [compare]: compare
       PURITY: 100% pure
-  [27] Src [collect]: collect
+  [27] Src [compare_local]: compare_local
       PURITY: 100% pure
-  [28] Src [collect]: collect
+  [28] Src [history]: history → build_history → list_commits → _run_git
       PURITY: 100% pure
-  [29] Src [_from_json]: _from_json
+  [29] Src [is_clean]: is_clean → _run_git
       PURITY: 100% pure
-  [30] Src [_from_coverage_file]: _from_coverage_file
+  [30] Src [get_dirty_files]: get_dirty_files → _run_git
       PURITY: 100% pure
-  [31] Src [version]: version
+  [31] Src [get_changed_files]: get_changed_files → _run_git
       PURITY: 100% pure
-  [32] Src [collect]: collect
+  [32] Src [checkout_temporary]: checkout_temporary → resolve_ref → _run_git
       PURITY: 100% pure
-  [33] Src [_format_result_details]: _format_result_details
+  [33] Src [lookup]: lookup → _cache_dir
       PURITY: 100% pure
-  [34] Src [print_rich]: print_rich → _fmt_time
+  [34] Src [store]: store → _cache_dir
       PURITY: 100% pure
-  [35] Src [print_plain]: print_plain → print
+  [35] Src [clear]: clear → _cache_dir
       PURITY: 100% pure
-  [36] Src [print_json]: print_json → print
+  [36] Src [_check_stub_regression]: _check_stub_regression → _func_length
       PURITY: 100% pure
-  [37] Src [any_failed]: any_failed
+  [37] Src [_check_no_delegation]: _check_no_delegation → _func_length
       PURITY: 100% pure
-  [38] Src [run_command]: run_command
+  [38] Src [_check_logic_density_drop]: _check_logic_density_drop
       PURITY: 100% pure
-  [39] Src [check_regression]: check_regression → load_json_file
+  [39] Src [_check_cohesion_loss]: _check_cohesion_loss
       PURITY: 100% pure
-  [40] Src [add]: add
+  [40] Src [version]: version
       PURITY: 100% pure
-  [41] Src [run]: run
+  [41] Src [_read_source]: _read_source
       PURITY: 100% pure
-  [42] Src [__init__]: __init__
+  [42] Src [_iter_functions]: _iter_functions
       PURITY: 100% pure
-  [43] Src [_load_swop_mappings]: _load_swop_mappings
+  [43] Src [_param_count]: _param_count
       PURITY: 100% pure
-  [44] Src [_fallback_yaml_parse]: _fallback_yaml_parse
+  [44] Src [_symbol_metrics]: _symbol_metrics
       PURITY: 100% pure
-  [45] Src [get_git_modified_files]: get_git_modified_files
+  [45] Src [collect]: collect
       PURITY: 100% pure
-  [46] Src [analyze_impact]: analyze_impact
+  [46] Src [is_available]: is_available
       PURITY: 100% pure
-  [47] Src [execute_targeted_tests]: execute_targeted_tests
+  [47] Src [version]: version
       PURITY: 100% pure
-  [48] Src [__getattr__]: __getattr__
+  [48] Src [collect]: collect
       PURITY: 100% pure
-  [49] Src [collect]: collect
+  [49] Src [version]: version
       PURITY: 100% pure
-  [50] Src [_parse]: _parse
+  [50] Src [collect]: collect
       PURITY: 100% pure
 
 LAYERS:
   scripts/                        CC̄=5.7    ←in:0  →out:3
   │ check_regression            96L  0C    3m  CC=14     ←0
   │
-  regix/                          CC̄=5.0    ←in:4  →out:4
+  regix/                          CC̄=4.5    ←in:4  →out:4
   │ !! config                     503L  2C   24m  CC=8      ←0
   │ probes                     433L  6C   14m  CC=11     ←0
-  │ !! models                     399L  13C   11m  CC=15     ←0
+  │ models                     403L  13C   12m  CC=13     ←0
   │ smells                     393L  0C   15m  CC=14     ←1
-  │ !! cli                        370L  0C    9m  CC=18     ←0
-  │ !! code2llm_backend           267L  1C    6m  CC=25     ←0
+  │ cli                        388L  0C   15m  CC=14     ←0
+  │ !! code2llm_backend           286L  1C   12m  CC=21     ←0
+  │ impact                     274L  1C   14m  CC=11     ←0
+  │ compare                    264L  0C    7m  CC=9      ←0
   │ factory                    261L  0C    6m  CC=5      ←0
-  │ !! compare                    260L  0C    6m  CC=15     ←0
-  │ !! snapshot                   243L  0C    7m  CC=17     ←4
-  │ !! impact                     228L  1C    6m  CC=19     ←0
+  │ snapshot                   252L  0C   10m  CC=11     ←4
   │ structure_backend          202L  2C    7m  CC=11     ←0
   │ git                        180L  1C    9m  CC=6      ←2
   │ architecture_backend       139L  1C    7m  CC=6      ←0
@@ -141,8 +135,8 @@ LAYERS:
   │ reporter                   130L  1C    8m  CC=14     ←2
   │ __init__                   112L  2C    4m  CC=9      ←0
   │ cache                      110L  0C    5m  CC=4      ←0
-  │ coverage_backend           109L  1C    5m  CC=7      ←0
   │ history                    109L  0C    4m  CC=8      ←2
+  │ coverage_backend           109L  1C    5m  CC=7      ←0
   │ radon_backend              104L  1C    3m  CC=11     ←0
   │ vallm_backend               84L  1C    3m  CC=11     ←0
   │ lizard_backend              82L  1C    3m  CC=9      ←0

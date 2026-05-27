@@ -11,8 +11,13 @@ from typing import List, Dict, Any, Set
 class ImpactAnalyzer:
     """Generic impact analyzer for local code changes and test suite mapping."""
 
-    def __init__(self, workdir: str = "."):
+    def __init__(self, workdir: str = ".", config: RegressionConfig | None = None):
         self.root = Path(workdir).resolve()
+        if config is None:
+            from regix.config import RegressionConfig
+            self.config = RegressionConfig()
+        else:
+            self.config = config
         self.dependency_graph: Dict[str, Dict[str, Any]] = {}
         self._load_swop_mappings()
 
@@ -127,19 +132,17 @@ class ImpactAnalyzer:
             files = [line.strip() for line in (res.stdout + res_untracked.stdout).splitlines() if line.strip()]
             
             # Filter to focus only on active code paths and ignore massive temp/build/artifact directories
-            allowed_prefixes = ("backend/", "frontend/", "connect-", "packages/", "services/")
-            ignored_substrings = (
-                "/node_modules/", "/.venv/", "/__pycache__/", "/project/", "project/",
-                "/batch_", "batch_", "/reports/", "reports/", "/redeploy/", "redeploy/"
-            )
+            allowed_prefixes = tuple(self.config.impact_include_prefixes)
+            ignored_globs = self.config.impact_ignore_globs
             
             filtered_files = []
             for f in files:
                 # Must start with allowed prefix or be a main level config file
-                if not any(f.startswith(p) for p in allowed_prefixes) and "/" in f:
+                if allowed_prefixes and not any(f.startswith(p) for p in allowed_prefixes) and "/" in f:
                     continue
-                # Must not contain ignored substrings
-                if any(sub in f or f.startswith(sub) for sub in ignored_substrings):
+                # Must not match ignored globs
+                import fnmatch
+                if any(fnmatch.fnmatch(f, glob) for glob in ignored_globs):
                     continue
                 filtered_files.append(f)
                 
@@ -166,17 +169,25 @@ class ImpactAnalyzer:
         return contexts, targets
 
     def _map_python_unit_tests(self, file_path: Path) -> Set[str]:
-        """Map Python file to unit test targets. Returns set of test paths."""
+        """Map Python file to unit test targets using configured patterns."""
         targets: Set[str] = set()
-        if "backend" in file_path.parts or file_path.suffix == ".py":
-            stem = file_path.stem
-            potential_tests = [
-                self.root / "backend" / "tests" / f"test_{stem}.py",
-                self.root / "tests" / f"test_{stem}.py"
-            ]
-            for p_test in potential_tests:
-                if p_test.exists():
-                    targets.add(str(p_test.relative_to(self.root)))
+        if file_path.suffix != ".py":
+            return targets
+
+        stem = file_path.stem
+        try:
+            rel_dir = str(file_path.parent.relative_to(self.root))
+            if rel_dir == ".":
+                rel_dir = ""
+        except ValueError:
+            rel_dir = ""
+
+        for pattern in self.config.impact_test_patterns:
+            p_str = pattern.replace("{stem}", stem).replace("{dir}", rel_dir)
+            p_str = p_str.replace("//", "/").lstrip("/")
+            p_test = self.root / p_str
+            if p_test.exists():
+                targets.add(str(p_test.relative_to(self.root)))
         return targets
 
     def _map_frontend_routes(self, file_path: Path) -> Set[str]:

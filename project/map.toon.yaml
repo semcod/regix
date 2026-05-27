@@ -1,9 +1,9 @@
-# regix | 48f 8157L | python:36,yaml:4,json:2,shell:2,ini:1,yml:1,toml:1 | 2026-05-27
+# regix | 48f 8257L | yaml:4,python:36,json:2,ini:1,toml:1,shell:2,yml:1 | 2026-05-27
 # generated in 0.01s
-# stats: 196 func | 0 cls | 48 mod | CC̄=5.0 | critical:8 | cycles:0
-# alerts[5]: CC Code2llmBackend._parse_map_toon=25; CC ImpactAnalyzer.analyze_impact=19; fan-out Code2llmBackend._parse_map_toon=19; CC ImpactAnalyzer._fallback_yaml_parse=18; CC impact=18
-# hotspots[5]: Code2llmBackend._parse_map_toon fan=19; ImpactAnalyzer.analyze_impact fan=18; Code2llmBackend._parse_evolution_toon fan=16; BackendProbe.run fan=16; BenchmarkReporter.print_rich fan=15
-# evolution: CC̄ 4.5→5.0 (regressed +0.5)
+# stats: 221 func | 0 cls | 48 mod | CC̄=4.5 | critical:2 | cycles:0
+# alerts[5]: CC Code2llmBackend._parse_map_toon=21; CC Code2llmBackend._parse_evolution_toon=17; fan-out BackendProbe.run=16; fan-out BenchmarkReporter.print_rich=15; fan-out ImpactAnalyzer.analyze_impact=15
+# hotspots[5]: BackendProbe.run fan=16; BenchmarkReporter.print_rich fan=15; compare fan=15; ImpactAnalyzer.analyze_impact fan=15; build_regix_suite fan=14
+# evolution: CC̄ 5.0→4.5 (improved -0.5)
 # Keys: M=modules, D=details, i=imports, e=exports, c=classes, f=functions, m=methods
 M[48]:
   Makefile,136
@@ -20,7 +20,7 @@ M[48]:
   regix/backends/__init__.py,20
   regix/backends/architecture_backend.py,139
   regix/backends/base.py,72
-  regix/backends/code2llm_backend.py,267
+  regix/backends/code2llm_backend.py,286
   regix/backends/coverage_backend.py,109
   regix/backends/docstring_backend.py,79
   regix/backends/lizard_backend.py,82
@@ -36,20 +36,20 @@ M[48]:
   regix/benchmark/reporter.py,130
   regix/benchmark/suite.py,28
   regix/cache.py,110
-  regix/cli.py,370
-  regix/compare.py,260
+  regix/cli.py,388
+  regix/compare.py,264
   regix/config.py,503
   regix/exceptions.py,54
   regix/gates.py,64
   regix/git.py,180
   regix/history.py,109
-  regix/impact.py,228
+  regix/impact.py,274
   regix/integrations/__init__.py,112
   regix/integrations/planfile.py,76
-  regix/models.py,399
+  regix/models.py,403
   regix/report.py,134
   regix/smells.py,393
-  regix/snapshot.py,243
+  regix/snapshot.py,252
   scripts/check_regression.py,96
   sumd.json,406
   tox.ini,52
@@ -57,62 +57,9 @@ M[48]:
 D:
   regix/backends/code2llm_backend.py:
     e: Code2llmBackend
-    Code2llmBackend(BackendBase): is_available(0),version(0),_run_code2llm(1),_parse_map_toon(1),_parse_evolution_toon(1),collect(4)  # Code2llm TOON YAML parser for rich structural metrics.
+    Code2llmBackend(BackendBase): is_available(0),version(0),_run_code2llm(1),_parse_header_stats(1),_parse_module_list_entry(1),_parse_function_entry(2),_parse_map_toon(1),_parse_next_action_line(1),_parse_cc_from_line(1),_parse_target_to_symbol_file(1),_parse_evolution_toon(1),collect(4)  # Code2llm TOON YAML parser for rich structural metrics.
 
 Gene...
-  regix/impact.py:
-    e: ImpactAnalyzer
-    ImpactAnalyzer: __init__(1),_load_swop_mappings(0),_fallback_yaml_parse(1),get_git_modified_files(0),analyze_impact(1),execute_targeted_tests(3)  # Generic impact analyzer for local code changes and test suit...
-  regix/cli.py:
-    e: _load_config,compare,history,snapshot,diff,gates,status,init,impact
-    _load_config(config;workdir)
-    compare(ref_a;ref_b;local;config;fmt;output;metric;errors_only;fail_on;workdir;planfile;changed_only)
-    history(depth;ref;metric;fmt;output;config;workdir)
-    snapshot(ref;fmt;output;config;workdir)
-    diff(ref_a;ref_b;threshold;metric;config;workdir)
-    gates(ref;fail_on;config;workdir)
-    status(config;workdir)
-    init(workdir)
-    impact(run;dry_run;pytest_only;workdir)
-  regix/snapshot.py:
-    e: _collect_files,_filter_sources,_merge_symbols,_resolve_backends,_load_sources,_run_backends,capture
-    _collect_files(workdir;include;exclude)
-    _filter_sources(sources;include;exclude)
-    _merge_symbols(all_results)
-    _resolve_backends(backend_names;config)
-    _load_sources(ref;workdir;config;is_local)
-    _run_backends(backends;workdir;files;config;sources)
-    capture(ref;workdir;config;backend_names;restrict_to_files)
-  regix/models.py:
-    e: SymbolMetrics,MetricDelta,ArchSmell,Regression,Improvement,Snapshot,RegressionReport,CommitMetrics,HistoryRegression,TrendLine,HistoryReport,GateCheck,GateResult
-    SymbolMetrics:  # All tracked metrics for a single symbol (function, class, or...
-    MetricDelta:  # Change in a single metric between two snapshots...
-    ArchSmell:  # An architectural regression smell detected by cross-symbol a...
-    Regression:  # A detected worsening of a metric between two snapshots...
-    Improvement:  # A detected improvement of a metric between two snapshots...
-    Snapshot: get(2),save(1),load(1)  # Immutable record of all SymbolMetrics for a codebase at a po...
-    RegressionReport: to_dict(0),to_json(1),to_yaml(0),_toon_regression_section(1),_toon_smell_section(1),to_toon(0),_matches(4),filter(4)  # Aggregated result of a comparison between two snapshots...
-    CommitMetrics:  # Aggregated metrics for a single commit...
-    HistoryRegression:  # A regression spanning multiple commits...
-    TrendLine:  # Linear trend across commit history for a single metric...
-    HistoryReport:  # Multi-commit metric timeline...
-    GateCheck:  # Single gate threshold check...
-    GateResult:  # Aggregate gate evaluation result...
-  regix/compare.py:
-    e: _severity_for_delta,_compute_delta,_collect_deleted_symbol,_compare_symbol_metrics,_process_comparison_key,compare
-    _severity_for_delta(abs_delta;is_regression;is_improvement;warn_thresh;error_thresh)
-    _compute_delta(metric;before;after;config)
-    _collect_deleted_symbol(m_before;file_path;symbol_name;config;ref_before;ref_after)
-    _compare_symbol_metrics(m_before;m_after;file_path;symbol_name;config;ref_before;ref_after)
-    _process_comparison_key(key;idx_before;idx_after;config;ref_before;ref_after)
-    compare(snap_before;snap_after;config)
-  regix/backends/docstring_backend.py:
-    e: DocstringBackend
-    DocstringBackend(BackendBase): is_available(0),version(0),collect(4)  # Measure docstring coverage using the ``ast`` module...
-  regix/benchmark/reporter.py:
-    e: BenchmarkReporter,_fmt_time
-    BenchmarkReporter: __init__(1),_format_result_details(0),print_rich(0),print_plain(0),print_json(0),print(1),any_failed(0)  # Prints results as a rich table or plain text...
-    _fmt_time(s)
   scripts/check_regression.py:
     e: run_command,load_json_file,check_regression
     run_command(cmd)
@@ -140,15 +87,59 @@ Gene...
     _count_hollow_signals(m;config)
     _was_already_hollow(m_before;config)
     _check_hallucination_proxy(file;sym;m_before;m_after;config;ref_b;ref_a)
+  regix/backends/docstring_backend.py:
+    e: DocstringBackend
+    DocstringBackend(BackendBase): is_available(0),version(0),collect(4)  # Measure docstring coverage using the ``ast`` module...
+  regix/benchmark/reporter.py:
+    e: BenchmarkReporter,_fmt_time
+    BenchmarkReporter: __init__(1),_format_result_details(0),print_rich(0),print_plain(0),print_json(0),print(1),any_failed(0)  # Prints results as a rich table or plain text...
+    _fmt_time(s)
+  regix/cli.py:
+    e: _load_config,compare,history,snapshot,diff,gates,status,init,_print_modified_files,_print_impact_summary,_print_pytest_targets,_print_testql_scenarios,_print_visual_routes,_print_test_results,impact
+    _load_config(config;workdir)
+    compare(ref_a;ref_b;local;config;fmt;output;metric;errors_only;fail_on;workdir;planfile;changed_only)
+    history(depth;ref;metric;fmt;output;config;workdir)
+    snapshot(ref;fmt;output;config;workdir)
+    diff(ref_a;ref_b;threshold;metric;config;workdir)
+    gates(ref;fail_on;config;workdir)
+    status(config;workdir)
+    init(workdir)
+    _print_modified_files(files)
+    _print_impact_summary(analysis)
+    _print_pytest_targets(targets)
+    _print_testql_scenarios(scenarios)
+    _print_visual_routes(routes)
+    _print_test_results(results;pytest_only)
+    impact(run;dry_run;pytest_only;workdir)
   regix/integrations/planfile.py:
     e: sync_regressions_to_planfile
     sync_regressions_to_planfile(report;workdir)
-  regix/backends/vallm_backend.py:
-    e: VallmBackend
-    VallmBackend(BackendBase): is_available(0),version(0),collect(4)  # LLM-based code quality scoring via the ``vallm`` CLI tool...
+  regix/models.py:
+    e: SymbolMetrics,MetricDelta,ArchSmell,Regression,Improvement,Snapshot,RegressionReport,CommitMetrics,HistoryRegression,TrendLine,HistoryReport,GateCheck,GateResult
+    SymbolMetrics:  # All tracked metrics for a single symbol (function, class, or...
+    MetricDelta:  # Change in a single metric between two snapshots...
+    ArchSmell:  # An architectural regression smell detected by cross-symbol a...
+    Regression:  # A detected worsening of a metric between two snapshots...
+    Improvement:  # A detected improvement of a metric between two snapshots...
+    Snapshot: get(2),save(1),load(1)  # Immutable record of all SymbolMetrics for a codebase at a po...
+    RegressionReport: to_dict(0),to_json(1),to_yaml(0),_toon_regression_section(1),_toon_smell_section(1),to_toon(0),_matches(4),_count_severity(2),filter(4)  # Aggregated result of a comparison between two snapshots...
+    CommitMetrics:  # Aggregated metrics for a single commit...
+    HistoryRegression:  # A regression spanning multiple commits...
+    TrendLine:  # Linear trend across commit history for a single metric...
+    HistoryReport:  # Multi-commit metric timeline...
+    GateCheck:  # Single gate threshold check...
+    GateResult:  # Aggregate gate evaluation result...
   regix/backends/radon_backend.py:
     e: RadonBackend
     RadonBackend(BackendBase): is_available(0),version(0),collect(4)  # Maintainability index and cyclomatic complexity via ``radon`...
+  regix/backends/vallm_backend.py:
+    e: VallmBackend
+    VallmBackend(BackendBase): is_available(0),version(0),collect(4)  # LLM-based code quality scoring via the ``vallm`` CLI tool...
+  regix/backends/structure_backend.py:
+    e: _CallVisitor,StructureBackend,_analyse_function
+    _CallVisitor(ast.NodeVisitor): __init__(0),visit_Call(1)  # Collect call_count and fan_out from a function body...
+    StructureBackend(BackendBase): is_available(0),version(0),collect(4),_collect_functions(3)  # AST-based structural metrics: fan_out, call_count, symbol_co...
+    _analyse_function(node)
   regix/benchmark/probes.py:
     e: BenchmarkProbe,ImportProbe,CLIProbe,UnitTestProbe,ThroughputProbe,BackendProbe,_measurement_error
     BenchmarkProbe(ABC): run(0)
@@ -158,11 +149,21 @@ Gene...
     ThroughputProbe(BenchmarkProbe): __init__(7),run(0)  # Measures throughput of a callable (operations/second)...
     BackendProbe(BenchmarkProbe): __init__(5),_generate_files(1),run(0)  # Measures a regix backend's collect() throughput on synthetic...
     _measurement_error()
-  regix/backends/structure_backend.py:
-    e: _CallVisitor,StructureBackend,_analyse_function
-    _CallVisitor(ast.NodeVisitor): __init__(0),visit_Call(1)  # Collect call_count and fan_out from a function body...
-    StructureBackend(BackendBase): is_available(0),version(0),collect(4),_collect_functions(3)  # AST-based structural metrics: fan_out, call_count, symbol_co...
-    _analyse_function(node)
+  regix/impact.py:
+    e: ImpactAnalyzer
+    ImpactAnalyzer: __init__(1),_load_swop_mappings(0),_parse_yaml_section_header(1),_parse_yaml_item_start(1),_parse_yaml_item_field(2),_fallback_yaml_parse(1),get_git_modified_files(0),_map_folder_to_context(1),_map_swop_manifest(1),_map_python_unit_tests(1),_map_frontend_routes(1),_map_scenarios(1),analyze_impact(1),execute_targeted_tests(3)  # Generic impact analyzer for local code changes and test suit...
+  regix/snapshot.py:
+    e: _should_ignore_dir,_apply_include_patterns,_apply_exclude_patterns,_collect_files,_filter_sources,_merge_symbols,_resolve_backends,_load_sources,_run_backends,capture
+    _should_ignore_dir(dirname)
+    _apply_include_patterns(files;include)
+    _apply_exclude_patterns(files;exclude)
+    _collect_files(workdir;include;exclude)
+    _filter_sources(sources;include;exclude)
+    _merge_symbols(all_results)
+    _resolve_backends(backend_names;config)
+    _load_sources(ref;workdir;config;is_local)
+    _run_backends(backends;workdir;files;config;sources)
+    capture(ref;workdir;config;backend_names;restrict_to_files)
   regix/backends/lizard_backend.py:
     e: LizardBackend
     LizardBackend(BackendBase): is_available(0),version(0),collect(4)  # Cyclomatic complexity and function length via the ``lizard``...
@@ -173,27 +174,33 @@ Gene...
 
 Reads ``.re...
     _as_attribute_preset(value)
-  regix/history.py:
-    e: _aggregate_snapshot_metrics,_compute_trends,build_history,_linear_slope
-    _aggregate_snapshot_metrics(symbols)
-    _compute_trends(commit_metrics_list;metric_keys)
-    build_history(depth;ref;workdir;config;metrics_filter)
-    _linear_slope(values)
+  regix/compare.py:
+    e: _severity_for_delta,_compute_delta,_collect_deleted_symbol,_compare_symbol_metrics,_process_comparison_key,_count_severity_in_list,compare
+    _severity_for_delta(abs_delta;is_regression;is_improvement;warn_thresh;error_thresh)
+    _compute_delta(metric;before;after;config)
+    _collect_deleted_symbol(m_before;file_path;symbol_name;config;ref_before;ref_after)
+    _compare_symbol_metrics(m_before;m_after;file_path;symbol_name;config;ref_before;ref_after)
+    _process_comparison_key(key;idx_before;idx_after;config;ref_before;ref_after)
+    _count_severity_in_list(items;severity)
+    compare(snap_before;snap_after;config)
   regix/config.py:
     e: GateThresholds,RegressionConfig
     GateThresholds: get(1)  # Threshold set for a single tier (hard or target).
 
 Keys use ...
     RegressionConfig: cc_max(1),cc_max(1),mi_min(1),mi_min(1),coverage_min(1),coverage_min(1),length_max(1),length_max(1),docstring_min(1),docstring_min(1),quality_min(1),quality_min(1),from_file(1),from_dict(1),_parse_gates(1),_parse_legacy_metrics(1),_parse_deltas(1),_parse_smells(1),_parse_files(1),_parse_backends(1),_parse_output(1),_parse_cache(1),_parse_loop(1),delta_thresholds(1),is_lower_better(1),_find_config(1),_from_yaml(1),_from_pyproject(1),apply_env_overrides(0)  # All user-configurable values for a Regix run...
+  regix/history.py:
+    e: _aggregate_snapshot_metrics,_compute_trends,build_history,_linear_slope
+    _aggregate_snapshot_metrics(symbols)
+    _compute_trends(commit_metrics_list;metric_keys)
+    build_history(depth;ref;workdir;config;metrics_filter)
+    _linear_slope(values)
   regix/backends/coverage_backend.py:
     e: CoverageBackend
     CoverageBackend(BackendBase): is_available(0),version(0),collect(4),_from_json(2),_from_coverage_file(3)
   regix/benchmark/cli.py:
     e: main
     main()
-  regix/backends/architecture_backend.py:
-    e: ArchitectureBackend
-    ArchitectureBackend(BackendBase): is_available(0),version(0),_read_source(3),_iter_functions(0),_param_count(0),_symbol_metrics(1),collect(4)  # Computes per-function structural metrics via AST for smell d...
   regix/gates.py:
     e: _passes,check_gates
     _passes(value;threshold;operator)
@@ -210,6 +217,9 @@ Keys use ...
     checkout_temporary(ref;workdir)
     read_tree_sources(ref;workdir;suffix)
     read_local_sources(workdir;files)
+  regix/backends/architecture_backend.py:
+    e: ArchitectureBackend
+    ArchitectureBackend(BackendBase): is_available(0),version(0),_read_source(3),_iter_functions(0),_param_count(0),_symbol_metrics(1),collect(4)  # Computes per-function structural metrics via AST for smell d...
   regix/benchmark/suite.py:
     e: BenchmarkSuite
     BenchmarkSuite: __init__(1),add(1),run(1)  # Collects probes and runs them...
@@ -248,18 +258,18 @@ Keys use ...
     e: BenchmarkResult
     BenchmarkResult: to_dict(0)
   goal.yaml:
-  planfile.yaml:
   SUMR.json:
-  pyqual.yaml:
+  planfile.yaml:
   Makefile:
+  pyqual.yaml:
   sumd.json:
-  tree.sh:
   tox.ini:
-  prefact.yaml:
-  project.sh:
-  Taskfile.yml:
   pyproject.toml:
+  tree.sh:
+  prefact.yaml:
+  Taskfile.yml:
+  project.sh:
+  regix/__main__.py:
   regix/backends/__init__.py:
   regix/benchmark/__init__.py:
   regix/benchmark/__main__.py:
-  regix/__main__.py:

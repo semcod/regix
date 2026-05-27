@@ -1,5 +1,5 @@
 flowchart TD
-%% generated in 0.00s
+%% generated in 0.01s
 
     %% Entry points (blue)
     classDef entry fill:#4dabf7,stroke:#1971c2,color:#fff
@@ -13,26 +13,32 @@ flowchart TD
         regix__cli__gates["gates"]
         regix__cli__status["status"]
         regix__cli__init["init"]
+        regix__cli___print_modified_files["_print_modified_files"]
+        regix__cli___print_impact_summary["_print_impact_summary"]
+        regix__cli___print_pytest_targets["_print_pytest_targets"]
+        regix__cli___print_testql_scenarios["_print_testql_scenarios"]
+        regix__cli___print_visual_routes["_print_visual_routes"]
+        regix__cli___print_test_results["_print_test_results"]
         regix__cli__impact["impact"]
     end
 
     subgraph Core
-        regix__cache__lookup["lookup"]
-        regix__cache__store["store"]
-        regix__cache__clear["clear"]
-        regix__backends__base__BackendBase__is_available["is_available"]
-        regix__backends__base__BackendBase__collect["collect"]
-        regix__backends__base__BackendBase__version["version"]
-        regix__backends__base__BackendBase___python_version["_python_version"]
-        regix__backends__base__register_backend["register_backend"]
-        regix__backends__architecture_backend__ArchitectureBackend__is_available["is_available"]
-        regix__backends__architecture_backend__ArchitectureBackend__version["version"]
-        regix__backends__architecture_backend__ArchitectureBackend___read_source["_read_source"]
-        regix__backends__architecture_backend__ArchitectureBackend___iter_functions["_iter_functions"]
-        regix__backends__architecture_backend__ArchitectureBackend___param_count["_param_count"]
-        regix__backends__architecture_backend__ArchitectureBackend___symbol_metrics["_symbol_metrics"]
-        regix__backends__architecture_backend__ArchitectureBackend__collect["collect"]
-        ...["+110 more"]
+        regix__config__GateThresholds__get["get"]
+        regix__config__RegressionConfig__cc_max["cc_max"]
+        regix__config__RegressionConfig__mi_min["mi_min"]
+        regix__config__RegressionConfig__coverage_min["coverage_min"]
+        regix__config__RegressionConfig__length_max["length_max"]
+        regix__config__RegressionConfig__docstring_min["docstring_min"]
+        regix__config__RegressionConfig__quality_min["quality_min"]
+        regix__config__RegressionConfig__from_file["from_file"]
+        regix__config__RegressionConfig__from_dict["from_dict"]
+        regix__config__RegressionConfig___parse_gates["_parse_gates"]
+        regix__config__RegressionConfig___parse_legacy_metrics["_parse_legacy_metrics"]
+        regix__config__RegressionConfig___parse_deltas["_parse_deltas"]
+        regix__config__RegressionConfig___parse_smells["_parse_smells"]
+        regix__config__RegressionConfig___parse_files["_parse_files"]
+        regix__config__RegressionConfig___parse_backends["_parse_backends"]
+        ...["+124 more"]
     end
 
-    class regix__cache__lookup,regix__cache__store,regix__cache__clear,regix__backends__base__BackendBase__is_available,regix__backends__base__BackendBase__collect,regix__backends__base__BackendBase__version,regix__backends__base__BackendBase___python_version,regix__backends__base__register_backend,regix__backends__architecture_backend__ArchitectureBackend__is_available,regix__backends__architecture_backend__ArchitectureBackend__version entry
+    class regix__config__GateThresholds__get,regix__config__RegressionConfig__cc_max,regix__config__RegressionConfig__mi_min,regix__config__RegressionConfig__coverage_min,regix__config__RegressionConfig__length_max,regix__config__RegressionConfig__docstring_min,regix__config__RegressionConfig__quality_min,regix__config__RegressionConfig__from_file,regix__config__RegressionConfig__from_dict,regix__config__RegressionConfig___parse_gates entry

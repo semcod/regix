@@ -1,24 +1,28 @@
-# redup/duplication | 3 groups | 36f 5611L | 2026-05-27
+# redup/duplication | 4 groups | 36f 5711L | 2026-05-27
 
 SUMMARY:
   files_scanned: 36
-  total_lines:   5611
-  dup_groups:    3
-  dup_fragments: 6
-  saved_lines:   17
-  scan_ms:       2205
+  total_lines:   5711
+  dup_groups:    4
+  dup_fragments: 8
+  saved_lines:   25
+  scan_ms:       2731
 
-HOTSPOTS[5] (files with most duplication):
+HOTSPOTS[6] (files with most duplication):
   regix/benchmark/factory.py  dup=22L  groups=1  frags=2  (0.4%)
+  regix/cli.py  dup=16L  groups=1  frags=2  (0.3%)
   regix/backends/docstring_backend.py  dup=3L  groups=1  frags=1  (0.1%)
   regix/backends/structure_backend.py  dup=3L  groups=1  frags=1  (0.1%)
   regix/backends/code2llm_backend.py  dup=3L  groups=1  frags=1  (0.1%)
   regix/backends/vallm_backend.py  dup=3L  groups=1  frags=1  (0.1%)
 
-DUPLICATES[3] (ranked by impact):
+DUPLICATES[4] (ranked by impact):
   [ad22907fd7353219]   EXAC  setup  L=11 N=2 saved=11 sim=1.00
       regix/benchmark/factory.py:186-196  (setup)
       regix/benchmark/factory.py:216-226  (setup)
+  [045c6a3a5b9b1697]   STRU  _print_pytest_targets  L=8 N=2 saved=8 sim=1.00
+      regix/cli.py:306-313  (_print_pytest_targets)
+      regix/cli.py:315-322  (_print_testql_scenarios)
   [cdd9c981788b61e5]   EXAC  version  L=3 N=2 saved=3 sim=1.00
       regix/backends/docstring_backend.py:22-24  (version)
       regix/backends/structure_backend.py:120-122  (version)
@@ -26,26 +30,32 @@ DUPLICATES[3] (ranked by impact):
       regix/backends/code2llm_backend.py:52-54  (is_available)
       regix/backends/vallm_backend.py:21-23  (is_available)
 
-REFACTOR[3] (ranked by priority):
+REFACTOR[4] (ranked by priority):
   [1] ○ extract_function   → regix/benchmark/utils/setup.py
       WHY: 2 occurrences of 11-line block across 1 files — saves 11 lines
       FILES: regix/benchmark/factory.py
-  [2] ○ extract_function   → regix/backends/utils/version.py
+  [2] ○ extract_function   → regix/utils/_print_pytest_targets.py
+      WHY: 2 occurrences of 8-line block across 1 files — saves 8 lines
+      FILES: regix/cli.py
+  [3] ○ extract_function   → regix/backends/utils/version.py
       WHY: 2 occurrences of 3-line block across 2 files — saves 3 lines
       FILES: regix/backends/docstring_backend.py, regix/backends/structure_backend.py
-  [3] ○ extract_function   → regix/backends/utils/is_available.py
+  [4] ○ extract_function   → regix/backends/utils/is_available.py
       WHY: 2 occurrences of 3-line block across 2 files — saves 3 lines
       FILES: regix/backends/code2llm_backend.py, regix/backends/vallm_backend.py
 
-QUICK_WINS[1] (low risk, high savings — do first):
+QUICK_WINS[2] (low risk, high savings — do first):
   [1] extract_function   saved=11L  → regix/benchmark/utils/setup.py
       FILES: factory.py
+  [2] extract_function   saved=8L  → regix/utils/_print_pytest_targets.py
+      FILES: cli.py
 
-EFFORT_ESTIMATE (total ≈ 0.6h):
+EFFORT_ESTIMATE (total ≈ 0.8h):
   easy   setup                               saved=11L  ~22min
+  easy   _print_pytest_targets               saved=8L  ~16min
   easy   version                             saved=3L  ~6min
   easy   is_available                        saved=3L  ~6min
 
 METRICS-TARGET:
-  dup_groups:  3 → 0
-  saved_lines: 17 lines recoverable
+  dup_groups:  4 → 0
+  saved_lines: 25 lines recoverable
