@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from types import SimpleNamespace
 from typing import Any
 
 try:
@@ -80,33 +79,15 @@ if ToolPreset is not None:
         output=".regix/report.toon.yaml",
         allow_failure=False,
     )
+    REGIX_PRESET = _preset
 else:
-    # Fallback dla backward compatibility gdy pyqual nie jest zainstalowany
-    _preset = SimpleNamespace(
-        binary="regix",
-        command="regix compare HEAD~1 HEAD --format toon --output .regix/",
-        output=".regix/report.toon.yaml",
-        allow_failure=False,
-    )
-
-
-def _as_attribute_preset(value: Any) -> AttributePreset:
-    if isinstance(value, dict):
-        return AttributePreset(value)
-    if hasattr(value, "__dict__"):
-        return AttributePreset(vars(value))
-    return AttributePreset(
+    # Fallback for callers that inspect the integration without pyqual installed.
+    REGIX_PRESET = AttributePreset(
         {
-            "binary": getattr(value, "binary", "regix"),
-            "command": getattr(
-                value,
-                "command",
-                "regix compare HEAD~1 HEAD --format toon --output .regix/",
-            ),
-            "output": getattr(value, "output", ".regix/report.toon.yaml"),
-            "allow_failure": getattr(value, "allow_failure", False),
+            "binary": "regix",
+            "command": "regix compare HEAD~1 HEAD --format toon --output .regix/",
+            "output": ".regix/report.toon.yaml",
+            "allow_failure": False,
         }
     )
 
-
-REGIX_PRESET = _as_attribute_preset(_preset)

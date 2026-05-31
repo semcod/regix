@@ -66,7 +66,7 @@ class TestRegixPreset:
     def test_has_required_keys(self):
         assert getattr(REGIX_PRESET, "binary", None) == "regix"
         assert getattr(REGIX_PRESET, "command", None)
-        assert REGIX_PRESET["output"] == ".regix/report.toon.yaml"
+        assert getattr(REGIX_PRESET, "output", None) == ".regix/report.toon.yaml"
 
     def test_attribute_preset_wraps_dict(self):
         preset = AttributePreset({"binary": "regix", "command": "regix status"})

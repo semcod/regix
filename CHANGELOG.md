@@ -2,6 +2,17 @@
 
 ## [Unreleased]
 
+## [0.1.27] - 2026-05-31
+
+### Docs
+- Update README.md
+
+### Test
+- Update tests/test_integrations.py
+
+### Other
+- Update regix/integrations/__init__.py
+
 ## [0.1.26] - 2026-05-27
 
 ### Docs
