@@ -2,6 +2,16 @@
 
 ## [Unreleased]
 
+## [0.1.29] - 2026-05-31
+
+### Docs
+- Update README.md
+
+### Other
+- Update VERSION
+- Update regix/__init__.py
+- Update uv.lock
+
 ## [0.1.27] - 2026-05-31
 
 ### Docs
