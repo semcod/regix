@@ -1,0 +1,310 @@
+// LESS format — define @variables here as needed
+
+app {
+  name: regix;
+  version: 0.1.29;
+  description: "Regression Index — detect and measure code quality regressions between git versions";
+  license: Apache-2.0;
+  authors: "Tom Sapletta <tom@sapletta.com>";
+  keywords: "regression, refactoring, code-quality, git, cyclomatic-complexity, CI";
+  homepage: https://github.com/semcod/regix;
+  repository: https://github.com/semcod/regix;
+}
+
+dependencies {
+  runtime: "pyyaml>=6.0, typer>=0.12, rich>=13.0";
+  lizard: lizard>=1.17;
+  radon: radon>=6.0;
+  coverage: coverage[toml]>=7.0;
+  vallm: vallm>=0.1;
+  full: "lizard>=1.17, radon>=6.0, coverage[toml]>=7.0, vallm>=0.1";
+  pyqual: pyqual>=0.1.50;
+  dev: "pytest>=8.0, pytest-cov>=5.0, lizard>=1.17, radon>=6.0, coverage[toml]>=7.0, goal>=2.1.218, costs>=0.1.20, pfix>=0.1.60, pyqual>=0.1.50, code2llm>=0.1, vallm>=0.1, prefact>=0.1, llx>=0.1.75, build>=1.0, twine>=5.0";
+}
+
+interface[type="cli"] {
+  framework: argparse;
+}
+interface[type="cli"] page[name="regix"] {
+  entry: regix.cli:app;
+}
+
+workflow[name="install"] {
+  trigger: manual;
+  step-1: run cmd=pip install .;
+}
+
+workflow[name="dev"] {
+  trigger: manual;
+  step-1: run cmd=pip install -e ".[dev]";
+}
+
+workflow[name="test"] {
+  trigger: manual;
+  step-1: run cmd=python -m pytest -q;
+}
+
+workflow[name="build"] {
+  trigger: manual;
+  step-1: run cmd=python -m pip install --upgrade build twine;
+  step-2: run cmd=python -m build --sdist --wheel;
+}
+
+workflow[name="publish"] {
+  trigger: manual;
+  step-1: run cmd=python -m twine upload dist/*;
+}
+
+workflow[name="clean"] {
+  trigger: manual;
+  step-1: run cmd=rm -rf dist build *.egg-info .pytest_cache __pycache__ goal/__pycache__;
+}
+
+workflow[name="push"] {
+  trigger: manual;
+  step-1: run cmd=if command -v goal &> /dev/null; then \;
+  step-2: run cmd=goal push; \;
+  step-3: run cmd=else \;
+  step-4: run cmd=echo "Goal not installed. Run 'make install' first."; \;
+  step-5: run cmd=fi;
+}
+
+workflow[name="benchmark"] {
+  trigger: manual;
+  step-1: run cmd=$(PYTHON) -m regix.benchmark;
+}
+
+workflow[name="benchmark-ci"] {
+  trigger: manual;
+  step-1: run cmd=$(PYTHON) -m regix.benchmark --plain --threshold 30.0;
+}
+
+workflow[name="benchmark-json"] {
+  trigger: manual;
+  step-1: run cmd=$(PYTHON) -m regix.benchmark --json > .pyqual/benchmark.json;
+}
+
+workflow[name="docker-matrix"] {
+  trigger: manual;
+  step-1: run cmd=bash integration/run_docker_matrix.sh;
+}
+
+workflow[name="deps-cache"] {
+  trigger: manual;
+  step-1: run cmd=echo "${YELLOW}Downloading all deps to local wheel cache...${RESET}";
+  step-2: run cmd=mkdir -p $(WHEEL_CACHE);
+  step-3: run cmd=$(PIP) download -d $(WHEEL_CACHE) -e ".[dev]";
+  step-4: run cmd=echo "${GREEN}Cached $$(ls $(WHEEL_CACHE) | wc -l) wheels in $(WHEEL_CACHE)/${RESET}";
+}
+
+workflow[name="deps-lock"] {
+  trigger: manual;
+  step-1: run cmd=echo "${YELLOW}Freezing current versions...${RESET}";
+  step-2: run cmd=$(PIP) freeze --exclude-editable > requirements-lock.txt;
+  step-3: run cmd=echo "${GREEN}Wrote requirements-lock.txt${RESET}";
+}
+
+workflow[name="test-offline"] {
+  trigger: manual;
+  step-1: run cmd=echo "${YELLOW}Running tests offline (no network)...${RESET}";
+  step-2: run cmd=$(PYTHON) -m pytest tests/ -q --tb=short -p no:cacheprovider;
+  step-3: run cmd=echo "${GREEN}Offline tests complete${RESET}";
+}
+
+workflow[name="install-offline"] {
+  trigger: manual;
+  step-1: run cmd=if [ ! -d "$(WHEEL_CACHE)" ]; then \;
+  step-2: run cmd=echo "${YELLOW}No wheel cache found. Run 'make deps-cache' first.${RESET}"; \;
+  step-3: run cmd=exit 1; \;
+  step-4: run cmd=fi;
+  step-5: run cmd=$(PIP) install --no-index --find-links=$(WHEEL_CACHE) -e ".[dev]";
+}
+
+workflow[name="bump-version"] {
+  trigger: manual;
+  step-1: run cmd=if [ -z "$(PART)" ]; then \;
+  step-2: run cmd=echo "${YELLOW}Error: PART variable not set. Usage: make bump-version PART=<major|minor|patch>${RESET}"; \;
+  step-3: run cmd=exit 1; \;
+  step-4: run cmd=fi;
+  step-5: run cmd=echo "${YELLOW}Bumping $(PART) version...${RESET}";
+  step-6: run cmd=current_version=$$(grep '^version = ' pyproject.toml | head -1 | sed 's/version = "\(.*\)"/\1/'); \;
+  step-7: run cmd=echo "Current version: $$current_version"; \;
+  step-8: run cmd=IFS='.' read -r major minor patch <<< "$$current_version"; \;
+}
+
+workflow[name="help"] {
+  trigger: manual;
+  step-1: run cmd=echo "Targets:";
+  step-2: run cmd=echo "  make install  - install goal locally";
+  step-3: run cmd=echo "  make dev      - install in development mode";
+  step-4: run cmd=echo "  make test     - run tests";
+  step-5: run cmd=echo "  make build    - build package for PyPI";
+  step-6: run cmd=echo "  make publish  - build and upload to PyPI";
+  step-7: run cmd=echo "  make clean    - remove build artifacts";
+  step-8: run cmd=echo "  make push     - use goal to push changes";
+  step-9: run cmd=echo "  make benchmark      - run performance benchmark";
+  step-10: run cmd=echo "  make benchmark-ci   - benchmark for CI (plain, threshold)";
+  step-11: run cmd=echo "  make benchmark-json - benchmark JSON output";
+  step-12: run cmd=echo "  make deps-cache     - download all deps to local wheel cache";
+  step-13: run cmd=echo "  make deps-lock      - freeze current versions to requirements-lock.txt";
+  step-14: run cmd=echo "  make test-offline   - run tests without network (uses cached deps)";
+}
+
+workflow[name="health"] {
+  trigger: manual;
+  step-1: run cmd=docker compose ps;
+  step-2: run cmd=docker compose exec app echo "Health check passed";
+}
+
+workflow[name="import-makefile-hint"] {
+  trigger: manual;
+  step-1: run cmd=echo 'Run: taskfile import Makefile to import existing targets.';
+}
+
+workflow[name="all"] {
+  trigger: manual;
+  step-1: run cmd=taskfile run install;
+  step-2: run cmd=taskfile run lint;
+  step-3: run cmd=taskfile run test;
+}
+
+workflow[name="sumd"] {
+  trigger: manual;
+  step-1: run cmd=echo "# $(basename $(pwd))" > SUMD.md
+echo "" >> SUMD.md
+echo "$(python3 -c "import tomllib; f=open('pyproject.toml','rb'); d=tomllib.load(f); print(d.get('project',{}).get('description','Project description'))" 2>/dev/null || echo 'Project description')" >> SUMD.md
+echo "" >> SUMD.md
+echo "## Contents" >> SUMD.md
+echo "" >> SUMD.md
+echo "- [Metadata](#metadata)" >> SUMD.md
+echo "- [Architecture](#architecture)" >> SUMD.md
+echo "- [Dependencies](#dependencies)" >> SUMD.md
+echo "- [Source Map](#source-map)" >> SUMD.md
+echo "- [Intent](#intent)" >> SUMD.md
+echo "" >> SUMD.md
+echo "## Metadata" >> SUMD.md
+echo "" >> SUMD.md
+echo "- **name**: \`$(basename $(pwd))\`" >> SUMD.md
+echo "- **version**: \`$(python3 -c "import tomllib; f=open('pyproject.toml','rb'); d=tomllib.load(f); print(d.get('project',{}).get('version','unknown'))" 2>/dev/null || echo 'unknown')\`" >> SUMD.md
+echo "- **python_requires**: \`>=$(python3 -c "import tomllib; f=open('pyproject.toml','rb'); d=tomllib.load(f); print(d.get('project',{}).get('requires-python','3.10').replace('>=','').replace('^',''))" 2>/dev/null || echo '3.10')\`" >> SUMD.md
+echo "- **license**: $(python3 -c "import tomllib; f=open('pyproject.toml','rb'); d=tomllib.load(f); lic=d.get('project',{}).get('license','MIT'); print(lic if isinstance(lic,str) else lic.get('text','MIT'))" 2>/dev/null || echo 'MIT')" >> SUMD.md
+echo "- **ecosystem**: SUMD + DOQL + testql + taskfile" >> SUMD.md
+echo "- **generated_from**: pyproject.toml, Taskfile.yml, Makefile, regix/" >> SUMD.md
+echo "" >> SUMD.md
+echo "## Architecture" >> SUMD.md
+echo "" >> SUMD.md
+echo '```' >> SUMD.md
+echo "SUMD (description) → DOQL/source (code) → taskfile (automation) → testql (verification)" >> SUMD.md
+echo '```' >> SUMD.md
+echo "" >> SUMD.md
+echo "## Dependencies" >> SUMD.md
+echo "" >> SUMD.md
+runtime_deps=$(python3 -c 'import tomllib; f=open("pyproject.toml","rb"); d=tomllib.load(f); print(", ".join(d.get("project",{}).get("dependencies",[])) or "none")' 2>/dev/null || echo 'none')
+echo "- **runtime**: ${runtime_deps}" >> SUMD.md
+echo "- **analysis (optional)**: lizard, radon, coverage[toml], vallm" >> SUMD.md
+echo "- **dev/test**: pytest, pytest-cov, tox, ruff, mypy" >> SUMD.md
+echo "" >> SUMD.md
+echo "## Source Map" >> SUMD.md
+echo "" >> SUMD.md
+find . -name '*.py' -not -path './.venv/*' -not -path './venv/*' -not -path './__pycache__/*' -not -path './.git/*' -not -path './.tox/*' -not -path './dist/*' -not -path './build/*' -not -path './.pytest_cache/*' -not -path './.ruff_cache/*' -not -path './.coverage/*' -not -path './.code2llm_cache/*' -not -path './.taskill/*' | head -50 | sed 's|^./||' | sed 's|^|- |' >> SUMD.md
+echo "" >> SUMD.md
+echo "## Intent" >> SUMD.md
+echo "" >> SUMD.md
+echo "- Track code-quality regressions between refs." >> SUMD.md
+echo '- Support LLM patch validation via diff-scoped `regix review`.' >> SUMD.md
+echo "- Target selective tests using impact + dependency analysis." >> SUMD.md
+echo "Generated SUMD.md";
+  step-2: run cmd=python3 -c "
+import json, os, subprocess
+from pathlib import Path
+project_name = Path.cwd().name
+py_files = list(Path('.').rglob('*.py'))
+skip_parts = ['.venv', 'venv', '__pycache__', '.git', '.tox', 'dist', 'build', '.pytest_cache', '.ruff_cache', '.coverage', '.code2llm_cache', '.taskill']
+py_files = [f for f in py_files if not any(x in str(f).split(os.sep) for x in skip_parts)]
+data = {
+    'project_name': project_name,
+    'description': 'SUMD - Structured Unified Markdown Descriptor for AI-aware project refactorization',
+    'files': [{'path': str(f), 'type': 'python'} for f in py_files[:100]]
+}
+with open('sumd.json', 'w') as f:
+    json.dump(data, f, indent=2)
+print('Generated sumd.json')
+" 2>/dev/null || echo 'Python generation failed, using fallback';
+}
+
+workflow[name="sumr"] {
+  trigger: manual;
+  step-1: run cmd=echo "# $(basename $(pwd)) - Summary Report" > SUMR.md
+echo "" >> SUMR.md
+echo "SUMR - Summary Report for project analysis" >> SUMR.md
+echo "" >> SUMR.md
+echo "## Contents" >> SUMR.md
+echo "" >> SUMR.md
+echo "- [Metadata](#metadata)" >> SUMR.md
+echo "- [Quality Status](#quality-status)" >> SUMR.md
+echo "- [Metrics](#metrics)" >> SUMR.md
+echo "- [Refactoring Analysis](#refactoring-analysis)" >> SUMR.md
+echo "- [Intent](#intent)" >> SUMR.md
+echo "" >> SUMR.md
+echo "## Metadata" >> SUMR.md
+echo "" >> SUMR.md
+echo "- **name**: \`$(basename $(pwd))\`" >> SUMR.md
+echo "- **version**: \`$(python3 -c "import tomllib; f=open('pyproject.toml','rb'); d=tomllib.load(f); print(d.get('project',{}).get('version','unknown'))" 2>/dev/null || echo 'unknown')\`" >> SUMR.md
+echo "- **generated_at**: \`$(date -Iseconds)\`" >> SUMR.md
+echo "" >> SUMR.md
+echo "## Quality Status" >> SUMR.md
+echo "" >> SUMR.md
+if [ -f pyqual.yaml ]; then
+  echo "- **pyqual_config**: ✅ Present" >> SUMR.md
+  echo "- **last_run**: $(stat -c %y .pyqual/pipeline.db 2>/dev/null | cut -d' ' -f1 || echo 'N/A')" >> SUMR.md
+else
+  echo "- **pyqual_config**: ❌ Missing" >> SUMR.md
+fi
+echo "" >> SUMR.md
+echo "## Metrics" >> SUMR.md
+echo "" >> SUMR.md
+py_files=$(find . -name '*.py' -not -path './.venv/*' -not -path './venv/*' | wc -l)
+echo "- **python_files**: $py_files" >> SUMR.md
+lines=$(find . -name '*.py' -not -path './.venv/*' -not -path './venv/*' -exec cat {} \; 2>/dev/null | wc -l)
+echo "- **total_lines**: $lines" >> SUMR.md
+echo "" >> SUMR.md
+echo "## Refactoring Analysis" >> SUMR.md
+echo "" >> SUMR.md
+echo "Run \`code2llm ./ -f evolution\` for detailed refactoring queue." >> SUMR.md
+echo "Generated SUMR.md";
+  step-2: run cmd=python3 -c "
+import json, os, subprocess
+from pathlib import Path
+from datetime import datetime
+project_name = Path.cwd().name
+py_files = len([f for f in Path('.').rglob('*.py') if not any(x in str(f) for x in ['.venv', 'venv', '__pycache__', '.git'])])
+data = {
+    'project_name': project_name,
+    'report_type': 'SUMR',
+    'generated_at': datetime.now().isoformat(),
+    'metrics': {
+        'python_files': py_files,
+        'has_pyqual_config': Path('pyqual.yaml').exists()
+    }
+}
+with open('SUMR.json', 'w') as f:
+    json.dump(data, f, indent=2)
+print('Generated SUMR.json')
+" 2>/dev/null || echo 'Python generation failed, using fallback';
+}
+
+env_vars {
+  keys: OPENROUTER_API_KEY, LLM_MODEL, PYPI_API_TOKEN, TWINE_USERNAME, TWINE_PASSWORD;
+}
+
+deploy {
+  target: makefile;
+}
+
+environment[name="local"] {
+  runtime: python;
+  env_file: .env;
+  python_version: >=3.10;
+  vars: LLM_MODEL, OPENROUTER_API_KEY, PYPI_API_TOKEN, TWINE_PASSWORD, TWINE_USERNAME;
+  runtime_llm: OPENROUTER_API_KEY;
+}
