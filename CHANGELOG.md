@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+## [0.1.30] - 2026-06-29
+
+### Docs
+- Update README.md
+
 ## [0.1.29] - 2026-05-31
 
 ### Docs
