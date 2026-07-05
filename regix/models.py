@@ -443,6 +443,8 @@ class GateCheck:
     passed: bool
     source: str = "snapshot"
     severity: str = "error"
+    file: str | None = None
+    symbol: str | None = None
 
 
 @dataclass

@@ -193,3 +193,94 @@ class TestCapture:
         cfg = RegressionConfig()
         snap = capture("local", tmp_path, cfg, backend_names=["nonexistent"])
         assert len(snap.symbols) == 0
+
+    @patch("regix.backends.get_backend")
+    @patch("regix.git.read_local_sources")
+    def test_capture_file_cache_skips_unchanged_files(
+        self, mock_read, mock_get_bk, tmp_path: Path
+    ):
+        """A second capture() with use_file_cache=True must not re-run the
+        backend on a file whose content hasn't changed since the first call.
+        """
+        mock_read.return_value = {"a.py": "x = 1", "b.py": "y = 2"}
+
+        mock_bk = MagicMock()
+        mock_bk.name = "structure"
+        mock_bk.version.return_value = "1.0"
+        mock_bk.is_available.return_value = True
+        mock_bk.collect.side_effect = lambda workdir, files, config, sources: [
+            SymbolMetrics(file=str(f), symbol=None, cc=1) for f in files
+        ]
+        mock_get_bk.return_value = mock_bk
+
+        cfg = RegressionConfig()
+        cache_dir = str(tmp_path / "cache")
+
+        snap1 = capture(
+            "local",
+            tmp_path,
+            cfg,
+            backend_names=["structure"],
+            use_file_cache=True,
+            file_cache_dir=cache_dir,
+        )
+        assert {s.file for s in snap1.symbols} == {"a.py", "b.py"}
+        assert mock_bk.collect.call_count == 1
+        first_call_files = mock_bk.collect.call_args.args[1]
+        assert len(first_call_files) == 2
+
+        # Second capture, same content: neither file should be re-analyzed.
+        snap2 = capture(
+            "local",
+            tmp_path,
+            cfg,
+            backend_names=["structure"],
+            use_file_cache=True,
+            file_cache_dir=cache_dir,
+        )
+        assert {s.file for s in snap2.symbols} == {"a.py", "b.py"}
+        assert mock_bk.collect.call_count == 2  # called again, but with 0 files
+        second_call_files = mock_bk.collect.call_args.args[1]
+        assert second_call_files == []
+
+    @patch("regix.backends.get_backend")
+    @patch("regix.git.read_local_sources")
+    def test_capture_file_cache_reanalyzes_only_changed_file(
+        self, mock_read, mock_get_bk, tmp_path: Path
+    ):
+        mock_bk = MagicMock()
+        mock_bk.name = "structure"
+        mock_bk.version.return_value = "1.0"
+        mock_bk.is_available.return_value = True
+        mock_bk.collect.side_effect = lambda workdir, files, config, sources: [
+            SymbolMetrics(file=str(f), symbol=None, cc=1) for f in files
+        ]
+        mock_get_bk.return_value = mock_bk
+
+        cfg = RegressionConfig()
+        cache_dir = str(tmp_path / "cache")
+
+        mock_read.return_value = {"a.py": "x = 1", "b.py": "y = 2"}
+        capture(
+            "local",
+            tmp_path,
+            cfg,
+            backend_names=["structure"],
+            use_file_cache=True,
+            file_cache_dir=cache_dir,
+        )
+
+        # b.py changes; a.py doesn't.
+        mock_read.return_value = {"a.py": "x = 1", "b.py": "y = 999"}
+        snap = capture(
+            "local",
+            tmp_path,
+            cfg,
+            backend_names=["structure"],
+            use_file_cache=True,
+            file_cache_dir=cache_dir,
+        )
+
+        reanalyzed = mock_bk.collect.call_args.args[1]
+        assert [str(f) for f in reanalyzed] == ["b.py"]
+        assert {s.file for s in snap.symbols} == {"a.py", "b.py"}

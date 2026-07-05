@@ -2,6 +2,51 @@
 
 ## [Unreleased]
 
+### Added
+- Per-file incremental cache for `regix gates` (`--cache`/`--no-cache`, default
+  on): each file's analysis is keyed by its content hash + the active backend
+  versions, independent of git ref/commit. The existing commit-sha-keyed
+  snapshot cache in `regix/cache.py` only helps a *fixed* ref (a tag or
+  already-analyzed commit) — it's unusable for `ref=local` (never gets a
+  `commit_sha`) and gets fully invalidated by every new commit on a moving
+  ref like `HEAD`, even when only one file actually changed. This is exactly
+  the cost paid on every koru loop iteration and every manual gate check
+  (~60-90s on semcod/koru). Implemented via `regix.cache.split_cached_files`/
+  `update_file_cache` (a gzipped JSON index keyed by relative path) and wired
+  into `snapshot.capture(use_file_cache=True)`, which only runs backends on
+  files whose hash or backend-versions fingerprint changed, then merges in
+  cached symbols for everything else.
+  Verified: 26 new cache-layer tests + 2 new `capture()` integration tests
+  (mock backend call counts prove unchanged files are skipped and only the
+  actually-changed file gets re-analyzed) plus a real timing run against this
+  repo — identical gate results both times, second run ~2x faster with zero
+  disk reads (`0inputs` vs `2368inputs` per `/usr/bin/time`). Full test suite
+  (354 tests) passes.
+- `GateCheck` now carries `file`/`symbol` so gate violations can be attributed
+  to a specific location in output.
+
+## [0.1.32] - 2026-07-05
+
+### Docs
+- Update CHANGELOG.md
+- Update README.md
+
+### Test
+- Update tests/test_cache.py
+- Update tests/test_cli.py
+- Update tests/test_snapshot.py
+
+### Other
+- Update VERSION
+- Update local.dev.txt
+- Update regix/__init__.py
+- Update regix/cache.py
+- Update regix/cli.py
+- Update regix/gates.py
+- Update regix/models.py
+- Update regix/snapshot.py
+- Update uv.lock
+
 ## [0.1.30] - 2026-06-29
 
 ### Docs

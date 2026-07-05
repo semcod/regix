@@ -129,4 +129,4 @@ __all__ = [
     "ArchSmell",
 ]
 
-__version__ = "0.1.30"
+__version__ = "0.1.32"

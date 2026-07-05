@@ -185,6 +185,23 @@ class TestGatesCommand:
         assert result.exit_code == 1
         assert "violation" in result.output
 
+    @patch("regix.snapshot.capture")
+    @patch("regix.gates.check_gates")
+    def test_gates_violation_names_file_and_symbol(self, mock_gates, mock_capture, tmp_path):
+        from regix.models import GateCheck, GateResult
+        mock_capture.return_value = _fake_snap()
+        mock_gates.return_value = GateResult(checks=[
+            GateCheck(metric="cc", value=50.0, threshold=15.0,
+                      operator="le", passed=False, source="snapshot", severity="error",
+                      file="src/pkg/mod.py", symbol="big_func"),
+            GateCheck(metric="mi", value=5.0, threshold=20.0,
+                      operator="ge", passed=False, source="snapshot", severity="warning",
+                      file="src/pkg/mod.py", symbol=None),
+        ])
+        result = runner.invoke(app, ["gates", "--workdir", str(tmp_path)])
+        assert "src/pkg/mod.py::big_func" in result.output
+        assert "src/pkg/mod.py::(mod)" in result.output
+
 
 class TestDiffCommand:
     @patch("regix.snapshot.capture")

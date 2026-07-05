@@ -9,7 +9,18 @@ from pathlib import Path
 
 import pytest
 
-from regix.cache import _cache_dir, _cache_key, clear, lookup, store
+from regix.cache import (
+    _cache_dir,
+    _cache_key,
+    clear,
+    content_hash,
+    load_file_index,
+    lookup,
+    save_file_index,
+    split_cached_files,
+    store,
+    update_file_cache,
+)
 from regix.models import Snapshot, SymbolMetrics
 
 
@@ -120,3 +131,133 @@ class TestClear:
     def test_clear_empty_dir(self, tmp_path: Path):
         count = clear(cache_dir=str(tmp_path))
         assert count == 0
+
+
+class TestContentHash:
+    def test_deterministic(self):
+        assert content_hash("x = 1") == content_hash("x = 1")
+
+    def test_changes_with_content(self):
+        assert content_hash("x = 1") != content_hash("x = 2")
+
+
+class TestFileIndex:
+    def test_load_missing_returns_empty(self, tmp_path: Path):
+        assert load_file_index(cache_dir=str(tmp_path)) == {}
+
+    def test_save_then_load_roundtrips(self, tmp_path: Path):
+        save_file_index({"a.py": {"hash": "abc"}}, cache_dir=str(tmp_path))
+        assert load_file_index(cache_dir=str(tmp_path)) == {"a.py": {"hash": "abc"}}
+
+    def test_load_corrupted_returns_empty(self, tmp_path: Path):
+        path = tmp_path / "file_index.json.gz"
+        path.write_bytes(b"not valid gzip")
+        assert load_file_index(cache_dir=str(tmp_path)) == {}
+
+
+class TestSplitCachedFiles:
+    def test_unindexed_file_needs_analysis(self, tmp_path: Path):
+        files = [Path("a.py")]
+        sources = {"a.py": "x = 1"}
+        to_analyze, cached = split_cached_files(
+            files, sources, {"lizard": "1.0"}, cache_dir=str(tmp_path)
+        )
+        assert to_analyze == files
+        assert cached == []
+
+    def test_unchanged_file_is_served_from_cache(self, tmp_path: Path):
+        files = [Path("a.py")]
+        sources = {"a.py": "x = 1"}
+        versions = {"lizard": "1.0"}
+        symbols = [SymbolMetrics(file="a.py", symbol="f", cc=3)]
+
+        update_file_cache(files, sources, symbols, versions, cache_dir=str(tmp_path))
+        to_analyze, cached = split_cached_files(
+            files, sources, versions, cache_dir=str(tmp_path)
+        )
+
+        assert to_analyze == []
+        assert len(cached) == 1
+        assert cached[0].cc == 3
+
+    def test_changed_content_invalidates_cache_entry(self, tmp_path: Path):
+        files = [Path("a.py")]
+        versions = {"lizard": "1.0"}
+        symbols = [SymbolMetrics(file="a.py", symbol="f", cc=3)]
+
+        update_file_cache(
+            files, {"a.py": "x = 1"}, symbols, versions, cache_dir=str(tmp_path)
+        )
+        to_analyze, cached = split_cached_files(
+            files, {"a.py": "x = 2"}, versions, cache_dir=str(tmp_path)
+        )
+
+        assert to_analyze == files
+        assert cached == []
+
+    def test_changed_backend_version_invalidates_cache_entry(self, tmp_path: Path):
+        files = [Path("a.py")]
+        sources = {"a.py": "x = 1"}
+        symbols = [SymbolMetrics(file="a.py", symbol="f", cc=3)]
+
+        update_file_cache(
+            files, sources, symbols, {"lizard": "1.0"}, cache_dir=str(tmp_path)
+        )
+        to_analyze, cached = split_cached_files(
+            files, sources, {"lizard": "2.0"}, cache_dir=str(tmp_path)
+        )
+
+        assert to_analyze == files
+        assert cached == []
+
+    def test_mixed_changed_and_unchanged_files(self, tmp_path: Path):
+        files = [Path("a.py"), Path("b.py")]
+        sources = {"a.py": "x = 1", "b.py": "y = 2"}
+        versions = {"lizard": "1.0"}
+        symbols = [
+            SymbolMetrics(file="a.py", symbol="f", cc=1),
+            SymbolMetrics(file="b.py", symbol="g", cc=2),
+        ]
+        update_file_cache(files, sources, symbols, versions, cache_dir=str(tmp_path))
+
+        changed_sources = {"a.py": "x = 1", "b.py": "y = 999"}  # only b.py changed
+        to_analyze, cached = split_cached_files(
+            files, changed_sources, versions, cache_dir=str(tmp_path)
+        )
+
+        assert to_analyze == [Path("b.py")]
+        assert len(cached) == 1
+        assert cached[0].file == "a.py"
+
+
+class TestUpdateFileCache:
+    def test_writes_entry_retrievable_via_index(self, tmp_path: Path):
+        files = [Path("a.py")]
+        sources = {"a.py": "x = 1"}
+        symbols = [SymbolMetrics(file="a.py", symbol="f", cc=3, mi=50.0)]
+
+        update_file_cache(
+            files, sources, symbols, {"lizard": "1.0"}, cache_dir=str(tmp_path)
+        )
+
+        index = load_file_index(cache_dir=str(tmp_path))
+        assert index["a.py"]["hash"] == content_hash("x = 1")
+        assert index["a.py"]["symbols"][0]["cc"] == 3
+        assert index["a.py"]["symbols"][0]["mi"] == 50.0
+
+    def test_file_with_no_symbols_still_cached_as_empty(self, tmp_path: Path):
+        """A file that produced zero symbols this run must still be recorded
+        as a cache hit next time -- otherwise an empty-result file would be
+        re-analyzed on every single run forever."""
+        files = [Path("empty.py")]
+        sources = {"empty.py": ""}
+
+        update_file_cache(
+            files, sources, [], {"lizard": "1.0"}, cache_dir=str(tmp_path)
+        )
+        to_analyze, cached = split_cached_files(
+            files, sources, {"lizard": "1.0"}, cache_dir=str(tmp_path)
+        )
+
+        assert to_analyze == []
+        assert cached == []

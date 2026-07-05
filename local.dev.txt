@@ -1,0 +1,17 @@
+# local.dev.txt — locally developed dependencies of this project (generated 2026-07-04)
+# by ~/github/local.dev.sh — DO NOT EDIT; see ~/github/local.dev.md
+# project: regix 0.1.31 (python) at /home/tom/github/semcod/regix
+# deps declared: 18 | with local source: 9
+
+## LOCAL DEPS  (dep | required | local source (version) | installed | status)
+code2llm | >=0.1 | /home/tom/github/semcod/code2llm (0.5.169) | 0.5.169 non-editable | NON-EDITABLE -> fix: pip install -e /home/tom/github/semcod/code2llm  [pyproject.toml[dev]]
+code2llm | >=0.1 | /home/tom/github/wronai/teLLMe/code2llm-src (0.5.23) | 0.5.169 non-editable | STALE-INSTALL (local 0.5.23) -> fix: pip install -e /home/tom/github/wronai/teLLMe/code2llm-src  [pyproject.toml[dev]]
+costs | >=0.1.20 | /home/tom/github/semcod/costs (0.1.53) | 0.1.52 non-editable | STALE-INSTALL (local 0.1.53) -> fix: pip install -e /home/tom/github/semcod/costs  [pyproject.toml[dev]]
+goal | >=2.1.218 | /home/tom/github/semcod/goal (2.1.266) | 2.1.262 non-editable | STALE-INSTALL (local 2.1.266) -> fix: pip install -e /home/tom/github/semcod/goal  [pyproject.toml[dev]]
+llx | >=0.1.75 | /home/tom/github/semcod/llx (0.1.85) | 0.1.84 non-editable | STALE-INSTALL (local 0.1.85) -> fix: pip install -e /home/tom/github/semcod/llx  [pyproject.toml[dev]]
+pfix | >=0.1.60 | /home/tom/github/semcod/pfix (0.1.76) | 0.1.73 editable | OK-EDITABLE  [pyproject.toml[dev]]
+prefact | >=0.1 | /home/tom/github/semcod/prefact (dynamic) | 0.1.59 non-editable | NON-EDITABLE -> fix: pip install -e /home/tom/github/semcod/prefact  [pyproject.toml[dev]]
+pyqual | >=0.1.50 | /home/tom/github/semcod/pyqual (0.1.150) | 0.1.150 non-editable | NON-EDITABLE -> fix: pip install -e /home/tom/github/semcod/pyqual  [pyproject.toml[pyqual]]
+vallm | >=0.1 | /home/tom/github/semcod/vallm (0.1.93) | 0.1.92 non-editable | STALE-INSTALL (local 0.1.93) -> fix: pip install -e /home/tom/github/semcod/vallm  [pyproject.toml[vallm]]
+
+## EXTERNAL DEPS (no local source, 10): build, coverage, lizard, pytest, pytest-cov, pyyaml, radon, rich, twine, typer

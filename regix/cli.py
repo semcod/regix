@@ -306,6 +306,12 @@ def gates(
     fail_on: str = typer.Option("error", "--fail-on", help="Exit 1 on: error | any"),
     config: Optional[str] = typer.Option(None, "--config", help="Path to regix.yaml"),
     workdir: str = typer.Option(".", "--workdir", "-w", help="Project root"),
+    cache: bool = typer.Option(
+        True,
+        "--cache/--no-cache",
+        help="Skip re-analysis for files unchanged since the last cached run "
+        "(content-hash + backend-version keyed; safe across refs/commits).",
+    ),
 ) -> None:
     """Check current state against configured quality gates (absolute thresholds)."""
     from regix.gates import check_gates
@@ -313,22 +319,27 @@ def gates(
 
     cfg = _load_config(config, workdir)
     wd = Path(cfg.workdir).resolve()
-    snap = capture(ref, wd, cfg)
+    snap = capture(ref, wd, cfg, use_file_cache=cache)
     result = check_gates(snap, cfg)
     errs = result.errors
     warns = result.warnings
+    def _where(gc) -> str:
+        if not gc.file:
+            return ""
+        return f"{gc.file}::{gc.symbol or '(mod)'}  "
+
     if errs:
         typer.echo(f"✗ {len(errs)} hard-gate violation(s):")
         for gc in errs:
             op_str = {"le": "≤", "ge": "≥", "eq": "="}.get(gc.operator, gc.operator)
             typer.echo(
-                f"  {gc.metric}: {gc.value} (threshold: {op_str} {gc.threshold})"
+                f"  {_where(gc)}{gc.metric}: {gc.value} (threshold: {op_str} {gc.threshold})"
             )
     if warns:
         typer.echo(f"⚠ {len(warns)} target-gate miss(es):")
         for gc in warns:
             op_str = {"le": "≤", "ge": "≥", "eq": "="}.get(gc.operator, gc.operator)
-            typer.echo(f"  {gc.metric}: {gc.value} (target: {op_str} {gc.threshold})")
+            typer.echo(f"  {_where(gc)}{gc.metric}: {gc.value} (target: {op_str} {gc.threshold})")
     if not errs and (not warns):
         typer.echo("✓ All quality gates passed (hard + target).")
     elif not errs:

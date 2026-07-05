@@ -216,12 +216,21 @@ def capture(
     config: RegressionConfig,
     backend_names: list[str] | None = None,
     restrict_to_files: list[str] | None = None,
+    use_file_cache: bool = False,
+    file_cache_dir: str = "~/.cache/regix",
 ) -> Snapshot:
     """Capture a snapshot at a git ref or the local working tree.
 
     All file contents are loaded into RAM first — no temporary worktrees
     are created.  For committed refs ``git archive`` streams the tree
     directly into memory; for ``local`` the working tree is read once.
+
+    ``use_file_cache`` skips backend analysis for any file whose content
+    hash + backend-versions fingerprint already has a cached result,
+    regardless of *ref* — unlike the commit-sha-keyed whole-snapshot cache
+    in :mod:`regix.cache`, this also speeds up ``local`` and a moving
+    ``HEAD`` where only a handful of files actually changed since the last
+    check.
     """
     from regix.git import resolve_ref
 
@@ -239,8 +248,27 @@ def capture(
         files = [f for f in files if str(f) in restrict_set]
         sources = {k: v for k, v in sources.items() if k in restrict_set}
 
-    all_results = _run_backends(backends, workdir, files, config, sources)
-    symbols = _merge_symbols(all_results)
+    if use_file_cache:
+        from regix.cache import split_cached_files, update_file_cache
+
+        files_to_analyze, cached_symbols = split_cached_files(
+            files, sources, backend_versions, cache_dir=file_cache_dir
+        )
+        all_results = _run_backends(
+            backends, workdir, files_to_analyze, config, sources
+        )
+        fresh_symbols = _merge_symbols(all_results)
+        update_file_cache(
+            files_to_analyze,
+            sources,
+            fresh_symbols,
+            backend_versions,
+            cache_dir=file_cache_dir,
+        )
+        symbols = cached_symbols + fresh_symbols
+    else:
+        all_results = _run_backends(backends, workdir, files, config, sources)
+        symbols = _merge_symbols(all_results)
 
     return Snapshot(
         ref=ref,

@@ -46,6 +46,8 @@ def check_gates(snapshot: Snapshot, config: RegressionConfig) -> GateResult:
                         passed=False,
                         source="snapshot",
                         severity="error",
+                        file=sm.file,
+                        symbol=sm.symbol,
                     )
                 )
             elif not _passes(value, target_val, operator):
@@ -58,6 +60,8 @@ def check_gates(snapshot: Snapshot, config: RegressionConfig) -> GateResult:
                         passed=False,
                         source="snapshot",
                         severity="warning",
+                        file=sm.file,
+                        symbol=sm.symbol,
                     )
                 )
 
