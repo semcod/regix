@@ -158,6 +158,12 @@ class RegressionConfig:
         }
     )
     backends_parallel: bool = False
+    # MI granularity: "module" (default, radon module-level MI) or "function"
+    # (per-symbol MI via Halstead+CC+SLOC on each function's span). Module MI
+    # punishes LOC, so extracting a helper to cut CC can drop module MI below
+    # the gate; "function" evaluates each unit so good refactors stop being
+    # penalized. See regix STARTER-026.
+    mi_granularity: str = "module"
     on_regression: str = "warn"
     fail_exit_code: int = 1
     show_improvements: bool = True
@@ -422,9 +428,12 @@ class RegressionConfig:
             return
         bk = root["backends"]
         if isinstance(bk, dict):
-            kwargs["backends"] = {k: v for k, v in bk.items() if k != "parallel"}
+            _meta = {"parallel", "mi_granularity"}
+            kwargs["backends"] = {k: v for k, v in bk.items() if k not in _meta}
             if "parallel" in bk:
                 kwargs["backends_parallel"] = bk["parallel"]
+            if "mi_granularity" in bk:
+                kwargs["mi_granularity"] = str(bk["mi_granularity"])
 
     @staticmethod
     def _parse_output(root: dict, kwargs: dict) -> None:

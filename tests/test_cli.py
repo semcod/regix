@@ -202,6 +202,42 @@ class TestGatesCommand:
         assert "src/pkg/mod.py::big_func" in result.output
         assert "src/pkg/mod.py::(mod)" in result.output
 
+    @patch("regix.snapshot.capture")
+    @patch("regix.gates.check_gates")
+    def test_gates_json_format(self, mock_gates, mock_capture, tmp_path):
+        import json as _json
+        from regix.models import GateCheck, GateResult
+        mock_capture.return_value = _fake_snap()
+        mock_gates.return_value = GateResult(checks=[
+            GateCheck(metric="cc", value=50.0, threshold=15.0,
+                      operator="le", passed=False, source="snapshot", severity="error",
+                      file="src/pkg/mod.py", symbol="big_func"),
+            GateCheck(metric="mi", value=5.0, threshold=20.0,
+                      operator="ge", passed=False, source="snapshot", severity="warning",
+                      file="src/pkg/mod.py", symbol=None),
+        ])
+        result = runner.invoke(app, ["gates", "--format", "json", "--workdir", str(tmp_path)])
+        assert result.exit_code == 1  # hard-gate error present
+        payload = _json.loads(result.output)
+        assert payload["errors"] == 1 and payload["warnings"] == 1
+        assert payload["all_passed"] is False
+        v = payload["violations"][0]
+        assert v["file"] == "src/pkg/mod.py" and v["symbol"] == "big_func"
+        assert v["metric"] == "cc" and v["value"] == 50.0
+        assert v["threshold"] == 15.0 and v["severity"] == "error"
+
+    @patch("regix.snapshot.capture")
+    @patch("regix.gates.check_gates")
+    def test_gates_json_all_pass(self, mock_gates, mock_capture, tmp_path):
+        import json as _json
+        from regix.models import GateResult
+        mock_capture.return_value = _fake_snap()
+        mock_gates.return_value = GateResult(checks=[])
+        result = runner.invoke(app, ["gates", "--format", "json", "--workdir", str(tmp_path)])
+        assert result.exit_code == 0
+        payload = _json.loads(result.output)
+        assert payload["all_passed"] is True and payload["violations"] == []
+
 
 class TestDiffCommand:
     @patch("regix.snapshot.capture")

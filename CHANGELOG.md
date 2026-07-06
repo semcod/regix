@@ -25,6 +25,20 @@
 - `GateCheck` now carries `file`/`symbol` so gate violations can be attributed
   to a specific location in output.
 
+## [0.1.33] - 2026-07-06
+
+### Docs
+- Update README.md
+
+### Test
+- Update tests/test_cli.py
+- Update tests/test_radon_mi_granularity.py
+
+### Other
+- Update regix/backends/radon_backend.py
+- Update regix/cli.py
+- Update regix/config.py
+
 ## [0.1.32] - 2026-07-05
 
 ### Docs

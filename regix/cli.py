@@ -312,6 +312,7 @@ def gates(
         help="Skip re-analysis for files unchanged since the last cached run "
         "(content-hash + backend-version keyed; safe across refs/commits).",
     ),
+    fmt: str = typer.Option("rich", "--format", "-f", help="Output format: rich | json"),
 ) -> None:
     """Check current state against configured quality gates (absolute thresholds)."""
     from regix.gates import check_gates
@@ -323,6 +324,24 @@ def gates(
     result = check_gates(snap, cfg)
     errs = result.errors
     warns = result.warnings
+
+    if fmt == "json":
+        import json
+        from dataclasses import asdict
+
+        payload = {
+            "ref": ref,
+            "all_passed": result.all_passed,
+            "errors": len(errs),
+            "warnings": len(warns),
+            "violations": [asdict(gc) for gc in errs + warns],
+        }
+        typer.echo(json.dumps(payload, indent=2, default=str))
+        if errs and (fail_on == "any" or fail_on == "error"):
+            raise SystemExit(cfg.fail_exit_code)
+        if warns and fail_on == "any":
+            raise SystemExit(cfg.fail_exit_code)
+        return
     def _where(gc) -> str:
         if not gc.file:
             return ""
@@ -390,7 +409,7 @@ def init(
     if target.exists():
         typer.echo(f"regix.yaml already exists at {target}")
         raise SystemExit(1)
-    default_config = 'regix:\n  workdir: .\n\n  # ── Quality gates ──────────────────────────────────────────\n  gates:\n    # Hard — violations block the pipeline (exit code 1)\n    hard:\n      cc: 15\n      mi: 20\n      coverage: 80\n      length: 100\n      docstring: 60\n      quality: 0.85\n\n    # Target — aspirational goals, reported as warnings\n    target:\n      cc: 10\n      mi: 30\n      coverage: 90\n      length: 50\n      docstring: 80\n      quality: 0.95\n\n    on_regression: warn\n    fail_exit_code: 1\n\n  # ── Delta thresholds (relative change between commits) ─────\n  deltas:\n    warn: 2\n    error: 5\n\n  # ── Backends ───────────────────────────────────────────────\n  backends:\n    cc: lizard\n    mi: radon\n    coverage: pytest-cov\n    quality: none\n    docstring: builtin\n\n  # ── File filtering ─────────────────────────────────────────\n  exclude:\n    - "tests/**"\n    - "docs/**"\n    - "examples/**"\n    - ".venv/**"\n\n  # ── Output ─────────────────────────────────────────────────\n  output:\n    format: rich\n    dir: .regix/\n    show_improvements: true\n'
+    default_config = 'regix:\n  workdir: .\n\n  # ── Quality gates ──────────────────────────────────────────\n  gates:\n    # Hard — violations block the pipeline (exit code 1)\n    hard:\n      cc: 15\n      mi: 20\n      coverage: 80\n      length: 100\n      docstring: 60\n      quality: 0.85\n\n    # Target — aspirational goals, reported as warnings\n    target:\n      cc: 10\n      mi: 30\n      coverage: 90\n      length: 50\n      docstring: 80\n      quality: 0.95\n\n    on_regression: warn\n    fail_exit_code: 1\n\n  # ── Delta thresholds (relative change between commits) ─────\n  deltas:\n    warn: 2\n    error: 5\n\n  # ── Backends ───────────────────────────────────────────────\n  backends:\n    cc: lizard\n    mi: radon\n    coverage: pytest-cov\n    quality: none\n    docstring: builtin\n    # mi_granularity: module   # or "function" — score each function\'s own\n    #                          # span so helper extraction (lower CC, more LOC)\n    #                          # stops dropping module MI below the gate\n\n  # ── File filtering ─────────────────────────────────────────\n  exclude:\n    - "tests/**"\n    - "docs/**"\n    - "examples/**"\n    - ".venv/**"\n\n  # ── Output ─────────────────────────────────────────────────\n  output:\n    format: rich\n    dir: .regix/\n    show_improvements: true\n'
     target.write_text(default_config, encoding="utf-8")
     typer.echo(f"Created {target}")
 
