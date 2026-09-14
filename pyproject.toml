@@ -51,7 +51,6 @@ dev = [
     "coverage[toml]>=7.0",
     "goal>=2.1.218",
     "costs>=0.1.20",
-    "pfix>=0.1.60",
     "pyqual>=0.1.50",
     "code2llm>=0.1",
     "vallm>=0.1",
@@ -111,22 +110,6 @@ addopts = ""
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["regix*"]
-
-[tool.pfix]
-# Self-healing Python configuration
-model = "openrouter/deep/deep-v4-pro"
-auto_apply = true
-auto_install_deps = true
-auto_restart = false
-max_retries = 3
-create_backups = false
-git_auto_commit = false
-
-[tool.pfix.runtime_todo]
-enabled = true
-todo_file = "TODO.md"
-min_severity = "low"
-deduplicate = true
 
 [tool.costs]
 # AI Cost tracking configuration
