@@ -11,6 +11,16 @@ app = typer.Typer(
 )
 
 
+@app.callback()
+def _main_callback() -> None:
+    try:
+        from regix.autoupdate import check_for_updates
+        check_for_updates("regix")
+    except Exception:
+        pass
+
+
+
 def _load_config(config: str | None, workdir: str) -> "RegressionConfig":
     from regix.config import RegressionConfig
 
