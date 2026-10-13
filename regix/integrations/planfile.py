@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 import subprocess
 import shutil
 from pathlib import Path
@@ -19,7 +20,8 @@ def sync_regressions_to_planfile(report: RegressionReport, workdir: str = ".") -
     # 1. Find planfile executable
     planfile_bin = shutil.which("planfile")
     # Fallback to local copy if present
-    local_planfile = Path("/home/tom/github/semcod/planfile/.venv/bin/planfile")
+    env_planfile = os.environ.get("PLANFILE_BIN")
+    local_planfile = Path(env_planfile) if env_planfile else Path.home() / "github" / "semcod" / "planfile" / ".venv" / "bin" / "planfile"
     if not planfile_bin and local_planfile.exists():
         planfile_bin = str(local_planfile)
 
